@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import SalesSummary from "./SalesSummary";
 
+
+//요약페이지의 컴포넌트에 api데이터 전달 위한 컨테이너 컴포넌트
 function SalesSummaryContainer() {
   const [summary, setSummary] = useState({
     thisMonthProfit: 0,
@@ -10,7 +12,7 @@ function SalesSummaryContainer() {
   const [period, setPeriod] = useState("MONTH");
 
   useEffect(() => {
-    fetch(`http://localhost:8080/api/monitoring/user?period=${period}`)
+    fetch(`http://localhost:8080/api/monitoring/user?period=${period}`) //API데이터 요청
       .then((res) => res.json())
       .then((data) => {
         setSummary({
@@ -26,7 +28,7 @@ function SalesSummaryContainer() {
 
   return (
     <div style={{ width: "1000px" }}>
-      {/* 드롭다운을 상단 우측에 배치 */}
+      {/* 조회기간 선택 드롭다운 상단 우측에 배치 */}
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
         <select
           value={period}
