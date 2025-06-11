@@ -1,6 +1,7 @@
 import React from "react";
 import { css, Global } from "@emotion/react";
 import SalesSummary from "../components/MonitoringPage/SalesSummary";
+import SalesSummaryContainer from "../components/MonitoringPage/SummaryContainer";
 // import Carousel from "../component/carousel/recommendCarousel";
 // import HomeCalendar from "../component/calendar/homeCalendar";
 
@@ -46,13 +47,8 @@ const monitoringView = () => {
   return (
     <>
       <div>
-        <SalesSummary />
+        <SalesSummaryContainer />
       </div>
-      <div css={container}>
-        목표를 세워 볼까요?
-      </div>
-      <div css={[container, task1]}>큰목표 작은목표 1</div>
-      <div css={[container, task1]}>큰목표 작은목표 2</div>
     </>
   );
 };

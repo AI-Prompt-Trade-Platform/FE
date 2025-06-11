@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import SalesSummary from "./SalesSummary"; // 위에서 만든 컴포넌트
+import SalesSummary from "./SalesSummary";
 
 function SalesSummaryContainer() {
   const [summary, setSummary] = useState({
@@ -7,10 +7,10 @@ function SalesSummaryContainer() {
     totalSalesCount: 0,
     avgRate: null,
   });
+  const [period, setPeriod] = useState("MONTH");
 
   useEffect(() => {
-    // 실제 API 주소로 변경 필요
-    fetch("http://localhost:8080/api/monitoring/user")
+    fetch(`http://localhost:8080/api/monitoring/user?period=${period}`)
       .then((res) => res.json())
       .then((data) => {
         setSummary({
@@ -20,17 +20,39 @@ function SalesSummaryContainer() {
         });
       })
       .catch((err) => {
-        // 에러 처리
         console.error(err);
       });
-  }, []);
+  }, [period]);
 
   return (
-    <SalesSummary
-      thisMonthProfit={summary.thisMonthProfit}
-      totalSalesCount={summary.totalSalesCount}
-      avgRate={summary.avgRate}
-    />
+    <div style={{ width: "1000px" }}>
+      {/* 드롭다운을 상단 우측에 배치 */}
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
+        <select
+          value={period}
+          onChange={e => setPeriod(e.target.value)}
+          style={{
+            background: "#232323",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            padding: "8px 16px",
+            fontSize: "1rem",
+            outline: "none",
+            cursor: "pointer",
+          }}
+        >
+          <option value="MONTH">이번달</option>
+          <option value="HALF_YEAR">6개월</option>
+          <option value="YEAR">1년</option>
+        </select>
+      </div>
+      <SalesSummary
+        thisMonthProfit={summary.thisMonthProfit}
+        totalSalesCount={summary.totalSalesCount}
+        avgRate={summary.avgRate}
+      />
+    </div>
   );
 }
 
