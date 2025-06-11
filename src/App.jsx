@@ -1,41 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React from 'react';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'; //서버 API데이터 관리 라이브러리
+import { BrowserRouter } from 'react-router-dom';
+import Router from './routes';
 import './App.css'
 import AuthControls from "./components/AuthControls.jsx";
+import { globalStyle } from './components/common/styles/globalStyle/globalStyle';
+import { Global } from '@emotion/react'; //css를 컴포넌트 단위로 작성 가능하게 하는 라이브러리
 
-function App() {
-  const [count, setCount] = useState(0)
 
+const queryClient = new QueryClient();
+
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+      <Global styles={globalStyle} />
+      <div className='app'>
+        <Router />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-          <div>
-              <h1>Prumpt 2.0</h1>
-              <AuthControls />
-              {/* 로그인된 사용자만 볼 수 있는 콘텐츠 */}
-          </div>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+};
 
-export default App
+
+export default App;
