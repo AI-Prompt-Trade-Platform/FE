@@ -1,6 +1,7 @@
 import React from "react";
 import { css, Global } from "@emotion/react";
 import SalesSummaryContainer from "../components/MonitoringPage/SummaryContainer";
+import StarryBackground from "../components/mainBackground/StarryBackground"
 
 
 const mainColor = {
@@ -21,17 +22,17 @@ const summaryNchart = {
 
 const monitoringView = () => {
   return (
-    <div style={mainColor}>
-      <div>
-        <p style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "24px" }}>
-          수익 모니터링
-        </p>
+      <div style={mainColor}>
+        <div>
+          <p style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "24px" }}>
+            수익 모니터링
+          </p>
+        </div>
+        <div style={summaryNchart}>
+          <SalesSummaryContainer />
+        </div>
       </div>
-      <div style={summaryNchart}>
-        <SalesSummaryContainer />
-      </div>
-    </div>
-  );
+    );
 };
 
 export default monitoringView;

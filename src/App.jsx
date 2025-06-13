@@ -2,6 +2,7 @@ import React from 'react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'; //서버 API데이터 관리 라이브러리
 import { BrowserRouter } from 'react-router-dom';
 import Router from './routes';
+import StarryBackground from './components/mainBackground/StarryBackground.jsx';
 import './App.css'
 import AuthControls from "./components/AuthControls.jsx";
 import { globalStyle } from './components/common/styles/globalStyle/globalStyle';
@@ -16,6 +17,7 @@ const App = () => {
       <BrowserRouter>
       <Global styles={globalStyle} />
       <div className='app'>
+        <StarryBackground />
         <Router />
       </div>
       </BrowserRouter>
