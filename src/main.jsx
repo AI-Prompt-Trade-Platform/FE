@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App.jsx'
 
 const container = document.getElementById('root');
@@ -12,16 +11,7 @@ if (!container) {
 
 const root = createRoot(container);
 root.render(
-    <Auth0Provider
-        domain={import.meta.env.VITE_AUTH0_DOMAIN}
-        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-        redirectUri={window.location.origin}
-        authorizationParams={{
-            redirect_uri: window.location.origin,
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,      // .env에 VITE_AUTH0_AUDIENCE 설정 필요
-            scope: 'openid profile email'
-        }}
-    >
+    <StrictMode>
         <App />
-    </Auth0Provider>
+    </StrictMode>
 );
