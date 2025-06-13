@@ -5,7 +5,6 @@ import Article from '../components/article/article';
 
 const Router = () => {
   return (
-    <Article>
       <Routes>
         {routes.map((route) => (
           <Route
@@ -15,7 +14,6 @@ const Router = () => {
             />
         ))}
       </Routes>
-    </Article>
   );
 };
 
