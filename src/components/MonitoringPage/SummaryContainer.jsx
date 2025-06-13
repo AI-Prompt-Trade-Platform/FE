@@ -68,6 +68,7 @@ function SalesSummaryContainer() {
         thisMonthProfit={summary.thisMonthProfit}
         totalSalesCount={summary.totalSalesCount}
         avgRate={summary.avgRate}
+        period={period}
       />
       <SalesChart data={dailyProfit} period={period} />
       {/* PromptCard 컴포넌트 여기에 추가 */}

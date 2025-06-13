@@ -1,0 +1,35 @@
+.sales-summary-container {
+  display: flex;
+  flex-direction: column;
+  background: rgba(24, 24, 24, 0.7);
+  backdrop-filter: blur(10px);
+  font-size: 16px;
+  border-radius: 12px;
+}
+
+.sales-summary-content {
+  display: flex;
+  gap: 16px;
+}
+
+.summary-item {
+  flex: 1;
+  height: 200px;
+  background: rgba(35, 35, 35, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.summary-item-title {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.summary-item-value {
+  color: #fff;
+  font-size: 3rem;
+  font-weight: bold;
+  line-height: 200%;
+} 

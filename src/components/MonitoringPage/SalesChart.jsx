@@ -1,5 +1,6 @@
 import React from "react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import "./SalesChart.css"; // CSS 파일 임포트
 
 // period에 따라 기본 차트 데이터 생성
 function getDefaultChartData(period) {
@@ -28,7 +29,7 @@ function SalesChart({ data, period }) {
   // 데이터가 없으면 period에 맞는 기본값 사용
   const chartData = Array.isArray(data) && data.length > 0 ? data : getDefaultChartData(period);
 
-  // X축 tick 설정: 기간에 따라 간격 조정
+  // X축 날짜 표기 설정: 기간에 따라 간격 조정
   let xAxisTickFormatter = (date) => {
     const [_, mm, dd] = date.split('-');
     return `${mm}/${dd}`;
@@ -55,16 +56,9 @@ function SalesChart({ data, period }) {
   }
 
   return (
-    <div style={{
-      background: "#232323",
-      borderRadius: "16px",
-      padding: "24px",
-      marginTop: "24px",
-      width: "100%",
-      minHeight: "300px"
-    }}>
-      <div style={{ color: "#fff", fontWeight: "bold", fontSize: "1.2rem", marginBottom: "16px" }}>수익 차트</div>
-      <ResponsiveContainer width="100%" height={220}>
+    <div className="sales-chart-container">
+      <div className="sales-chart-title">수익 차트</div>
+      <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData}>
           <CartesianGrid stroke="#333" />
           <XAxis dataKey="summaryDate" stroke="#fff" tick={{ fill: "#fff" }}

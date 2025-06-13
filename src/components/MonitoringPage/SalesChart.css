@@ -1,0 +1,17 @@
+.sales-chart-container {
+  background: rgba(35, 35, 35, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 24px;
+  width: 100%;
+  min-height: 300px;
+  /* box-shadow: 0 0 10px rgba(255, 255, 255, 0.1), inset 0 0 8px rgba(255, 255, 255, 0.05); */
+}
+
+.sales-chart-title {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+} 

@@ -14,8 +14,8 @@ const mainColor = {
 };
 
 const summaryNchart = {
-  maxWidth: "1800px",
-  minWidth: "1500px",
+  maxWidth: "1900px",
+  minWidth: "1000px",
   margin: "0 auto"
 }
 
@@ -23,8 +23,8 @@ const summaryNchart = {
 const monitoringView = () => {
   return (
       <div style={mainColor}>
-        <div>
-          <p style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "24px" }}>
+        <div style={{ textAlign: "left", marginLeft: "10%" }}>
+          <p style={{ fontSize: "3rem", fontWeight: "bold", marginBottom: "24px" }}>
             수익 모니터링
           </p>
         </div>
