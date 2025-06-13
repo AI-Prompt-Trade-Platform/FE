@@ -5,12 +5,11 @@ import StarryBackground from "../components/mainBackground/StarryBackground"
 
 
 const mainColor = {
-  background: "#181818",
   color: "#fff",
   minHeight: "100vh", // 화면 전체 높이 적용
   padding: "40px",    // 여백 추가
-  display: "grid",
-  justifyContent: "center"
+  // display: "grid",
+  // justifyContent: "center"
 };
 
 const summaryNchart = {
@@ -22,9 +21,9 @@ const summaryNchart = {
 
 const monitoringView = () => {
   return (
-      <div style={mainColor}>
+      <div>
         <div style={{ textAlign: "left", marginLeft: "10%" }}>
-          <p style={{ fontSize: "3rem", fontWeight: "bold", marginBottom: "24px" }}>
+          <p style={{ fontSize: "3rem", fontWeight: "bold", marginBottom: "24px", color: "white"}}>
             수익 모니터링
           </p>
         </div>
