@@ -16,7 +16,6 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
       <Global styles={globalStyle} />
-      <StarryBackground />
       <div className='app'>
         <Router />
       </div>

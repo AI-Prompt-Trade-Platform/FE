@@ -4,7 +4,8 @@ import SalesChart from "./SalesChart";
 
 
 const monitoringStyle = {
-  width: "100%"
+  width: "100%",
+  margin: "auto"
 }
 
 
@@ -44,6 +45,10 @@ function SalesSummaryContainer() {
 
   return (
     <div style={monitoringStyle}>
+      {/* 네비게이션바 컴포넌트 */}
+        <p style={{ fontSize: "3rem", textAlign: "left", color: "white", fontWeight: "bold", marginTop: "20px", marginBottom: "20px" }}>
+          수익 모니터링
+        </p>
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
         <select
           value={period}

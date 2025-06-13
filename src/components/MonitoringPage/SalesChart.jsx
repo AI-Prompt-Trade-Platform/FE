@@ -57,7 +57,6 @@ function SalesChart({ data, period }) {
 
   return (
     <div className="sales-chart-container">
-      <div className="sales-chart-title">수익 차트</div>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData}>
           <CartesianGrid stroke="#333" />

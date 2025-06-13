@@ -14,22 +14,24 @@
 
 .summary-item {
   flex: 1;
-  height: 180px;
   background: rgba(35, 35, 35, 0.7);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 24px;
+  width: 100%;
+  height: 150%;
 }
 
 .summary-item-title {
   color: #fff;
-  font-size: 2rem;
+  font-size: 1.7em;
   margin-bottom: 12px;
 }
 
 .summary-item-value {
   color: #fff;
-  font-size: 3rem;
+  font-size: 2em;
   font-weight: bold;
   line-height: 210%;
+  width: 100%;
 } 
