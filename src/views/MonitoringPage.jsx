@@ -9,8 +9,8 @@ const mainColor = {
   color: "#fff",
   minHeight: "100vh", // 화면 전체 높이 적용
   padding: "40px",    // 여백 추가
-  // display: "grid",
-  // justifyContent: "center"
+  display: "grid",
+  justifyContent: "center"
 };
 
 const summaryNchart = {
