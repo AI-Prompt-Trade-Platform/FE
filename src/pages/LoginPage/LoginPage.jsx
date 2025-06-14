@@ -19,7 +19,7 @@ const LoginPage = () => {
 
   return (
     <div className="login-page-container">
-      <h1 className="login-title">Prumpt에 오신 것을 환영합니다!</h1>
+      <h1 className="login-title" data-text="Prumpt에 오신 것을 환영합니다!">Prumpt에 오신 것을 환영합니다!</h1>
       <p className="login-description">로그인하여 프롬프트의 세계를 탐험해보세요.</p>
       
       {/* 로그인 버튼만 홈화면에 추가하면 됨 =================================== */}
