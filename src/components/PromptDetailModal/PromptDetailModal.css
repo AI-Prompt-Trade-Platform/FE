@@ -1,0 +1,108 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1a1a2e; /* 어두운 배경 */
+  color: #e0e0e0; /* 밝은 텍스트 색상 */
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.3s ease-out;
+  border: 1px solid #00c4cc; /* 강조 색상 테두리 */
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.modal-close-btn:hover {
+  color: #00c4cc;
+}
+
+.modal-title {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: #00c4cc; /* 강조 색상 */
+  text-align: center;
+}
+
+.modal-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.modal-details p {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.modal-details strong {
+  color: #008c99;
+}
+
+.modal-tags {
+  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.modal-tags .tag {
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-20px); }
+}
+
+.modal-overlay.fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+  .modal-title {
+    font-size: 2rem;
+  }
+  .modal-description {
+    font-size: 1rem;
+  }
+} 

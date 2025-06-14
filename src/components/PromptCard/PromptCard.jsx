@@ -1,7 +1,7 @@
 import React from 'react';
 import './PromptCard.css';
 
-const PromptCard = ({ prompt }) => {
+const PromptCard = ({ prompt, onCardClick }) => {
   const {
     id,
     title,
@@ -15,8 +15,14 @@ const PromptCard = ({ prompt }) => {
     downloads
   } = prompt;
 
+  const handleClick = () => {
+    if (onCardClick) {
+      onCardClick(prompt);
+    }
+  };
+
   return (
-    <div className="prompt-card">
+    <div className="prompt-card" onClick={handleClick}>
       <div className="card-thumbnail">
         {thumbnail ? (
           <img src={thumbnail} alt={title} />

@@ -1,5 +1,6 @@
 import monitoringView from '../views/MonitoringPage';
 import Home from '../views/MonitoringPage';
+import LoginPage from '../pages/LoginPage/LoginPage';
 //views 폴더의 .jsx 파일을 라우팅 할 때 사용
 
 
@@ -17,6 +18,11 @@ import Home from '../views/MonitoringPage';
 const routes = [
     {
         path : '/',
+        component : LoginPage,
+        name : 'Login',
+    },
+    {
+        path : '/monitoring',
         component : monitoringView,
         name : 'MonitoringPage',
     }

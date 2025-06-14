@@ -13,7 +13,7 @@
 
 .summary-item {
   flex: 1;
-  background: rgba(35, 35, 35, 0.7);
+  background: linear-gradient(145deg, #2c2c2c6e 0%, #161616ca 100%);
   backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 24px;

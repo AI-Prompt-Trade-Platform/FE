@@ -1,0 +1,59 @@
+.login-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #1a1a2e; /* 어두운 배경 */
+  color: #e0e0e0; /* 밝은 텍스트 색상 */
+  text-align: center;
+  padding: 20px;
+}
+
+.login-title {
+  font-size: 3rem;
+  color: #00c4cc; /* 강조 색상 */
+  margin-bottom: 20px;
+}
+
+.login-description {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.login-button {
+  background-color: #4a9eff; /* 버튼 배경색 */
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.login-button:hover {
+  background-color: #3a8ee2;
+  transform: translateY(-2px);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .login-title {
+    font-size: 2.5rem;
+  }
+  .login-description {
+    font-size: 1rem;
+  }
+  .login-button {
+    padding: 12px 25px;
+    font-size: 1rem;
+  }
+} 
