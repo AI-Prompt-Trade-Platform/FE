@@ -1,0 +1,126 @@
+.prompt-carousel-section {
+  margin-bottom: 50px;
+  margin-top: 30px;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 30px 24px 20px;
+  position: relative;
+  overflow: visible;
+}
+
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.carousel-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.carousel-track-wrapper {
+  overflow-x: hidden;
+  overflow-y: visible;
+  width: 100%;
+  position: relative;
+  padding: 10px 0 20px 0;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform;
+  overflow: visible;
+}
+
+.carousel-slide {
+  flex: 0 0 auto;
+  padding: 0 10px;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.carousel-controls {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  position: static;
+  width: auto;
+  height: auto;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: auto;
+  z-index: 1;
+  transform: none;
+}
+
+.carousel-btn {
+  background: #222;
+  color: #4a9eff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  box-shadow: 0 2px 8px #0006;
+}
+.carousel-btn:disabled {
+  color: #555;
+  background: #181818;
+  cursor: not-allowed;
+}
+.carousel-btn:not(:disabled):hover {
+  background: #4a9eff;
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .prompt-carousel-section {
+    max-width: 100vw;
+    padding: 20px 8px;
+  }
+  .carousel-title {
+    font-size: 22px;
+  }
+  .carousel-slide {
+    padding: 0 6px;
+  }
+  .carousel-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+  .carousel-track-wrapper {
+    padding: 8px 0 16px 0;
+  }
+}
+@media (max-width: 600px) {
+  .prompt-carousel-section {
+    padding: 15px 2px;
+  }
+  .carousel-title {
+    font-size: 18px;
+  }
+  .carousel-slide {
+    padding: 0 2px;
+  }
+  .carousel-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+  .carousel-track-wrapper {
+    padding: 6px 0 12px 0;
+  }
+} 

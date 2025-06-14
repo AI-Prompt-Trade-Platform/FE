@@ -76,7 +76,6 @@ function SalesSummaryContainer() {
         period={period}
       />
       <SalesChart data={dailyProfit} period={period} />
-      {/* PromptCard 컴포넌트 여기에 추가 */}
     </div>
   );
 }

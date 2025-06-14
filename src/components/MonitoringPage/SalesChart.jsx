@@ -57,7 +57,7 @@ function SalesChart({ data, period }) {
 
   return (
     <div className="sales-chart-container">
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={300} style={{ marginLeft: "-20px" }}> {/* Recahrts 그래프 사이즈 */}
         <LineChart data={chartData}>
           <CartesianGrid stroke="#333" />
           <XAxis dataKey="summaryDate" stroke="#fff" tick={{ fill: "#fff" }}

@@ -22,7 +22,6 @@ const monitoringView = () => {
   return (
       <div>
         <StarryBackground />
-        
         <div style={summaryNchart}>
           <SalesSummaryContainer />
         </div>
