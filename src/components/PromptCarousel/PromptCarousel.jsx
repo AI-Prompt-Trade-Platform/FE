@@ -10,6 +10,16 @@ const PromptCarousel = ({ prompts, title }) => {
   const goPrev = () => setCurrent((prev) => Math.max(prev - 1, 0));
   const goNext = () => setCurrent((prev) => Math.min(prev + 1, maxIndex));
 
+  if (!prompts || prompts.length === 0) {
+    return (
+      <section className="prompt-carousel-section">
+        <div className="no-prompts-message">
+          판매중인 프롬프트가 없습니다.
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="prompt-carousel-section">
       <div className="carousel-header">

@@ -1,7 +1,7 @@
 .prompt-carousel-section {
   margin-bottom: 50px;
   margin-top: 30px;
-  width: 100%;
+  /* width: 100%; */
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
@@ -29,6 +29,7 @@
   width: 100%;
   position: relative;
   padding: 10px 0 20px 0;
+  
 }
 
 .carousel-track {
@@ -123,4 +124,11 @@
   .carousel-track-wrapper {
     padding: 6px 0 12px 0;
   }
+}
+
+.no-prompts-message {
+  color: #aaa;
+  text-align: center;
+  padding: 50px 0;
+  font-size: 1.2rem;
 } 

@@ -90,11 +90,14 @@ function SalesSummaryContainer() {
 
 
   useEffect(() => {
+    const userToken = localStorage.getItem('accessToken'); // 로컬 스토리지에서 토큰 가져오기
+
     fetch(`http://localhost:8080/api/mypage/monitoring?period=${period}`, {
       method: "GET",
-      headers: { //사용자 토큰 들어가게 수정 필요
+      headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkNVMDZpVk9hQmlpdUNhbVp6aXJ6NjkwLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJYQTY2ZEo1cWNXcVhGcVNISzB2dmNZYlFraHppWG5CT0BjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9hcGkucHJ1bXB0LmxvY2FsIiwiaWF0IjoxNzQ5NjkxNDQ2LCJleHAiOjE3NDk3Nzc4NDYsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsImF6cCI6IlhBNjZkSjVxY1dxWEZxU0hLMHZ2Y1liUWtoemlYbkBPIn0.bbdASEovR4nxxSPjnQgJEglj5TDpelIHQjFmbpstNU59pcSP1QTShI7fnSNgb1hIRBpXGWR-8JWKqe8ufvnNgN_5JPojxZEAodnhT2i0P3MJUeLVzsQhXAjOokSLz6GN6Xe7LK6u_FT2Y888Uz7hjOk6ZqOwGkyE8Gjsy42isPtlqe0u8ezNLrkHdm1zV4NB4TkkHWJYVqEMXzn9TGPisy83WwJ_OhLEz9R19vMDwJ493DezqllhKOlgpwphxptpY0Vx5RIf2SWgz05Try1m_o8l6LLUAhsf3bWjd5FCasTVDGRXFO1QvYSDuy7RPtxY21QFc1wxgVQXQ2KF3TChA" // 여기에 실제 토큰 문자열 입력
+        // "Authorization": userToken ? `Bearer ${userToken}` : "" // 토큰이 있으면 추가, 없으면 빈 문자열
+        "Authorization": "" // 토큰이 있으면 추가, 없으면 빈 문자열
       }
     })
       .then((res) => res.json())
@@ -146,6 +149,7 @@ function SalesSummaryContainer() {
       />
       <SalesChart data={dailyProfit} period={period} />
       {/* <PromptCarousel title="판매중인 프롬프트" prompts={sellingPrompts} /> */}
+      {/* <h2 className="carousel-title" style={{textAlign: "left", color: "white", fontWeight: "bold", marginTop: "20px", marginBottom: "20px" }}>판매중인 프롬프트</h2> */}
       <PromptCarousel title="판매중인 프롬프트" prompts={popularPrompts} />
     </div>
   );
