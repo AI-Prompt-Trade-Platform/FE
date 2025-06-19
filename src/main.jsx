@@ -13,15 +13,14 @@ if (!container) {
 const root = createRoot(container);
 root.render(
     <Auth0Provider
-        domain={import.meta.env.VITE_AUTH0_DOMAIN}
-        clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-        redirectUri={window.location.origin}
-        authorizationParams={{
-            redirect_uri: window.location.origin,
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,      // .env에 VITE_AUTH0_AUDIENCE 설정 필요
-            scope: 'openid profile email'
+     domain={import.meta.env.VITE_AUTH0_DOMAIN}
+     clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+    authorizationParams={{
+           redirect_uri: window.location.origin,          // 콜백 URL
+              audience: import.meta.env.VITE_AUTH0_AUDIENCE, // API 식별자
+               scope: 'openid profile email'
         }}
-    >
+   >
         <App />
     </Auth0Provider>
 );

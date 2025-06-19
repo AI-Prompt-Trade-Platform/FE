@@ -1,9 +1,21 @@
 // src/api/client.js
-export async function callApi(endpoint, options = {}) {
-    /* eslint-disable-next-line no-unused-vars */
-    options
+import axios from 'axios';
 
-    // Auth0 훅은 React 컴포넌트 내에서만 쓸 수 있으므로,
-    // 여기서는 옵션 객체를 그대로 downstream 컴포넌트에 전달합니다.
-    throw new Error('callApi() 는 useAuth0()가 있는 컴포넌트에서 래핑해야함.');
-}
+// 기본 인스턴스
+const client = axios.create({
+    baseURL: '/api',
+    headers: { 'Content-Type': 'application/json' },
+});
+
+// 토큰을 붙이기 위해 인터셉터 등록
+client.interceptors.request.use(
+    async config => {
+        // Auth0 훅은 컴포넌트 안에서만 가능하므로, 여기서는
+        // 컴포넌트에서 액세스 토큰을 직접 넘겨주도록 합니다.
+        // 예: config.headers.Authorization = `Bearer ${token}`;
+        return config;
+    },
+    error => Promise.reject(error)
+);
+
+export default client;

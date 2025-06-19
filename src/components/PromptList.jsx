@@ -1,31 +1,32 @@
-// src/components/PromptList.jsx
-import React, { useEffect, useState } from 'react';
-import { useAuthApi } from '../hooks/useAuthApi';
+import React from 'react';
+import '../styles/Prompt.css';
 
-export default function PromptList() {
-    const { authFetch } = useAuthApi();
-    const [prompts, setPrompts] = useState([]);
-    const [error, setError] = useState();
-
-    useEffect(() => {
-        (async () => {
-            try {
-                // /api/prompts 엔드포인트에 GET 요청
-                const data = await authFetch('/api/prompts', { method: 'GET' });
-                setPrompts(data);
-            } catch (e) {
-                setError(e.message);
-            }
-        })();
-    }, [authFetch]);
-
-    if (error) return <div>데이터 로드 실패: {error}</div>;
-
+export default function PromptList({ prompts, onEdit, onDelete, onView }) {
     return (
-        <ul>
-            {prompts.map((p) => (
-                <li key={p.id}>{p.title}</li>
-            ))}
-        </ul>
+        <div className="prompt-list-wrapper">
+            <div className="prompt-list-container">
+                {prompts.map((prompt, index) => (
+                    <div key={index} className="prompt-card">
+                        <h3>{prompt.promptName || '제목 없음'}</h3>
+                        <p>{prompt.content || '내용 없음'}</p> {/* ✅ 수정 */}
+                        <h3>{prompt.title || '제목 없음'}</h3>
+                        <p>{prompt.content || '내용 없음'}</p>
+
+
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {prompt.tags?.map((tag, i) => (
+                                <span key={i} className="prompt-tag">#{tag}</span>
+                            ))}
+                        </div>
+
+                        <div className="prompt-card-actions">
+                            <button onClick={() => onEdit(prompt)} className="prompt-button-edit">수정</button>
+                            <button onClick={() => onDelete(prompt.id)} className="prompt-button-delete">삭제</button>
+                            <button onClick={() => onView(prompt)} className="prompt-button-view">상세</button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 }
