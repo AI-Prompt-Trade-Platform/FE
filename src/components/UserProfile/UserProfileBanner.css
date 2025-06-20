@@ -1,0 +1,242 @@
+.user-profile-banner {
+    margin-bottom: 30px;
+    background-color: rgba(30, 30, 30, 0.7);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.profile-banner {
+    height: 200px;
+    width: 100%;
+    background-color: var(--bg-tertiary);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.profile-banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지 비율을 유지하면서 컨테이너를 채움 */
+}
+
+.profile-banner-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, #2c2c2c 0%, #1e1e1e 100%);
+    color: var(--text-secondary);
+}
+
+.profile-info-container {
+    display: flex;
+    padding: 20px;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile-avatar {
+    margin-right: 20px;
+    order: 1;
+}
+
+.avatar-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+    border: 4px solid var(--bg-secondary);
+}
+
+/* 아바타 이미지 스타일 추가 */
+.avatar-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover; /* 이미지 비율을 유지하면서 컨테이너를 채움 */
+    border: 4px solid var(--bg-secondary);
+}
+
+/* 이미지 업로드 전 처리를 위한 스타일 */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-info {
+    flex: 1;
+    order: 2;
+}
+
+/* 아바타 오버레이 제거 */
+.avatar-overlay {
+    display: none;
+}
+
+.profile-name {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.profile-bio {
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.edit-profile-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color var(--transition-fast);
+}
+
+.edit-profile-button:hover {
+    background-color: var(--primary-hover);
+}
+
+.profile-edit-form {
+    width: 100%;
+}
+
+.edit-name-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+}
+
+.edit-bio-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 1rem;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.save-button, .cancel-button {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color var(--transition-fast);
+}
+
+.save-button {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+}
+
+.save-button:hover {
+    background-color: #0da56f;
+}
+
+.cancel-button {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.cancel-button:hover {
+    background-color: var(--bg-tertiary);
+}
+
+@media (max-width: 768px) {
+    .profile-info-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-avatar {
+        margin-bottom: 20px;
+        margin-right: 0;
+    }
+
+    .profile-info {
+        margin-right: 0;
+    }
+}
+
+/* 편집 모드 관련 스타일 추가 */
+.profile-banner.editable,
+.profile-avatar.editable {
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.profile-banner.editable:hover,
+.profile-avatar.editable:hover {
+    opacity: 0.8;
+}
+
+.banner-edit-overlay,
+.avatar-edit-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: inherit;
+}
+
+.profile-banner.editable:hover .banner-edit-overlay,
+.profile-avatar.editable:hover .avatar-edit-overlay {
+    display: flex;
+}
+
+.profile-banner-placeholder p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.profile-avatar.editable .avatar-circle {
+    position: relative;
+}
+
+/* 읽기 전용 이름 스타일을 프로필 이름과 동일하게 설정 */
+.readonly-name {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+    font-weight: bold; /* 굵게 표시 */
+}

@@ -1,0 +1,47 @@
+
+.profile-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #2a2a4a;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    color: #cccccc;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.tab-button:hover {
+    color: #ffffff;
+}
+
+.tab-button.active {
+    color: #4a9eff;
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #4a9eff;
+    border-radius: 3px 3px 0 0;
+}
+
+@media (max-width: 768px) {
+    .profile-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .tab-button {
+        padding: 12px 15px;
+    }
+}
