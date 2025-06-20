@@ -1,32 +1,36 @@
 import React from 'react';
-import '../styles/Prompt.css';
+import PromptCard from './PromptCard';
 
 export default function PromptList({ prompts, onEdit, onDelete, onView }) {
+    if (!Array.isArray(prompts) || prompts.length === 0) {
+        return <div className="text-gray-400 text-center py-8">프롬프트가 없습니다.</div>;
+    }
     return (
-        <div className="prompt-list-wrapper">
-            <div className="prompt-list-container">
-                {prompts.map((prompt, index) => (
-                    <div key={index} className="prompt-card">
-                        <h3>{prompt.promptName || '제목 없음'}</h3>
-                        <p>{prompt.content || '내용 없음'}</p> {/* ✅ 수정 */}
-                        <h3>{prompt.title || '제목 없음'}</h3>
-                        <p>{prompt.content || '내용 없음'}</p>
-
-
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {prompt.tags?.map((tag, i) => (
-                                <span key={i} className="prompt-tag">#{tag}</span>
-                            ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {prompts.map((prompt, idx) => {
+                // key: camelCase 우선, 없으면 snake_case, 둘 다 없으면 idx
+                const key = prompt.promptId || prompt.prompt_id || idx;
+                // 데이터 구조 오류 디버깅 메시지
+                if (!prompt.promptId && !prompt.prompt_id) {
+                    return (
+                        <div key={idx} className="border border-red-400 bg-black text-red-300 p-4 rounded-lg">
+                            <b>[디버깅] 데이터 구조 오류</b><br />
+                            필수 항목(prompt_id, promptId)이 없습니다.<br />
+                            수신된 데이터 전체:<br />
+                            <pre className="text-xs whitespace-pre-wrap">{JSON.stringify(prompt, null, 2)}</pre>
                         </div>
-
-                        <div className="prompt-card-actions">
-                            <button onClick={() => onEdit(prompt)} className="prompt-button-edit">수정</button>
-                            <button onClick={() => onDelete(prompt.id)} className="prompt-button-delete">삭제</button>
-                            <button onClick={() => onView(prompt)} className="prompt-button-view">상세</button>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    );
+                }
+                return (
+                    <PromptCard
+                        key={key}
+                        prompt={prompt}
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                        onView={onView}
+                    />
+                );
+            })}
         </div>
     );
 }

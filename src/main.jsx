@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App.jsx'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import PromptPage from './PromptPage.jsx';
 
 const container = document.getElementById('root');
 // container 는 HTMLElement | null 이므로, null 체크 혹은 Non-null 단언(!) 필요
@@ -21,6 +23,11 @@ root.render(
                scope: 'openid profile email'
         }}
    >
-        <App />
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<PromptPage />} />
+                <Route path="/prompts" element={<PromptPage />} />
+            </Routes>
+        </BrowserRouter>
     </Auth0Provider>
 );

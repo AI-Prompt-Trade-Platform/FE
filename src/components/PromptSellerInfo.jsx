@@ -1,14 +1,11 @@
-// src/components/PromptSellerInfo.jsx
 import React from 'react';
 
-export default function PromptSellerInfo({ seller }) {
+export default function PromptSellerInfo({ ownerProfileName }) {
     return (
-        <div className="bg-[#2c2c2c] p-4 rounded-lg text-white">
-            <h4 className="text-sm text-gray-400">판매자 정보</h4>
-            <div className="flex items-center gap-3 mt-2">
-                <div className="w-10 h-10 bg-gray-500 rounded-full"></div>
-                <div className="text-sm">{seller?.name || '판매자 이름'}</div>
-            </div>
+        <div>
+            <h4 className="font-semibold mb-2">판매자 정보</h4>
+            <p className="text-sm">프로필명: {ownerProfileName || "정보 없음"}</p>
+            {/* 여기에 판매자 관련 추가 정보 (예: 프로필 사진, 판매 등급 등)를 표시할 수 있습니다. */}
         </div>
     );
 }
