@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 import SearchBar from './SearchBar';
 import Navigation from './Navigation';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
   return (
     <header className="header">
       <div className="navbar">
-        <div className="logo">
+        <div className="logo" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
           <span>Prumpt</span>
           <span className="version">2.0</span>
         </div>
@@ -38,7 +44,7 @@ const Header = () => {
 
       <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
         <div className="mobile-search">
-          <SearchBar />
+          <SearchBar onSearch={() => setIsMobileMenuOpen(false)} />
         </div>
         <div className="mobile-nav">
           <Navigation isMobile={true} onItemClick={() => setIsMobileMenuOpen(false)} />

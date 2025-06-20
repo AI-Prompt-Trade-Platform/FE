@@ -78,23 +78,28 @@ class ApiClient {
 // API 클라이언트 인스턴스
 const apiClient = new ApiClient();
 
-// 프롬프트 관련 API
+// 프롬프트 관련 API - 백엔드 엔드포인트에 맞게 수정
 export const promptAPI = {
   // 인기 프롬프트 조회
   getPopularPrompts: (limit = 8) => 
-    apiClient.get(`/prompts/popular?limit=${limit}`),
+    apiClient.get(`/home/prompts/popular?size=${limit}`),
   
   // 최신 프롬프트 조회
   getLatestPrompts: (limit = 8) => 
-    apiClient.get(`/prompts/latest?limit=${limit}`),
+    apiClient.get(`/home/prompts/recent?size=${limit}`),
   
   // 프롬프트 검색
-  searchPrompts: (query, filters = {}) => {
-    const params = new URLSearchParams({
-      q: query,
-      ...filters
-    });
-    return apiClient.get(`/prompts/search?${params}`);
+  searchPrompts: (keyword, page = 0, size = 10) => 
+    apiClient.get(`/home/prompts/search?keyword=${keyword}&page=${page}&size=${size}`),
+  
+  // 프롬프트 카테고리 필터링
+  filterPrompts: (modelCategory, typeCategory, page = 0, size = 10) => {
+    const params = new URLSearchParams();
+    if (modelCategory) params.append('modelCategorySlug', modelCategory);
+    if (typeCategory) params.append('typeCategorySlug', typeCategory);
+    params.append('page', page);
+    params.append('size', size);
+    return apiClient.get(`/home/prompts/filter?${params}`);
   },
   
   // 프롬프트 상세 조회
@@ -124,52 +129,33 @@ export const promptAPI = {
 
 // 사용자 관련 API
 export const userAPI = {
-  // 로그인
-  login: (credentials) => 
-    apiClient.post('/auth/login', credentials),
-  
-  // 회원가입
-  register: (userData) => 
-    apiClient.post('/auth/register', userData),
-  
-  // 로그아웃
-  logout: () => 
-    apiClient.post('/auth/logout'),
-  
-  // 사용자 정보 조회
+  // 사용자 프로필 조회
   getProfile: () => 
-    apiClient.get('/user/profile'),
+    apiClient.get('/mypage/profile'),
   
-  // 사용자 정보 수정
+  // 사용자 프로필 수정
   updateProfile: (userData) => 
-    apiClient.put('/user/profile', userData),
+    apiClient.put('/mypage/me/profile/update', userData),
   
   // 구매 내역 조회
-  getPurchaseHistory: () => 
-    apiClient.get('/user/purchases'),
+  getPurchaseHistory: (page = 0, size = 10) => 
+    apiClient.get(`/mypage/prompts/purchased?page=${page}&size=${size}`),
+  
+  // 판매 내역 조회
+  getSellingHistory: (page = 0, size = 10) => 
+    apiClient.get(`/mypage/prompts/selling?page=${page}&size=${size}`),
   
   // 위시리스트 조회
-  getWishlist: () => 
-    apiClient.get('/user/wishlist'),
+  getWishlist: (page = 0, size = 10) => 
+    apiClient.get(`/wishlist?page=${page}&size=${size}`),
   
   // 위시리스트 추가
   addToWishlist: (promptId) => 
-    apiClient.post('/user/wishlist', { promptId }),
+    apiClient.post('/wishlist', { promptId }),
   
   // 위시리스트 제거
   removeFromWishlist: (promptId) => 
-    apiClient.delete(`/user/wishlist/${promptId}`),
-};
-
-// 카테고리 관련 API
-export const categoryAPI = {
-  // 모든 카테고리 조회
-  getCategories: () => 
-    apiClient.get('/categories'),
-  
-  // 카테고리별 프롬프트 조회
-  getPromptsByCategory: (categoryId, limit = 20) => 
-    apiClient.get(`/categories/${categoryId}/prompts?limit=${limit}`),
+    apiClient.delete(`/wishlist/${promptId}`),
 };
 
 // 결제 관련 API
@@ -198,22 +184,19 @@ export const statsAPI = {
     apiClient.get(`/stats/prompts/${promptId}`),
 };
 
-// 인증 토큰 관리
+// 인증 토큰 설정 함수
 export const setAuthToken = (token) => {
   apiClient.setAuthToken(token);
-  if (token) {
-    localStorage.setItem('authToken', token);
-  } else {
-    localStorage.removeItem('authToken');
-  }
 };
 
-// 토큰 초기화 (앱 시작시)
+// 인증 초기화 함수
 export const initializeAuth = () => {
+  // 로컬 스토리지에서 토큰 복원
   const token = localStorage.getItem('authToken');
   if (token) {
-    apiClient.setAuthToken(token);
+    setAuthToken(token);
   }
 };
 
+// 기본 API 클라이언트 노출
 export default apiClient; 

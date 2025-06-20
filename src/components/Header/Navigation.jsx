@@ -1,13 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Navigation.css';
 
 const Navigation = ({ isMobile = false, onItemClick }) => {
-  const { isLoggedIn, user, login, logout } = useAuth();
+  const { isLoading, isLoggedIn, user, login, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = () => {
-    // 실제 로그인 로직 대신 데모용 로그인
-    login({ name: '김사용자', email: 'user@example.com' });
+    login();
     if (onItemClick) onItemClick();
   };
 
@@ -16,9 +17,25 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
     if (onItemClick) onItemClick();
   };
 
-  const handleNavClick = () => {
+  const handleNavClick = (item) => {
+    if (item.name === '홈') {
+      navigate('/');
+    }
     if (onItemClick) onItemClick();
   };
+
+  // 로딩 중일 때
+  if (isLoading) {
+    return (
+      <nav className={`navigation ${isMobile ? 'mobile' : ''}`}>
+        <div className="nav-items">
+          <div className="nav-item">
+            <span className="nav-text">로딩중...</span>
+          </div>
+        </div>
+      </nav>
+    );
+  }
 
   const loggedOutItems = [
     { name: '홈', href: '#', active: true, icon: '🏠' },
@@ -40,15 +57,15 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
     <nav className={`navigation ${isMobile ? 'mobile' : ''}`}>
       <div className="nav-items">
         {navItems.map((item, index) => (
-          <a
+          <button
             key={index}
-            href={item.href}
             className={`nav-item ${item.active ? 'active' : ''}`}
-            onClick={handleNavClick}
+            onClick={() => handleNavClick(item)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           >
             {isMobile && <span className="nav-icon">{item.icon}</span>}
             <span className="nav-text">{item.name}</span>
-          </a>
+          </button>
         ))}
         
         {!isLoggedIn ? (
@@ -60,7 +77,7 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
           <div className="user-menu">
             <div className="user-info">
               <span className="user-avatar">👤</span>
-              <span className="user-name">{user?.name}</span>
+              <span className="user-name">{user?.name || user?.email || '사용자'}</span>
             </div>
             <button className="nav-item logout-btn" onClick={handleLogout}>
               {isMobile && <span className="nav-icon">🚪</span>}

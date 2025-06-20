@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import Header from './components/Header/Header'
 import HomePage from './pages/HomePage'
 import LandingPage from './pages/LandingPage'
+import SearchPage from './pages/SearchPage'
 import './App.css'
 
 function AppContent() {
@@ -16,6 +17,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/landing" element={<LandingPage />} />
+        <Route path="/search" element={<SearchPage />} />
       </Routes>
     </div>
   );

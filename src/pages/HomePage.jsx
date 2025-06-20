@@ -39,7 +39,7 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [loadingMessage] = useState(getRandomLoadingMessage());
 
-  // 샘플 데이터 (백엔드 연결 전까지 사용)
+  // 샘플 데이터 (백엔드 연결 실패 시 사용)
   const samplePopularPrompts = [
     {
       id: 1,
@@ -134,20 +134,49 @@ const HomePage = () => {
     }
   ];
 
+  // 백엔드 데이터를 프론트엔드 구조에 맞게 변환하는 함수
+  const transformBackendData = (backendData) => {
+    if (!backendData || !backendData.content) return [];
+    
+    return backendData.content.map(item => ({
+      id: item.id || item.promptId,
+      title: item.title || item.promptName || '제목 없음',
+      description: item.description || '설명 없음',
+      category: item.category || item.typeCategory || '기타',
+      rating: item.rating || item.rate || 0,
+      price: item.price || 0,
+      author: item.author || item.ownerProfileName || '작성자 미상',
+      downloads: item.downloads || item.salesCount || 0,
+      tags: item.tags || item.hashTags || [],
+      thumbnail: item.thumbnail || item.thumbnailImageUrl || null
+    }));
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setError(null);
         
-        // 임시로 샘플 데이터 사용 (로딩 시간 단축)
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setPopularPrompts(samplePopularPrompts);
-        setLatestPrompts(sampleLatestPrompts);
+        // 백엔드 API 호출 시도
+        const [popularResponse, latestResponse] = await Promise.all([
+          promptAPI.getPopularPrompts(8),
+          promptAPI.getLatestPrompts(8)
+        ]);
+
+        console.log('백엔드 데이터 로드 성공:', { popularResponse, latestResponse });
+        
+        const transformedPopular = transformBackendData(popularResponse);
+        const transformedLatest = transformBackendData(latestResponse);
+        
+        setPopularPrompts(transformedPopular.length > 0 ? transformedPopular : samplePopularPrompts);
+        setLatestPrompts(transformedLatest.length > 0 ? transformedLatest : sampleLatestPrompts);
         
       } catch (err) {
-        console.error('데이터 로딩 실패:', err);
-        setError('데이터를 불러오는데 실패했습니다.');
-        // 에러 시에도 샘플 데이터 표시
+        console.warn('백엔드 API 호출 실패, 샘플 데이터 사용:', err.message);
+        setError('백엔드 서버에 연결할 수 없어 샘플 데이터를 표시합니다.');
+        
+        // 백엔드 연결 실패 시 샘플 데이터 사용
         setPopularPrompts(samplePopularPrompts);
         setLatestPrompts(sampleLatestPrompts);
       } finally {

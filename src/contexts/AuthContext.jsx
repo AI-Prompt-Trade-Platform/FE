@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { setAuthToken } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -11,24 +13,54 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
+  const {
+    isLoading,
+    isAuthenticated,
+    user,
+    loginWithRedirect,
+    logout,
+    getAccessTokenSilently,
+  } = useAuth0();
 
-  const login = (userData) => {
-    setIsLoggedIn(true);
-    setUser(userData);
+  // Auth0 토큰을 API 클라이언트에 설정
+  useEffect(() => {
+    const setToken = async () => {
+      try {
+        if (isAuthenticated) {
+          const token = await getAccessTokenSilently();
+          setAuthToken(token);
+          localStorage.setItem('authToken', token);
+        } else {
+          setAuthToken(null);
+          localStorage.removeItem('authToken');
+        }
+      } catch (error) {
+        console.error('토큰 설정 실패:', error);
+      }
+    };
+
+    if (!isLoading) {
+      setToken();
+    }
+  }, [isAuthenticated, isLoading, getAccessTokenSilently]);
+
+  const login = () => {
+    loginWithRedirect();
   };
 
-  const logout = () => {
-    setIsLoggedIn(false);
-    setUser(null);
+  const handleLogout = () => {
+    logout({ 
+      logoutParams: { returnTo: window.location.origin } 
+    });
   };
 
   const value = {
-    isLoggedIn,
+    isLoading,
+    isLoggedIn: isAuthenticated,
     user,
     login,
-    logout
+    logout: handleLogout,
+    getAccessTokenSilently,
   };
 
   return (
