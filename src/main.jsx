@@ -4,7 +4,7 @@ import './index.css'
 import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import PromptPage from './PromptPage.jsx';
+import PromptPage from './pages/PromptPage.jsx';
 
 const container = document.getElementById('root');
 // container 는 HTMLElement | null 이므로, null 체크 혹은 Non-null 단언(!) 필요

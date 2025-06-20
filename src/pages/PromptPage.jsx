@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useAuthApi } from './hooks/useAuthApi';
-import PromptForm from './components/PromptForm';
-import PromptList from './components/PromptList';
-import PromptDetailModal from './components/PromptDetailModal';
-import './index.css';
+import { useAuthApi } from '../hooks/useAuthApi.js';
+import PromptForm from '../components/PromptForm.jsx';
+import PromptList from '../components/PromptList.jsx';
+import PromptDetailModal from '../components/PromptDetailModal.jsx';
+import '../index.css';
 
 const DUMMY_PROMPTS = undefined;
 
