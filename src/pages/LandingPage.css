@@ -1,790 +1,1351 @@
-.landing-page {
-    background: linear-gradient(135deg,
-    #0a0a0a 0%,
-    #1a1a2e 25%,
-    #16213e 50%,
-    #0f3460 75%,
-    #533483 100%);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    position: relative;
-    overflow: hidden;
-    padding: 100px 50px;
-    text-align: center;
-    box-shadow:
-            0 25px 50px rgba(0, 0, 0, 0.5),
-            0 0 100px rgba(74, 158, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(74, 158, 255, 0.2);
+/* 양자 랜딩 페이지 - 차원을 넘나드는 AI 포털 */
+
+* {
+  box-sizing: border-box;
 }
 
-/* 배경 효과 */
-.landing-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
-    opacity: 0.3;
+/* 랜딩 페이지에서 Footer 숨기기 */
+body:has(.quantum-landing) .footer {
+  display: none !important;
 }
 
-/* 신경망 네트워크 효과 */
-.neural-network {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0.2;
+.quantum-landing {
+  min-height: 100vh;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, #0a0a0a 0%, #1a0b2e 25%, #2d1b3d 50%, #1e0a2e 75%, #0a0a0a 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #ffffff;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 1.5s cubic-bezier(0.23, 1, 0.320, 1);
 }
 
-.node {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    background: #4a9eff;
-    border-radius: 50%;
-    box-shadow: 0 0 15px #4a9eff;
-    animation: pulse 2s ease-in-out infinite;
+.quantum-landing.loaded {
+  opacity: 1;
+  transform: scale(1);
 }
 
-.node-1 { top: 20%; left: 15%; animation-delay: 0s; }
-.node-2 { top: 40%; left: 25%; animation-delay: 0.4s; }
-.node-3 { top: 60%; left: 35%; animation-delay: 0.8s; }
-.node-4 { top: 30%; right: 20%; animation-delay: 1.2s; }
-.node-5 { top: 70%; right: 30%; animation-delay: 1.6s; }
-
-.connection {
-    position: absolute;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(74, 158, 255, 0.3), transparent);
-    animation: dataFlow 3s linear infinite;
+/* 차원 포털 배경 */
+.dimensional-portal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
-.connection-1 {
-    top: 25%;
-    left: 16%;
-    width: 120px;
-    transform: rotate(25deg);
+.portal-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 800px;
+  height: 800px;
+  transform: translate(-50%, -50%);
+  animation: portalRotation 30s linear infinite;
 }
 
-.connection-2 {
-    top: 45%;
-    left: 26%;
-    width: 100px;
-    transform: rotate(-15deg);
+/* 양자 링들 */
+.quantum-rings {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
-.connection-3 {
-    top: 35%;
-    right: 25%;
-    width: 80px;
-    transform: rotate(45deg);
+.quantum-ring {
+  position: absolute;
+  border: 1px solid;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: quantumPulse 4s ease-in-out infinite;
 }
 
-.connection-4 {
-    top: 55%;
-    right: 35%;
-    width: 90px;
-    transform: rotate(-30deg);
+.quantum-ring.ring-1 {
+  width: 200px;
+  height: 200px;
+  border-color: rgba(120, 219, 255, 0.8);
+  animation-delay: 0s;
+  box-shadow: 
+    0 0 20px rgba(120, 219, 255, 0.5),
+    inset 0 0 20px rgba(120, 219, 255, 0.2);
 }
 
-/* 홀로그램 그리드 */
-.hologram-grid {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image:
-            linear-gradient(rgba(74, 158, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(74, 158, 255, 0.05) 1px, transparent 1px);
-    background-size: 50px 50px;
-    animation: gridMove 20s linear infinite;
-    opacity: 0.1;
+.quantum-ring.ring-2 {
+  width: 300px;
+  height: 300px;
+  border-color: rgba(255, 119, 198, 0.6);
+  animation-delay: 0.5s;
+  box-shadow: 
+    0 0 30px rgba(255, 119, 198, 0.4),
+    inset 0 0 30px rgba(255, 119, 198, 0.2);
 }
 
-/* 랜딩 콘텐츠 */
-.landing-content {
-    z-index: 3;
-    position: relative;
-    max-width: 900px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 40px;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 60px 40px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.quantum-ring.ring-3 {
+  width: 400px;
+  height: 400px;
+  border-color: rgba(120, 119, 198, 0.5);
+  animation-delay: 1s;
+  box-shadow: 
+    0 0 40px rgba(120, 119, 198, 0.3),
+    inset 0 0 40px rgba(120, 119, 198, 0.1);
 }
 
-.landing-text {
-    margin-bottom: 30px;
+.quantum-ring.ring-4 {
+  width: 500px;
+  height: 500px;
+  border-color: rgba(255, 255, 255, 0.3);
+  animation-delay: 1.5s;
+  box-shadow: 
+    0 0 50px rgba(255, 255, 255, 0.2),
+    inset 0 0 50px rgba(255, 255, 255, 0.1);
 }
 
-/* AI 배지 */
-.ai-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(74, 158, 255, 0.2);
-    border: 1px solid rgba(74, 158, 255, 0.4);
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    margin-bottom: 20px;
-    backdrop-filter: blur(10px);
-    animation: badgeGlow 2s ease-in-out infinite alternate;
+.quantum-ring.ring-5 {
+  width: 600px;
+  height: 600px;
+  border-color: rgba(120, 219, 255, 0.2);
+  animation-delay: 2s;
 }
 
-.badge-icon {
-    font-size: 16px;
-    animation: rotate 3s linear infinite;
+.quantum-ring.ring-6 {
+  width: 700px;
+  height: 700px;
+  border-color: rgba(255, 119, 198, 0.15);
+  animation-delay: 2.5s;
 }
 
-/* 글리치 텍스트 효과 */
-.glitch-text {
-    font-size: 56px;
-    font-weight: 900;
-    margin-bottom: 20px;
-    line-height: 1.1;
-    position: relative;
-    background: linear-gradient(45deg, #4a9eff, #00d4ff, #4a9eff);
-    background-size: 200% 200%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: gradientShift 3s ease-in-out infinite;
+.quantum-ring.ring-7 {
+  width: 800px;
+  height: 800px;
+  border-color: rgba(120, 119, 198, 0.1);
+  animation-delay: 3s;
 }
 
-.glitch-text::before,
-.glitch-text::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(45deg, #ff0080, #00ff80);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    opacity: 0;
+.quantum-ring.ring-8 {
+  width: 900px;
+  height: 900px;
+  border-color: rgba(255, 255, 255, 0.05);
+  animation-delay: 3.5s;
 }
 
-.glitch-text::before {
-    animation: glitch1 2s infinite;
+/* 에너지 소용돌이 */
+.energy-vortex {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150px;
+  height: 150px;
+  transform: translate(-50%, -50%);
+  background: 
+    radial-gradient(circle, 
+      rgba(120, 219, 255, 0.8) 0%, 
+      rgba(255, 119, 198, 0.6) 30%, 
+      rgba(120, 119, 198, 0.4) 60%, 
+      transparent 100%);
+  border-radius: 50%;
+  animation: energyVortex 8s linear infinite;
+  filter: blur(2px);
 }
 
-.glitch-text::after {
-    animation: glitch2 2s infinite;
+/* 데이터 파편들 */
+.data-fragments {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
-/* 네온 서브타이틀 */
-.neon-subtitle {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #00d4ff;
-    text-shadow:
-            0 0 10px #00d4ff,
-            0 0 20px #00d4ff,
-            0 0 30px #00d4ff;
-    animation: neonFlicker 4s ease-in-out infinite;
+.data-fragment {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  animation: fragmentFloat 15s linear infinite;
 }
 
-.landing-description {
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.9);
-    margin-bottom: 40px;
-    line-height: 1.6;
-    max-width: 700px;
+.fragment-core {
+  width: 100%;
+  height: 100%;
+  background: rgba(120, 219, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(120, 219, 255, 0.6);
 }
 
-/* 통계 행 */
-.stats-row {
-    display: flex;
-    gap: 40px;
-    margin-bottom: 40px;
-    justify-content: center;
-    flex-wrap: wrap;
+.fragment-trail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    rgba(120, 219, 255, 0.8), 
+    transparent);
+  transform-origin: left center;
+  animation: trailStretch 2s ease-in-out infinite;
 }
 
-.stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
+/* 신경망 연결선 */
+.neural-web {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.neural-connection {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.3), 
+    transparent);
+  animation: neuralPulse 6s ease-in-out infinite;
+}
+
+/* 메인 콘텐츠 */
+.quantum-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 1000px;
+  padding: 0 40px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.reality-distortion {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 60px 40px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.reality-distortion::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    rgba(120, 219, 255, 0.05) 0%, 
+    transparent 50%, 
+    rgba(255, 119, 198, 0.05) 100%);
+  animation: realityShift 10s ease-in-out infinite;
+}
+
+/* 위상 인디케이터 */
+.phase-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.phase-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+.phase-dot.active {
+  background: rgba(120, 219, 255, 1);
+  box-shadow: 
+    0 0 20px rgba(120, 219, 255, 0.8),
+    0 0 40px rgba(120, 219, 255, 0.4);
+  transform: scale(1.2);
+}
+
+.phase-dot.active::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 1px solid rgba(120, 219, 255, 0.5);
+  border-radius: 50%;
+  animation: dotRipple 2s ease-out infinite;
+}
+
+/* 브랜드 로고 */
+.quantum-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.brand-symbol {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.symbol-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, 
+    rgba(120, 219, 255, 1) 0%, 
+    rgba(255, 119, 198, 0.8) 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 20px rgba(120, 219, 255, 0.8),
+    0 0 40px rgba(120, 219, 255, 0.4);
+  animation: symbolPulse 3s ease-in-out infinite;
+}
+
+.symbol-orbit {
+  position: absolute;
+  border: 1px solid;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: orbitRotation 10s linear infinite;
+}
+
+.symbol-orbit.orbit-1 {
+  width: 40px;
+  height: 40px;
+  border-color: rgba(120, 219, 255, 0.6);
+  animation-duration: 8s;
+}
+
+.symbol-orbit.orbit-2 {
+  width: 60px;
+  height: 60px;
+  border-color: rgba(255, 119, 198, 0.4);
+  animation-duration: 12s;
+  animation-direction: reverse;
+}
+
+.symbol-orbit.orbit-3 {
+  width: 80px;
+  height: 80px;
+  border-color: rgba(120, 119, 198, 0.3);
+  animation-duration: 16s;
+}
+
+.brand-name {
+  font-size: 4rem;
+  font-weight: 900;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.brand-name span {
+  display: inline-block;
+  background: linear-gradient(45deg, 
+    #78dbff 0%, 
+    #ff77c6 50%, 
+    #7877c6 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: letterGlow 4s ease-in-out infinite;
+  text-shadow: 0 0 30px rgba(120, 219, 255, 0.5);
+}
+
+.brand-name .letter-p { animation-delay: 0s; }
+.brand-name .letter-r { animation-delay: 0.2s; }
+.brand-name .letter-u { animation-delay: 0.4s; }
+.brand-name .letter-m { animation-delay: 0.6s; }
+.brand-name .letter-p2 { animation-delay: 0.8s; }
+.brand-name .letter-t { animation-delay: 1s; }
+
+.brand-name .version {
+  font-size: 2.5rem;
+  color: rgba(120, 219, 255, 0.9);
+  margin-left: 10px;
+  animation: versionFloat 3s ease-in-out infinite;
+  font-weight: 700;
+  text-shadow: 0 0 30px rgba(120, 219, 255, 0.6);
+}
+
+/* 동적 타이틀 */
+.quantum-title {
+  margin-bottom: 50px;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.title-phase {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s ease-in-out;
+}
+
+.title-phase.phase-0,
+.title-phase.phase-1,
+.title-phase.phase-2 {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.phase-text {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  background: linear-gradient(135deg, 
+    rgba(120, 219, 255, 1) 0%, 
+    rgba(255, 119, 198, 0.8) 50%, 
+    rgba(120, 119, 198, 1) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 40px rgba(120, 219, 255, 0.3);
+  animation: phaseGlow 3s ease-in-out infinite;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.phase-subtitle {
+  font-size: 1.1rem;
+  font-weight: 400;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 1px;
+  text-transform: none;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* 양자 통계 */
+.quantum-stats {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-bottom: 50px;
+}
+
+.stat-quantum {
+  position: relative;
+  text-align: center;
+}
+
+.stat-energy {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, 
+    rgba(120, 219, 255, 0.3) 0%, 
+    transparent 70%);
+  border-radius: 50%;
+  animation: energyPulse 2s ease-in-out infinite;
 }
 
 .stat-number {
-    font-size: 32px;
-    font-weight: 900;
-    color: #4a9eff;
-    text-shadow: 0 0 20px rgba(74, 158, 255, 0.5);
+  font-size: 3rem;
+  font-weight: 900;
+  color: #78dbff;
+  text-shadow: 
+    0 0 20px rgba(120, 219, 255, 0.8),
+    0 0 40px rgba(120, 219, 255, 0.4);
+  display: block;
+  margin-bottom: 5px;
+  animation: numberFloat 4s ease-in-out infinite;
 }
 
 .stat-label {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 500;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-.landing-actions {
-    z-index: 3;
-    position: relative;
-    margin-top: 20px;
+/* 액션 버튼들 */
+.quantum-actions {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 40px;
 }
 
-.cta-button {
-    background: linear-gradient(135deg, #4a9eff, #0066cc);
-    color: white;
-    border: none;
-    padding: 16px 32px;
-    border-radius: 30px;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.portal-button {
+  position: relative;
+  padding: 15px 40px;
+  background: transparent;
+  border: 2px solid;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.primary-glow {
-    box-shadow:
-            0 8px 32px rgba(74, 158, 255, 0.4),
-            0 0 0 1px rgba(74, 158, 255, 0.3);
+.portal-button.primary {
+  border-color: rgba(120, 219, 255, 0.8);
+  color: #78dbff;
+  box-shadow: 
+    0 0 20px rgba(120, 219, 255, 0.3),
+    inset 0 0 20px rgba(120, 219, 255, 0.1);
 }
 
-.primary-glow:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(74, 158, 255, 0.6);
+.portal-button.primary:hover {
+  background: rgba(120, 219, 255, 0.1);
+  box-shadow: 
+    0 0 40px rgba(120, 219, 255, 0.6),
+    inset 0 0 40px rgba(120, 219, 255, 0.2);
+  transform: translateY(-2px);
 }
 
-.button-glow {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
+.portal-button.secondary {
+  border-color: rgba(255, 119, 198, 0.6);
+  color: #ff77c6;
+  box-shadow: 
+    0 0 20px rgba(255, 119, 198, 0.3),
+    inset 0 0 20px rgba(255, 119, 198, 0.1);
 }
 
-.primary-glow:hover .button-glow {
-    left: 100%;
+.portal-button.secondary:hover {
+  background: rgba(255, 119, 198, 0.1);
+  box-shadow: 
+    0 0 40px rgba(255, 119, 198, 0.6),
+    inset 0 0 40px rgba(255, 119, 198, 0.2);
+  transform: translateY(-2px);
 }
 
-.landing-visual {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-    width: 400px;
-    height: 400px;
-    pointer-events: none;
-    opacity: 0.3;
+.button-energy {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.5s ease;
 }
 
-/* AI 오브 */
-.ai-orb {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.portal-button:hover .button-energy {
+  left: 100%;
+}
+
+.button-text {
+  position: relative;
+  z-index: 2;
+}
+
+.button-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.button-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(120, 219, 255, 0.8);
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleExplode 2s ease-out infinite;
+}
+
+.button-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 119, 198, 0.2);
+  transform: translate(-50%, -50%);
+  animation: rippleExpand 3s ease-out infinite;
+}
+
+/* 신비로운 메시지 */
+.mystical-message {
+  position: relative;
+  text-align: center;
+}
+
+.message-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 60px;
+  background: radial-gradient(ellipse, 
+    rgba(120, 219, 255, 0.1) 0%, 
+    transparent 70%);
+  animation: messageGlow 4s ease-in-out infinite;
+}
+
+.message-text {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+  margin: 0 0 15px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.message-runes {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.rune {
+  font-size: 1.5rem;
+  color: rgba(120, 219, 255, 0.6);
+  animation: runeGlow 3s ease-in-out infinite;
+}
+
+.rune:nth-child(2) {
+  animation-delay: 1s;
+}
+
+.rune:nth-child(3) {
+  animation-delay: 2s;
+}
+
+/* 차원 경계선 */
+.dimensional-borders {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.border-line {
+  position: absolute;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(120, 219, 255, 0.3), 
+    transparent);
+  animation: borderPulse 8s ease-in-out infinite;
+}
+
+.border-top {
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+}
+
+.border-bottom {
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+}
+
+.border-left {
+  top: 20px;
+  bottom: 20px;
+  left: 20px;
+  width: 1px;
+  background: linear-gradient(180deg, 
+    transparent, 
+    rgba(120, 219, 255, 0.3), 
+    transparent);
+}
+
+.border-right {
+  top: 20px;
+  bottom: 20px;
+  right: 20px;
+  width: 1px;
+  background: linear-gradient(180deg, 
+    transparent, 
+    rgba(120, 219, 255, 0.3), 
+    transparent);
+}
+
+.border-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(120, 219, 255, 0.5);
+}
+
+.corner-tl {
+  top: 20px;
+  left: 20px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corner-tr {
+  top: 20px;
+  right: 20px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.corner-bl {
+  bottom: 20px;
+  left: 20px;
+  border-right: none;
+  border-top: none;
+}
+
+.corner-br {
+  bottom: 20px;
+  right: 20px;
+  border-left: none;
+  border-top: none;
+}
+
+/* 양자 노이즈 */
+.quantum-noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  opacity: 0.03;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(120, 219, 255, 0.8) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255, 119, 198, 0.8) 1px, transparent 1px);
+  background-size: 50px 50px, 80px 80px, 60px 60px;
+  animation: noiseMove 20s linear infinite;
+}
+
+/* 홀로그램 스캔 라인 */
+.hologram-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    transparent 50%, 
+    rgba(120, 219, 255, 0.03) 50%, 
+    rgba(120, 219, 255, 0.03) 51%, 
+    transparent 51%
+  );
+  background-size: 100% 4px;
+  animation: scanlines 2s linear infinite;
+}
+
+/* 저작권 오버레이 */
+.copyright-overlay {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.copyright-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.prumpt-logo {
+  width: 100px;
+  height: 30px;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 10px rgba(120, 219, 255, 0.4)) drop-shadow(0 0 15px rgba(255, 119, 198, 0.3));
+  animation: logoGlow 4s ease-in-out infinite;
+}
+
+.copyright-text {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+  text-align: center;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(120, 219, 255, 0.2);
+  animation: copyrightGlow 6s ease-in-out infinite;
+}
+
+@keyframes copyrightGlow {
+  0%, 100% { 
+    opacity: 0.4;
+    text-shadow: 0 0 10px rgba(120, 219, 255, 0.2);
+  }
+  50% { 
+    opacity: 0.7;
+    text-shadow: 0 0 15px rgba(120, 219, 255, 0.4);
+  }
+}
+
+@keyframes logoGlow {
+  0%, 100% { 
+    opacity: 0.6;
+    filter: drop-shadow(0 0 10px rgba(120, 219, 255, 0.3));
+  }
+  50% { 
+    opacity: 0.8;
+    filter: drop-shadow(0 0 20px rgba(120, 219, 255, 0.5)) drop-shadow(0 0 30px rgba(255, 119, 198, 0.3));
+  }
+}
+
+/* 애니메이션 키프레임 */
+@keyframes portalRotation {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes quantumPulse {
+  0%, 100% { 
+    opacity: 0.3; 
+    transform: translate(-50%, -50%) scale(1); 
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: translate(-50%, -50%) scale(1.05); 
+  }
+}
+
+@keyframes energyVortex {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes fragmentFloat {
+  0% {
+    top: 100%;
+    left: calc(var(--random-x, 50%) * 1%);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% {
+    top: -10%;
+    left: calc(var(--random-x, 50%) * 1%);
+    opacity: 0;
+  }
+}
+
+@keyframes trailStretch {
+  0%, 100% { transform: scaleX(0); }
+  50% { transform: scaleX(1); }
+}
+
+@keyframes neuralPulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes realityShift {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes dotRipple {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes symbolPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px rgba(120, 219, 255, 0.8),
+      0 0 40px rgba(120, 219, 255, 0.4);
+  }
+  50% { 
+    box-shadow: 
+      0 0 40px rgba(120, 219, 255, 1),
+      0 0 80px rgba(120, 219, 255, 0.6);
+  }
+}
+
+@keyframes orbitRotation {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes letterGlow {
+  0%, 100% { 
+    filter: brightness(1); 
+    text-shadow: 0 0 30px rgba(120, 219, 255, 0.5);
+  }
+  50% { 
+    filter: brightness(1.2); 
+    text-shadow: 0 0 50px rgba(120, 219, 255, 0.8);
+  }
+}
+
+@keyframes versionFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes phaseGlow {
+  0%, 100% { 
+    text-shadow: 0 0 40px rgba(120, 219, 255, 0.3);
+  }
+  50% { 
+    text-shadow: 0 0 60px rgba(120, 219, 255, 0.6);
+  }
+}
+
+@keyframes energyPulse {
+  0%, 100% { 
+    opacity: 0.3; 
+    transform: translateX(-50%) scale(1); 
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: translateX(-50%) scale(1.2); 
+  }
+}
+
+@keyframes numberFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes particleExplode {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) translate(var(--random-x, 20px), var(--random-y, 20px));
+  }
+}
+
+@keyframes rippleExpand {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.8;
+  }
+  100% {
     width: 200px;
     height: 200px;
+    opacity: 0;
+  }
 }
 
-.orb-core {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
-    background: radial-gradient(circle, #4a9eff, #0066cc);
-    border-radius: 50%;
-    box-shadow:
-            0 0 40px #4a9eff,
-            0 0 80px rgba(74, 158, 255, 0.5);
-    animation: orbPulse 3s ease-in-out infinite;
+@keyframes messageGlow {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.3; }
 }
 
-.orb-ring {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 2px solid rgba(74, 158, 255, 0.3);
-    border-radius: 50%;
-    animation: orbRotate 10s linear infinite;
+@keyframes runeGlow {
+  0%, 100% { 
+    color: rgba(120, 219, 255, 0.6);
+    text-shadow: 0 0 10px rgba(120, 219, 255, 0.3);
+  }
+  50% { 
+    color: rgba(120, 219, 255, 1);
+    text-shadow: 0 0 20px rgba(120, 219, 255, 0.8);
+  }
 }
 
-.ring-1 {
-    width: 120px;
-    height: 120px;
-    animation-duration: 8s;
+@keyframes borderPulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.6; }
 }
 
-.ring-2 {
-    width: 160px;
-    height: 160px;
-    animation-duration: 12s;
-    animation-direction: reverse;
+@keyframes noiseMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
 }
 
-.ring-3 {
-    width: 200px;
-    height: 200px;
-    animation-duration: 15s;
+@keyframes scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
 }
 
-.energy-particles {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+/* 데이터 파편 위치 설정 */
+.data-fragment.fragment-1 { --random-x: 10; animation-delay: 0s; }
+.data-fragment.fragment-2 { --random-x: 20; animation-delay: 1s; }
+.data-fragment.fragment-3 { --random-x: 30; animation-delay: 2s; }
+.data-fragment.fragment-4 { --random-x: 40; animation-delay: 3s; }
+.data-fragment.fragment-5 { --random-x: 50; animation-delay: 4s; }
+.data-fragment.fragment-6 { --random-x: 60; animation-delay: 5s; }
+.data-fragment.fragment-7 { --random-x: 70; animation-delay: 6s; }
+.data-fragment.fragment-8 { --random-x: 80; animation-delay: 7s; }
+.data-fragment.fragment-9 { --random-x: 90; animation-delay: 8s; }
+.data-fragment.fragment-10 { --random-x: 15; animation-delay: 9s; }
+.data-fragment.fragment-11 { --random-x: 25; animation-delay: 10s; }
+.data-fragment.fragment-12 { --random-x: 35; animation-delay: 11s; }
+.data-fragment.fragment-13 { --random-x: 45; animation-delay: 12s; }
+.data-fragment.fragment-14 { --random-x: 55; animation-delay: 13s; }
+.data-fragment.fragment-15 { --random-x: 65; animation-delay: 14s; }
+.data-fragment.fragment-16 { --random-x: 75; animation-delay: 0.5s; }
+.data-fragment.fragment-17 { --random-x: 85; animation-delay: 1.5s; }
+.data-fragment.fragment-18 { --random-x: 95; animation-delay: 2.5s; }
+.data-fragment.fragment-19 { --random-x: 5; animation-delay: 3.5s; }
+.data-fragment.fragment-20 { --random-x: 95; animation-delay: 4.5s; }
+
+/* 신경망 연결선 위치 */
+.neural-connection.connection-1 {
+  top: 20%;
+  left: 10%;
+  width: 200px;
+  transform: rotate(25deg);
+  animation-delay: 0s;
 }
 
-.particle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #00d4ff;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #00d4ff;
-    animation: particleFloat 4s ease-in-out infinite;
+.neural-connection.connection-2 {
+  top: 30%;
+  right: 15%;
+  width: 150px;
+  transform: rotate(-30deg);
+  animation-delay: 1s;
 }
 
-.particle-1 { top: 10%; left: 20%; animation-delay: 0s; }
-.particle-2 { top: 80%; left: 30%; animation-delay: 0.8s; }
-.particle-3 { top: 20%; right: 25%; animation-delay: 1.6s; }
-.particle-4 { bottom: 30%; right: 20%; animation-delay: 2.4s; }
-.particle-5 { bottom: 10%; left: 40%; animation-delay: 3.2s; }
-
-/* 플로팅 요소들 */
-.floating-elements {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+.neural-connection.connection-3 {
+  bottom: 25%;
+  left: 20%;
+  width: 180px;
+  transform: rotate(45deg);
+  animation-delay: 2s;
 }
 
-.tech-card {
-    position: absolute;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    color: white;
-    animation: techCardFloat 6s ease-in-out infinite;
+.neural-connection.connection-4 {
+  top: 60%;
+  right: 25%;
+  width: 120px;
+  transform: rotate(-15deg);
+  animation-delay: 3s;
 }
 
-.card-icon {
-    font-size: 20px;
+.neural-connection.connection-5 {
+  top: 15%;
+  left: 40%;
+  width: 100px;
+  transform: rotate(60deg);
+  animation-delay: 4s;
 }
 
-.card-ai {
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
+.neural-connection.connection-6 {
+  bottom: 40%;
+  right: 40%;
+  width: 140px;
+  transform: rotate(-45deg);
+  animation-delay: 5s;
 }
 
-.card-ml {
-    top: 20%;
-    right: 10%;
-    animation-delay: 2s;
+.neural-connection.connection-7 {
+  top: 45%;
+  left: 5%;
+  width: 160px;
+  transform: rotate(15deg);
+  animation-delay: 0.5s;
 }
 
-.card-future {
-    bottom: 20%;
-    left: 15%;
-    animation-delay: 4s;
+.neural-connection.connection-8 {
+  bottom: 15%;
+  right: 10%;
+  width: 110px;
+  transform: rotate(-60deg);
+  animation-delay: 1.5s;
 }
 
-/* 애니메이션 */
-@keyframes pulse {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
+.neural-connection.connection-9 {
+  top: 70%;
+  left: 35%;
+  width: 130px;
+  transform: rotate(30deg);
+  animation-delay: 2.5s;
 }
 
-@keyframes dataFlow {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
+.neural-connection.connection-10 {
+  top: 25%;
+  right: 45%;
+  width: 90px;
+  transform: rotate(-20deg);
+  animation-delay: 3.5s;
 }
 
-@keyframes gridMove {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(50px, 50px); }
+.neural-connection.connection-11 {
+  bottom: 50%;
+  left: 15%;
+  width: 170px;
+  transform: rotate(50deg);
+  animation-delay: 4.5s;
 }
 
-@keyframes badgeGlow {
-    0% { box-shadow: 0 0 10px rgba(74, 158, 255, 0.3); }
-    100% { box-shadow: 0 0 20px rgba(74, 158, 255, 0.6); }
+.neural-connection.connection-12 {
+  top: 35%;
+  left: 60%;
+  width: 80px;
+  transform: rotate(-40deg);
+  animation-delay: 5.5s;
 }
 
-@keyframes rotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.neural-connection.connection-13 {
+  bottom: 30%;
+  right: 30%;
+  width: 150px;
+  transform: rotate(20deg);
+  animation-delay: 0.2s;
 }
 
-@keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+.neural-connection.connection-14 {
+  top: 55%;
+  right: 5%;
+  width: 120px;
+  transform: rotate(-50deg);
+  animation-delay: 1.2s;
 }
 
-@keyframes glitch1 {
-    0%, 100% { opacity: 0; transform: translate(0); }
-    10% { opacity: 1; transform: translate(-2px, -1px); }
-    20% { opacity: 0; transform: translate(2px, 1px); }
+.neural-connection.connection-15 {
+  bottom: 60%;
+  left: 50%;
+  width: 100px;
+  transform: rotate(35deg);
+  animation-delay: 2.2s;
 }
 
-@keyframes glitch2 {
-    0%, 100% { opacity: 0; transform: translate(0); }
-    15% { opacity: 1; transform: translate(1px, -2px); }
-    25% { opacity: 0; transform: translate(-1px, 2px); }
-}
+/* 버튼 파티클 위치 */
+.button-particle.particle-1 { top: 20%; left: 20%; --random-x: 10px; --random-y: -15px; animation-delay: 0s; }
+.button-particle.particle-2 { top: 80%; left: 30%; --random-x: -10px; --random-y: 15px; animation-delay: 0.2s; }
+.button-particle.particle-3 { top: 30%; right: 25%; --random-x: 15px; --random-y: -10px; animation-delay: 0.4s; }
+.button-particle.particle-4 { bottom: 40%; right: 20%; --random-x: -15px; --random-y: 10px; animation-delay: 0.6s; }
+.button-particle.particle-5 { top: 60%; left: 60%; --random-x: 12px; --random-y: -12px; animation-delay: 0.8s; }
+.button-particle.particle-6 { bottom: 70%; right: 60%; --random-x: -12px; --random-y: 12px; animation-delay: 1s; }
+.button-particle.particle-7 { top: 40%; left: 80%; --random-x: 8px; --random-y: -18px; animation-delay: 1.2s; }
+.button-particle.particle-8 { bottom: 20%; left: 40%; --random-x: -8px; --random-y: 18px; animation-delay: 1.4s; }
 
-@keyframes neonFlicker {
-    0%, 100% {
-        text-shadow:
-                0 0 10px #00d4ff,
-                0 0 20px #00d4ff,
-                0 0 30px #00d4ff;
-    }
-    50% {
-        text-shadow:
-                0 0 5px #00d4ff,
-                0 0 10px #00d4ff,
-                0 0 15px #00d4ff;
-    }
-}
-
-@keyframes orbPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-@keyframes orbRotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-@keyframes particleFloat {
-    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
-    50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
-}
-
-@keyframes techCardFloat {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    33% { transform: translateY(-15px) rotate(2deg); }
-    66% { transform: translateY(-5px) rotate(-1deg); }
-}
-
-/* 대폭 개선된 반응형 디자인 */
-@media (max-width: 1024px) {
-    .landing-page {
-        padding: 60px 30px;
-    }
-
-    .glitch-text {
-        font-size: 48px;
-    }
-
-    .neon-subtitle {
-        font-size: 20px;
-    }
-
-    .landing-description {
-        font-size: 16px;
-    }
-
-    .stats-row {
-        gap: 30px;
-    }
-
-    .ai-orb {
-        width: 160px;
-        height: 160px;
-    }
-
-    .orb-core {
-        width: 65px;
-        height: 65px;
-    }
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+  .portal-core {
+    width: 600px;
+    height: 600px;
+  }
+  
+  .quantum-ring.ring-8 {
+    width: 700px;
+    height: 700px;
+  }
 }
 
 @media (max-width: 768px) {
-    .landing-page {
-        padding: 50px 25px;
-        min-height: 100vh;
-    }
-
-    .landing-content {
-        max-width: 100%;
-    }
-
-    .ai-badge {
-        font-size: 11px;
-        padding: 6px 12px;
-        margin-bottom: 15px;
-    }
-
-    .badge-icon {
-        font-size: 14px;
-    }
-
-    .glitch-text {
-        font-size: 40px;
-        margin-bottom: 15px;
-    }
-
-    .neon-subtitle {
-        font-size: 18px;
-        margin-bottom: 12px;
-    }
-
-    .landing-description {
-        font-size: 15px;
-        margin-bottom: 25px;
-        line-height: 1.6;
-        padding: 0 10px;
-    }
-
-    .stats-row {
-        gap: 25px;
-        margin-bottom: 30px;
-    }
-
-    .stat-item {
-        min-width: 80px;
-    }
-
-    .stat-number {
-        font-size: 24px;
-    }
-
-    .stat-label {
-        font-size: 11px;
-    }
-
-    .landing-actions {
-        margin-top: 30px;
-    }
-
-    .cta-button {
-        padding: 15px 32px;
-        font-size: 16px;
-    }
-
-    .ai-orb {
-        width: 140px;
-        height: 140px;
-    }
-
-    .orb-core {
-        width: 55px;
-        height: 55px;
-    }
-
-    .orb-ring.ring-1 {
-        width: 100px;
-        height: 100px;
-    }
-
-    .orb-ring.ring-2 {
-        width: 130px;
-        height: 130px;
-    }
-
-    .orb-ring.ring-3 {
-        width: 160px;
-        height: 160px;
-    }
-
-    .tech-card {
-        padding: 8px 12px;
-        font-size: 10px;
-        border-radius: 8px;
-    }
-
-    .card-icon {
-        font-size: 14px;
-    }
-
-    /* 모바일에서 신경망 노드 크기 조정 */
-    .node {
-        width: 6px;
-        height: 6px;
-    }
-
-    .connection {
-        height: 0.5px;
-    }
-
-    .connection-1,
-    .connection-2,
-    .connection-3,
-    .connection-4 {
-        width: 60px;
-    }
+  .quantum-landing {
+    padding: 20px;
+    justify-content: center;
+  }
+  
+  .quantum-content {
+    padding: 0 20px;
+    max-width: 100%;
+  }
+  
+  .reality-distortion {
+    padding: 40px 20px;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .brand-name {
+    font-size: 3rem;
+    justify-content: center;
+  }
+  
+  .phase-text {
+    font-size: 1.8rem;
+  }
+  
+  .phase-subtitle {
+    font-size: 1rem;
+  }
+  
+  .quantum-title {
+    height: 120px;
+  }
+  
+  .quantum-stats {
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .quantum-actions {
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    align-items: center;
+  }
+  
+  .portal-button {
+    padding: 12px 30px;
+    font-size: 1rem;
+    width: 200px;
+  }
+  
+  .portal-core {
+    width: 400px;
+    height: 400px;
+  }
+  
+  .quantum-ring.ring-7,
+  .quantum-ring.ring-8 {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
-    .landing-page {
-        padding: 40px 20px;
-        min-height: 100vh;
-    }
-
-    .ai-badge {
-        font-size: 10px;
-        padding: 5px 10px;
-        margin-bottom: 12px;
-    }
-
-    .badge-icon {
-        font-size: 12px;
-    }
-
-    .glitch-text {
-        font-size: 32px;
-        margin-bottom: 12px;
-    }
-
-    .neon-subtitle {
-        font-size: 16px;
-        margin-bottom: 10px;
-    }
-
-    .landing-description {
-        font-size: 14px;
-        margin-bottom: 20px;
-        padding: 0 5px;
-    }
-
-    .stats-row {
-        gap: 20px;
-        margin-bottom: 25px;
-    }
-
-    .stat-item {
-        min-width: 70px;
-    }
-
-    .stat-number {
-        font-size: 20px;
-    }
-
-    .stat-label {
-        font-size: 10px;
-    }
-
-    .landing-actions {
-        margin-top: 25px;
-    }
-
-    .cta-button {
-        padding: 12px 28px;
-        font-size: 14px;
-        border-radius: 12px;
-    }
-
-    .ai-orb {
-        width: 120px;
-        height: 120px;
-    }
-
-    .orb-core {
-        width: 45px;
-        height: 45px;
-    }
-
-    .orb-ring.ring-1 {
-        width: 80px;
-        height: 80px;
-    }
-
-    .orb-ring.ring-2 {
-        width: 100px;
-        height: 100px;
-    }
-
-    .orb-ring.ring-3 {
-        width: 120px;
-        height: 120px;
-    }
-
-    .tech-card {
-        padding: 6px 10px;
-        font-size: 9px;
-    }
-
-    .card-icon {
-        font-size: 12px;
-    }
-
-    /* 매우 작은 화면에서 플로팅 요소들 숨기기 */
-    .floating-elements {
-        display: none;
-    }
-
-    .energy-particles {
-        display: none;
-    }
+  .quantum-content {
+    padding: 0 15px;
+  }
+  
+  .reality-distortion {
+    padding: 30px 15px;
+  }
+  
+  .brand-name {
+    font-size: 2rem;
+    flex-direction: row;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .brand-name .version {
+    font-size: 1.5rem;
+    margin-left: 6px;
+  }
+  
+  .phase-text {
+    font-size: 1.4rem;
+  }
+  
+  .phase-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .quantum-title {
+    height: 100px;
+  }
+  
+  .quantum-stats {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .portal-button {
+    width: 180px;
+    padding: 10px 25px;
+    font-size: 0.9rem;
+  }
+  
+  .portal-core {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .quantum-ring.ring-5,
+  .quantum-ring.ring-6 {
+    display: none;
+  }
+  
+  .copyright-overlay {
+    bottom: 20px;
+  }
+  
+  .prumpt-logo {
+    width: 90px;
+    height: 27px;
+  }
+  
+  .copyright-text {
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 360px) {
-    .landing-page {
-        padding: 30px 15px;
-    }
-
-    .glitch-text {
-        font-size: 28px;
-    }
-
-    .neon-subtitle {
-        font-size: 14px;
-    }
-
-    .landing-description {
-        font-size: 13px;
-    }
-
-    .stats-row {
-        gap: 15px;
-    }
-
-    .stat-number {
-        font-size: 18px;
-    }
-
-    .cta-button {
-        padding: 10px 24px;
-        font-size: 13px;
-    }
-
-    .ai-orb {
-        width: 100px;
-        height: 100px;
-    }
-
-    .orb-core {
-        width: 35px;
-        height: 35px;
-    }
+  .brand-name {
+    font-size: 1.8rem;
+  }
+  
+  .brand-name .version {
+    font-size: 1.3rem;
+    margin-left: 5px;
+  }
+  
+  .phase-text {
+    font-size: 1.2rem;
+  }
+  
+  .phase-subtitle {
+    font-size: 0.8rem;
+  }
 }
