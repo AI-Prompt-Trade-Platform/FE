@@ -10,5 +10,12 @@ export default defineConfig({
     // 모든 네트워크 인터페이스에서 접근 가능하도록 설정
     // 'localhost' 문제 해결에 도움이 될 수 있습니다.
     host: true, // 또는 '0.0.0.0'
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080', // 백엔드 주소
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 })

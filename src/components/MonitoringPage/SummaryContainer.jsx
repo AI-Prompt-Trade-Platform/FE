@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SalesSummary from "./SalesSummary";
 import SalesChart from "./SalesChart";
-import PromptCarousel from "../PromptCarousel/PromptCarousel";
+import PromptCardList from "../PromptList/PromptCardList";
 
 
 const monitoringStyle = {
@@ -22,13 +22,6 @@ function SalesSummaryContainer() {
 
   // 인기 프롬프트 데이터를 가져오는 함수 (테스트를 위해 더미 데이터 사용)
   const fetchPopularPrompts = async () => {
-    try {
-      // 실제 API 호출 로직을 여기에 추가 (서비스 직전에 아래 주석 해제 및 수정)
-      // const response = await fetch('http://localhost:8080/api/prompts/popular');
-      // const data = await response.json();
-      // setPopularPrompts(data);
-
-      // 현재는 더미 데이터를 사용 (테스트 중 유지)
       const samplePopularPrompts = [
         {
           id: 1,
@@ -76,9 +69,6 @@ function SalesSummaryContainer() {
         }
       ];
       setPopularPrompts(samplePopularPrompts);
-    } catch (error) {
-      console.error("인기 프롬프트 데이터를 가져오는 중 오류 발생:", error);
-    }
   };
   const [sellingPrompts, setSellingPrompts] = useState([]);
 
@@ -92,27 +82,41 @@ function SalesSummaryContainer() {
   useEffect(() => {
     const userToken = localStorage.getItem('accessToken'); // 로컬 스토리지에서 토큰 가져오기
 
-    fetch(`http://localhost:8080/api/mypage/monitoring?period=${period}`, {
+    fetch('/api/mypage/monitoring?period=' + period, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        // "Authorization": userToken ? `Bearer ${userToken}` : "" // 토큰이 있으면 추가, 없으면 빈 문자열
-        "Authorization": "" // 토큰이 있으면 추가, 없으면 빈 문자열
+        "Authorization": ""
       }
     })
-      .then((res) => res.json())
-      .then((data) => {
+    .then(async (res) => {
+      if (!res.ok) {
+        // 서버에서 에러 응답(404, 500 등)
+        const text = await res.text();
+        throw new Error(`서버 오류: ${res.status} - ${text}`);
+      }
+      // 응답이 비어있으면 빈 객체 반환
+      const text = await res.text();
+      if (!text) return {};
+      return JSON.parse(text);
+    })
+    .then((data) => {
+      console.log("Monitoring API Response:", data); // API 응답 데이터 확인용
+      if (data) { // data가 유효한지 확인
         setSummary({
-          thisMonthProfit: data.thisMonthProfit,
-          totalSalesCount: data.totalSalesCount,
-          avgRate: data.avgRate,
+          thisMonthProfit: data.thisMonthProfit || 0,
+          totalSalesCount: data.totalSalesCount || 0,
+          avgRate: data.avgRate || null,
         });
         setDailyProfit(data.dailyProfit || []);
         setSellingPrompts(data.sellingPrompts || []);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+      } else {
+        console.warn("Monitoring API returned no data or invalid data.");
+      }
+    })
+    .catch((err) => {
+      console.error("Error fetching monitoring data:", err);
+    });
   }, [period]);
 
   return (
@@ -148,9 +152,8 @@ function SalesSummaryContainer() {
         period={period}
       />
       <SalesChart data={dailyProfit} period={period} />
-      {/* <PromptCarousel title="판매중인 프롬프트" prompts={sellingPrompts} /> */}
-      {/* <h2 className="carousel-title" style={{textAlign: "left", color: "white", fontWeight: "bold", marginTop: "20px", marginBottom: "20px" }}>판매중인 프롬프트</h2> */}
-      <PromptCarousel title="판매중인 프롬프트" prompts={popularPrompts} />
+      <h2 className="carousel-title" style={{textAlign: "left", color: "white", fontWeight: "bold", marginTop: "20px", marginBottom: "20px" }}>판매중인 프롬프트</h2>
+      <PromptCardList prompts={popularPrompts} />
     </div>
   );
 }

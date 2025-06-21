@@ -15,6 +15,8 @@ const PromptCard = ({ prompt, onCardClick }) => {
     downloads
   } = prompt;
 
+  console.log('Rendering PromptCard with prompt:', prompt); //디버깅용 (프롬프트 데이터 출력)
+
   const handleClick = () => {
     if (onCardClick) {
       onCardClick(prompt);
