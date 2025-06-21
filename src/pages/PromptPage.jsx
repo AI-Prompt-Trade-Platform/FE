@@ -1,51 +1,79 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useAuthApi } from '../hooks/useAuthApi.js';
 import PromptForm from '../components/PromptForm.jsx';
 import PromptList from '../components/PromptList.jsx';
 import PromptDetailModal from '../components/PromptDetailModal.jsx';
 import '../index.css';
 
-const DUMMY_PROMPTS = undefined;
+const DUMMY_PROMPTS = [
+    {
+        prompt_id: 1,
+        prompt_name: "Cosmic Voyager Logo Prompt",
+        description: "Generate stunning logos for a space exploration company. Creates a sleek, modern design with planetary rings and a stylized rocket ship. Perfect for tech startups, game studios, or any brand with a futuristic vision.",
+        image_url: "https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop",
+        price: 15.99,
+        author: "Star-Lord",
+        created_at: "2024-05-20T10:00:00Z",
+        is_purchased: false,
+        reviews: [
+            { review_id: 1, user: "Groot", rating: 5, comment: "I am Groot!" },
+            { review_id: 2, user: "Rocket", rating: 4, comment: "Not bad, but could use more explosions." },
+        ],
+    },
+    {
+        prompt_id: 2,
+        prompt_name: "Enchanted Forest Character Generator",
+        description: "Create whimsical and magical characters from an enchanted forest. Generates detailed descriptions and visual concepts for fairies, elves, and talking animals. Ideal for fantasy writers and game developers.",
+        image_url: "https://images.unsplash.com/photo-1476231682828-37e571bc172f?q=80&w=1974&auto=format&fit=crop",
+        price: 12.50,
+        author: "Galadriel",
+        created_at: "2024-05-18T14:30:00Z",
+        is_purchased: true,
+        reviews: [
+            { review_id: 3, user: "Frodo", rating: 5, comment: "Felt like I was back in the Shire. Very magical!" },
+        ],
+    },
+    {
+        prompt_id: 3,
+        prompt_name: "Cyberpunk Cityscape Prompt",
+        description: "Generate breathtaking, neon-drenched cityscapes in a cyberpunk style. Produces images with towering skyscrapers, flying vehicles, and holographic advertisements. A must-have for sci-fi artists.",
+        image_url: "https://images.unsplash.com/photo-1526566762798-8fac9c07aa98?q=80&w=2070&auto=format&fit=crop",
+        price: 25.00,
+        author: "Deckard",
+        created_at: "2024-05-15T09:00:00Z",
+        is_purchased: false,
+        reviews: [],
+    },
+];
 
 export default function PromptPage() {
     const [prompts, setPrompts] = useState([]);
     const [isCreating, setIsCreating] = useState(false);
     const [selectedPrompt, setSelectedPrompt] = useState(null);
 
-    const { authFetch } = useAuthApi();
     const { isAuthenticated } = useAuth0();
 
-    const fetchPromptList = useCallback(async () => {
-        try {
-            const data = await authFetch('/api/prompts');
-            if (Array.isArray(data) && data.length > 0) {
-                setPrompts([...data].reverse());
-            } else {
-                setPrompts([]);
-            }
-        } catch (error) {
+    useEffect(() => {
+        if (isAuthenticated) {
+            console.log("Using dummy data for development in PromptPage.");
+            setPrompts(DUMMY_PROMPTS);
+        } else {
+            console.log("User not authenticated, clearing prompts in PromptPage.");
             setPrompts([]);
         }
-    }, [authFetch]);
+    }, [isAuthenticated]);
 
-    useEffect(() => {
-        fetchPromptList();
-    }, []);
-
-    const handleCreate = async (formData) => {
-        try {
-            await authFetch('/api/prompts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-            setIsCreating(false);
-            await fetchPromptList();
-        } catch (error) {
-            setIsCreating(false);
-            await fetchPromptList();
-        }
+    const handleCreate = (formData) => {
+        const newPrompt = {
+            ...formData,
+            prompt_id: Date.now(),
+            author: 'CurrentUser',
+            created_at: new Date().toISOString(),
+            is_purchased: false,
+            reviews: []
+        };
+        setPrompts(prevPrompts => [newPrompt, ...prevPrompts]);
+        setIsCreating(false);
     };
 
     const handleCancel = () => {
@@ -59,41 +87,37 @@ export default function PromptPage() {
         setSelectedPrompt(null);
     };
 
-    const handlePurchase = async (prompt) => {
-        try {
-            await authFetch(`/api/prompts/${prompt.prompt_id}/purchase`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-            });
-            await fetchPromptList();
-            // 구매 후 상세 모달도 최신 데이터로 갱신
-            const updated = prompts.find(p => p.prompt_id === prompt.prompt_id);
-            if (updated) setSelectedPrompt({ ...updated, userPurchased: true });
-        } catch (e) {
-            alert('구매에 실패했습니다.');
-        }
+    const handlePurchase = (promptId) => {
+        const updatePrompts = (currentPrompts) => currentPrompts.map(p =>
+            p.prompt_id === promptId ? { ...p, is_purchased: true } : p
+        );
+        setPrompts(updatePrompts);
+        setSelectedPrompt(prev => prev ? { ...prev, is_purchased: true } : null);
     };
 
+    const handleReviewSubmit = (promptId, reviewData) => {
+        const newReview = {
+            review_id: Date.now(),
+            user: 'CurrentUser',
+            rating: Number(reviewData.rating),
+            comment: reviewData.comment,
+        };
 
-    const handleReviewSubmit = async (reviewData) => {
-        if (!selectedPrompt) return;
-        try {
-            await authFetch(`/api/reviews`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    promptId: selectedPrompt.prompt_id,
-                    rate: reviewData.rating,
-                    reviewContent: reviewData.comment,
-                }),
+        const updateAndSelect = (currentPrompts) => {
+            const updatedPrompts = currentPrompts.map(p => {
+                if (p.prompt_id === promptId) {
+                    const updatedReviews = [newReview, ...(p.reviews || [])];
+                    return { ...p, reviews: updatedReviews };
+                }
+                return p;
             });
-            await fetchPromptList();
-            // 리뷰 후 상세 모달도 최신 데이터로 갱신
-            const updated = prompts.find(p => p.prompt_id === selectedPrompt.prompt_id);
-            if (updated) setSelectedPrompt(updated);
-        } catch (e) {
-            alert('리뷰 등록에 실패했습니다.');
-        }
+
+            const newlySelectedPrompt = updatedPrompts.find(p => p.prompt_id === promptId);
+            setSelectedPrompt(newlySelectedPrompt);
+
+            return updatedPrompts;
+        };
+        setPrompts(updateAndSelect);
     };
 
     return (
@@ -120,8 +144,8 @@ export default function PromptPage() {
                 <div className="w-full max-w-6xl">
                     <PromptList
                         prompts={prompts}
-                        onEdit={() => {}}
-                        onDelete={() => {}}
+                        onEdit={() => {}} // Dummy handler
+                        onDelete={() => {}} // Dummy handler
                         onView={handleView}
                     />
                 </div>

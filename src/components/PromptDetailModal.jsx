@@ -14,18 +14,23 @@ export default function PromptDetailModal({ prompt, onClose, onReviewSubmit, onP
     if (!prompt) {
         return <div className="text-gray-400 text-center p-8">프롬프트 정보가 없습니다.</div>;
     }
+
+    const averageRating = prompt.reviews && prompt.reviews.length > 0
+        ? prompt.reviews.reduce((acc, review) => acc + review.rating, 0) / prompt.reviews.length
+        : 0;
+
     return ReactDOM.createPortal(
         <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
             <div className="prompt-modal">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="prompt-title">{prompt.prompt_name || prompt.title}</h2>
+                    <h2 className="prompt-title">{prompt.prompt_name}</h2>
                     <button className="prompt-close-button" onClick={onClose}>&times;</button>
                 </div>
                 <div className="prompt-detail-layout flex flex-row gap-8">
                     {/* 왼쪽 섹션 */}
                     <div className="prompt-detail-main flex flex-col flex-1 min-w-0" style={{ minWidth: 0, maxWidth: '70%' }}>
-                        <div className="prompt-box min-h-[150px] mb-4">
-                            {prompt.prompt_content || prompt.content}
+                        <div className="prompt-modal-image-container mb-4">
+                           <img src={prompt.image_url} alt={prompt.prompt_name} className="prompt-modal-image" />
                         </div>
                         <div className="mb-6">
                             <h3 className="prompt-section-title">프롬프트 설명</h3>
@@ -41,23 +46,23 @@ export default function PromptDetailModal({ prompt, onClose, onReviewSubmit, onP
                     {/* 오른쪽 사이드바 */}
                     <div className="prompt-detail-sidebar w-80 min-w-[280px]" style={{ position: 'sticky', top: 0, alignSelf: 'flex-start' }}>
                         <div className="prompt-box mb-4">
-                            <PromptSellerInfo ownerProfileName={prompt.owner_profile_name || prompt.ownerProfileName} />
+                            <PromptSellerInfo ownerProfileName={prompt.author} />
                         </div>
                         <div className="prompt-box">
                             <div className="prompt-rating mb-4">
-                                <span>⭐ {prompt.averageRating?.toFixed(1) || "0.0"} / 5.0</span>
+                                <span>⭐ {averageRating.toFixed(1)} / 5.0</span>
                                 <span className="mx-2">|</span>
-                                <span>AI 등급: {prompt.aiInspectionRate || prompt.ai_inspection_rate || "정보 없음"}</span>
+                                <span>AI 등급: {"정보 없음"}</span>
                             </div>
                             <div className="prompt-price mb-4">가격: ₩ {prompt.price?.toLocaleString() || "0"}</div>
-                            {prompt.userPurchased ? (
+                            {prompt.is_purchased ? (
                                 <div>
                                     <h3 className="prompt-section-title">리뷰 작성</h3>
-                                    <PromptReviewForm onSubmit={onReviewSubmit} />
+                                    <PromptReviewForm onSubmit={(reviewData) => onReviewSubmit(prompt.prompt_id, reviewData)} />
                                 </div>
                             ) : (
                                 <>
-                                    <button className="prompt-button-main w-full" onClick={() => onPurchase(prompt)}>구매하기</button>
+                                    <button className="prompt-button-main w-full" onClick={() => onPurchase(prompt.prompt_id)}>구매하기</button>
                                     <button className="prompt-button-secondary w-full mt-2">위시리스트에 추가</button>
                                 </>
                             )}

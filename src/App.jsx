@@ -1,109 +1,133 @@
-import React, { useState, useEffect, useCallback } from 'react'; // useCallback import
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useAuthApi } from './hooks/useAuthApi';
 import PromptForm from './components/PromptForm';
 import PromptList from './components/PromptList';
 import PromptDetailModal from './components/PromptDetailModal';
 import './index.css';
+
+const DUMMY_PROMPTS = [
+    {
+        prompt_id: 1,
+        prompt_name: "Cosmic Voyager Logo Prompt",
+        description: "Generate stunning logos for a space exploration company. Creates a sleek, modern design with planetary rings and a stylized rocket ship. Perfect for tech startups, game studios, or any brand with a futuristic vision.",
+        price: 15.99,
+        author: "Star-Lord",
+        created_at: "2024-05-20T10:00:00Z",
+        is_purchased: false,
+        reviews: [
+            { review_id: 1, user: "Groot", rating: 5, comment: "I am Groot!" },
+            { review_id: 2, user: "Rocket", rating: 4, comment: "Not bad, but could use more explosions." },
+        ],
+    },
+    {
+        prompt_id: 2,
+        prompt_name: "Enchanted Forest Character Generator",
+        description: "Create whimsical and magical characters from an enchanted forest. Generates detailed descriptions and visual concepts for fairies, elves, and talking animals. Ideal for fantasy writers and game developers.",
+        price: 12.50,
+        author: "Galadriel",
+        created_at: "2024-05-18T14:30:00Z",
+        is_purchased: true,
+        reviews: [
+            { review_id: 3, user: "Frodo", rating: 5, comment: "Felt like I was back in the Shire. Very magical!" },
+        ],
+    },
+    {
+        prompt_id: 3,
+        prompt_name: "Cyberpunk Cityscape Prompt",
+        description: "Generate breathtaking, neon-drenched cityscapes in a cyberpunk style. Produces images with towering skyscrapers, flying vehicles, and holographic advertisements. A must-have for sci-fi artists.",
+        price: 25.00,
+        author: "Deckard",
+        created_at: "2024-05-15T09:00:00Z",
+        is_purchased: false,
+        reviews: [],
+    },
+];
 
 export default function App() {
     const [prompts, setPrompts] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [editingPrompt, setEditingPrompt] = useState(null);
-    const [selectedPromptId, setSelectedPromptId] = useState(null);
+    const [selectedPrompt, setSelectedPrompt] = useState(null);
 
-    const { authFetch } = useAuthApi();
     const { isAuthenticated } = useAuth0();
-
-    // 수정: useCallback으로 함수를 감싸서 불필요한 재생성을 방지합니다.
-    const fetchPromptList = useCallback(async () => {
-        try {
-            const data = await authFetch('/api/prompts');
-            setPrompts([...data].reverse());
-        } catch (error) {
-            console.error('프롬프트 목록 불러오기 실패:', error);
-        }
-    }, [authFetch]); // authFetch가 변경될 때만 이 함수를 새로 만듭니다.
 
     useEffect(() => {
         if (isAuthenticated) {
-            fetchPromptList();
+            console.log("Using dummy data for development as user is authenticated.");
+            setPrompts(DUMMY_PROMPTS);
+        } else {
+            console.log("User not authenticated, clearing prompts.");
+            setPrompts([]);
         }
-    }, [isAuthenticated, fetchPromptList]); // 수정: 의존성 배열에 fetchPromptList를 넣습니다.
+    }, [isAuthenticated]);
 
     // 프롬프트 생성
     const handleCreate = async (formData) => {
-        try {
-            await authFetch('/api/prompts', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-            setIsCreating(false);
-            await fetchPromptList();
-        } catch (error) {
-            console.error('프롬프트 생성 실패:', error);
-        }
+        const newPrompt = {
+            ...formData,
+            prompt_id: Date.now(),
+            author: 'CurrentUser',
+            created_at: new Date().toISOString(),
+            is_purchased: false,
+            reviews: []
+        };
+        setPrompts(prevPrompts => [newPrompt, ...prevPrompts]);
+        setIsCreating(false);
     };
 
     // 프롬프트 수정
     const handleUpdate = async (formData) => {
-        // 수정: 백엔드 DTO 필드명(snake_case)과 일치시킵니다.
         if (!editingPrompt || !editingPrompt.prompt_id) return;
-        try {
-            await authFetch(`/api/prompts/${editingPrompt.prompt_id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-            setIsEditing(false);
-            setEditingPrompt(null);
-            await fetchPromptList();
-        } catch (error) {
-            console.error('프롬프트 수정 실패:', error);
-        }
+        setPrompts(prompts.map(p =>
+            p.prompt_id === editingPrompt.prompt_id ? { ...p, ...formData } : p
+        ));
+        setIsEditing(false);
+        setEditingPrompt(null);
     };
 
     // 프롬프트 삭제
     const handleDelete = async (prompt) => {
-        // 수정: 백엔드 DTO 필드명(snake_case)과 일치시킵니다.
         if (!prompt || !prompt.prompt_id) return;
         if (window.confirm(`'${prompt.prompt_name}' 프롬프트를 정말 삭제하시겠습니까?`)) {
-            try {
-                await authFetch(`/api/prompts/${prompt.prompt_id}`, { method: 'DELETE' });
-                await fetchPromptList();
-            } catch (error) {
-                console.error('삭제 실패:', error);
-                alert('삭제에 실패했습니다.');
-            }
+            setPrompts(prompts.filter(p => p.prompt_id !== prompt.prompt_id));
         }
+    };
+
+    // 구매 처리
+    const handlePurchase = (promptId) => {
+        const updatePrompts = (prompts) => prompts.map(p =>
+            p.prompt_id === promptId ? { ...p, is_purchased: true } : p
+        );
+        setPrompts(updatePrompts);
+        setSelectedPrompt(prev => prev ? { ...prev, is_purchased: true } : null);
     };
 
     // 리뷰 제출
     const handleReviewSubmit = async (promptId, reviewData) => {
-        if (!isAuthenticated) {
-            alert("리뷰를 작성하려면 로그인이 필요합니다.");
-            return;
-        }
-        try {
-            const requestBody = {
-                promptId: Number(promptId),
-                rate: Number(reviewData.rating),
-                reviewContent: reviewData.comment,
-            };
+        const newReview = {
+            review_id: Date.now(),
+            user: 'CurrentUser',
+            rating: Number(reviewData.rating),
+            comment: reviewData.comment,
+        };
 
-            await authFetch(`/api/prompts/${promptId}/reviews`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestBody),
+        const updateAndSelect = (currentPrompts) => {
+            const updatedPrompts = currentPrompts.map(p => {
+                if (p.prompt_id === promptId) {
+                    const updatedReviews = [newReview, ...(p.reviews || [])];
+                    return { ...p, reviews: updatedReviews };
+                }
+                return p;
             });
 
-            await fetchPromptList();
-        } catch (error) {
-            console.error('리뷰 등록 실패:', error);
-            alert('리뷰 등록에 실패했습니다.');
-        }
+            const newlySelectedPrompt = updatedPrompts.find(p => p.prompt_id === promptId);
+            setSelectedPrompt(newlySelectedPrompt);
+
+            return updatedPrompts;
+        };
+
+        setPrompts(updateAndSelect);
     };
 
     const handleEdit = (prompt) => {
@@ -119,14 +143,13 @@ export default function App() {
     };
 
     const handlePromptClick = (prompt) => {
-        // 수정: 백엔드 DTO 필드명(snake_case)과 일치시킵니다.
         if (prompt && prompt.prompt_id) {
-            setSelectedPromptId(prompt.prompt_id);
+            setSelectedPrompt(prompt);
         }
     };
 
     const handleCloseModal = () => {
-        setSelectedPromptId(null);
+        setSelectedPrompt(null);
     };
 
     return (
@@ -152,7 +175,6 @@ export default function App() {
 
             <div className="flex justify-center">
                 <div className="w-full max-w-6xl">
-                    {/* 참고: PromptList 및 PromptCard 컴포넌트도 내부적으로 snake_case 필드명을 사용하도록 수정이 필요합니다. */}
                     <PromptList
                         prompts={prompts}
                         onEdit={handleEdit}
@@ -162,11 +184,12 @@ export default function App() {
                 </div>
             </div>
 
-            {selectedPromptId && (
+            {selectedPrompt && (
                 <PromptDetailModal
-                    promptId={selectedPromptId}
+                    prompt={selectedPrompt}
                     onClose={handleCloseModal}
                     onReviewSubmit={handleReviewSubmit}
+                    onPurchase={handlePurchase}
                 />
             )}
         </div>
