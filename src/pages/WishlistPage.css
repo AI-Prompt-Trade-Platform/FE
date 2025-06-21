@@ -1,0 +1,16 @@
+.wishlist-page {
+    min-height: 100vh;
+    background-color: #121212;
+    color: #ffffff;
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+}
+
+.wishlist-main {
+    padding: 0;
+    position: relative;
+    z-index: 2;
+    overflow: visible;
+    padding-top: 20px;
+}
