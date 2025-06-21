@@ -20,6 +20,10 @@ const AboutPage = () => {
   // 프롬프트 둘러보기 버튼 클릭 핸들러
   const handleExplorePrompts = () => {
     navigate('/'); // 홈페이지로 이동
+    // 페이지 이동 후 상단으로 스크롤
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   // 마우스 위치 추적
@@ -108,7 +112,7 @@ const AboutPage = () => {
           
           <h1 className="hero-title">
             <span className="title-line">미래의 창조자들을 위한</span>
-            <span className="title-highlight">AI 프롬프트 마켓플레이스</span>
+            <span className="title-highlight">AI 프롬프트 스토어</span>
             <span className="title-line">Prumpt 2.0</span>
           </h1>
           
