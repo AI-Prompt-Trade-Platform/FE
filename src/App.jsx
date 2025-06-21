@@ -36,12 +36,15 @@ function AppContent() {
 }
 
 function App() {
+  const [count, setCount] = useState(0)
+
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AuthProvider>
+    <Router>
+      <AppContent />
+    </Router>
+  </AuthProvider>
+
   )
 }
 
