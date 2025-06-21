@@ -184,10 +184,6 @@ export const statsAPI = {
     apiClient.get(`/stats/prompts/${promptId}`),
 };
 
-// 인증 토큰 설정 함수
-export const setAuthToken = (token) => {
-  apiClient.setAuthToken(token);
-};
 
 // 인증 초기화 함수
 export const initializeAuth = () => {
@@ -197,6 +193,17 @@ export const initializeAuth = () => {
     setAuthToken(token);
   }
 };
+
+// 인증 토큰 관리
+export const setAuthToken = (token) => {
+  apiClient.setAuthToken(token);
+  if (token) {
+      localStorage.setItem('authToken', token);
+  } else {
+      localStorage.removeItem('authToken');
+  }
+};
+
 
 // 기본 API 클라이언트 노출
 export default apiClient; 

@@ -8,6 +8,9 @@ import LandingPage from './pages/LandingPage'
 import SearchPage from './pages/SearchPage'
 import DiscoverPage from './pages/DiscoverPage'
 import AboutPage from './pages/AboutPage'
+import WishlistPage from './pages/WishlistPage'
+import ProfilePage from "./pages/ProfilePage";
+import PaymentPage from "./pages/PaymentPage";
 import './App.css'
 
 function AppContent() {
@@ -23,6 +26,9 @@ function AppContent() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Routes>
       <Footer />
     </div>
@@ -30,12 +36,15 @@ function AppContent() {
 }
 
 function App() {
+  const [count, setCount] = useState(0)
+
   return (
     <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AuthProvider>
+    <Router>
+      <AppContent />
+    </Router>
+  </AuthProvider>
+
   )
 }
 

@@ -1,0 +1,144 @@
+.payment-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  position: relative; /* 명시적으로 position 설정 */
+}
+
+.payment-container {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  position: relative; /* 명시적으로 position 설정 */
+  z-index: 10; /* z-index 값 증가 */
+}
+
+.payment-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+  font-size: 2rem;
+}
+
+.point-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.point-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.point-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.point-option.selected {
+  border-color: #6c5ce7;
+  background-color: #f5f3ff;
+}
+
+.point-option .amount {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.payment-summary {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.payment-summary h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+  color: #000; /* 글씨 색상을 검은색으로 변경 */
+}
+
+.summary-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+  font-weight: bold;
+  color: #000; /* 마지막 항목도 검은색으로 변경 */
+}
+
+.payment-button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #6c5ce7;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.payment-button:hover {
+  background-color: #5b4bc9;
+}
+
+.payment-button:disabled {
+  background-color: #a29bda;
+  cursor: not-allowed;
+}
+
+/* 결제 성공 메시지 스타일 */
+.payment-success-message {
+  background-color: rgba(46, 213, 115, 0.2);
+  border: 1px solid #2ed573;
+  color: #20bf6b;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+/* 결제 실패 메시지 스타일 */
+.payment-error-message {
+  background-color: rgba(255, 71, 87, 0.2);
+  border: 1px solid #ff4757;
+  color: #ff4757;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
