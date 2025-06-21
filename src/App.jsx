@@ -1,4 +1,5 @@
 import React from 'react'
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'; // 서버 API 데이터 관리 라이브러리
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import Header from './components/Header/Header'
@@ -11,11 +12,20 @@ import AboutPage from './pages/AboutPage'
 import WishlistPage from './pages/WishlistPage'
 import ProfilePage from "./pages/ProfilePage";
 import PaymentPage from "./pages/PaymentPage";
+import AppRouter from './routes/routes';
+import { globalStyle } from './components/common/styles/globalStyle/globalStyle';
+import { Global } from '@emotion/react'; // css를 컴포넌트 단위로 작성 가능하게 하는 라이브러리
 import './App.css'
+
+const queryClient = new QueryClient();
+
+const App = () => {
 
 function AppContent() {
   const location = useLocation();
   const isLandingPage = location.pathname === '/landing';
+
+// todo: 라우팅 어떻게 할건지 고민해보기
 
   return (
     <div className="App">
@@ -37,13 +47,14 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-    <Router>
-      <AppContent />
-    </Router>
-  </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Global styles={globalStyle} />
+          <AppRouter />
+        </BrowserRouter>
+      </QueryClientProvider>
+  );
+};
 
-  )
-}
 
 export default App

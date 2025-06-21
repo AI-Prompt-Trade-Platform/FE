@@ -1,0 +1,5 @@
+.prompt-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(242px, 1fr));
+  gap: 1rem;
+} 

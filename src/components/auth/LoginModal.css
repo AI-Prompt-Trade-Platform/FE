@@ -1,0 +1,98 @@
+/* LoginModal.css */
+.login-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.login-modal-content {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  padding: 40px;
+  border-radius: 15px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(74, 158, 255, 0.3);
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  border: 1px solid rgba(74, 158, 255, 0.2);
+}
+
+.login-modal-content h2 {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  color: #00d4ff;
+  text-shadow: 0 0 10px #00d4ff;
+}
+
+.login-modal-content p {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.login-modal-button {
+  background: linear-gradient(135deg, #4a9eff, #0066cc);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(74, 158, 255, 0.4);
+  margin-bottom: 15px; /* Add space below the button */
+}
+
+.login-modal-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 158, 255, 0.6);
+}
+
+.login-modal-close-button {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-modal-close-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .login-modal-content {
+    padding: 30px;
+    margin: 20px;
+  }
+  .login-modal-content h2 {
+    font-size: 1.8rem;
+  }
+  .login-modal-content p {
+    font-size: 1rem;
+  }
+  .login-modal-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+  }
+  .login-modal-close-button {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+} 
