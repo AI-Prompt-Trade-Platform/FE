@@ -10,8 +10,9 @@ body {
 
 #root {
   width: 100%;
-  margin: 0 auto;
-  text-align: center;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
 .logo {
@@ -50,9 +51,9 @@ body {
   color: #888;
 }
 
-.app {
+/* .app {
   position: relative;
   z-index: 1;
   background-color: #24242400;
   min-height: 100vh;
-}
+} */

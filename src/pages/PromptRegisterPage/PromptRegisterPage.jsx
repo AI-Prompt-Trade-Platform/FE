@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PromptCard from '../../components/PromptCard/PromptCard';
 import './PromptRegisterPage.css';
@@ -34,6 +34,37 @@ const PromptRegisterPage = () => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const { authFetch } = useAuthApi();
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const { promptName, promptDescription, promptContent, price, exampleFile } = form;
+    const isValid =
+      promptName.trim() !== '' &&
+      promptDescription.trim() !== '' &&
+      promptContent.trim() !== '' &&
+      price.toString().trim() !== '' &&
+      exampleFile !== null;
+    setIsFormValid(isValid);
+  }, [form]);
+
+  const showValidationErrors = () => {
+    const newErrors = {};
+    if (form.promptName.trim() === '') newErrors.promptName = '프롬프트 이름을 입력해주세요.';
+    if (form.promptDescription.trim() === '') newErrors.promptDescription = '프롬프트 설명을 입력해주세요.';
+    if (form.promptContent.trim() === '') newErrors.promptContent = '프롬프트 내용을 입력해주세요.';
+    if (form.price.toString().trim() === '') newErrors.price = '가격을 입력해주세요.';
+    if (form.exampleFile === null) newErrors.exampleFile = '예시 파일을 업로드해주세요.';
+    setErrors(newErrors);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: null }));
+    }
+  };
 
   // Dropzone 설정
   const onDrop = (acceptedFiles) => {
@@ -44,6 +75,10 @@ const PromptRegisterPage = () => {
       else if (file.type.startsWith('video/')) type = 'VIDEO';
       else if (file.type.startsWith('text/')) type = 'TEXT';
       setForm({ ...form, exampleFile: file, exampleType: type });
+
+      if (errors.exampleFile) {
+        setErrors(prev => ({ ...prev, exampleFile: null }));
+      }
     }
   };
 
@@ -58,14 +93,14 @@ const PromptRegisterPage = () => {
     }
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid) {
+      showValidationErrors();
+      return;
+    }
     setError('');
+    setErrors({});
     setUploading(true);
     try {
       const formData = new FormData();
@@ -91,6 +126,7 @@ const PromptRegisterPage = () => {
       });
       alert('프롬프트가 성공적으로 등록되었습니다!');
       setForm(initialForm);
+      navigate(-1);
     } catch (err) {
       setError(err.message || '등록 중 오류가 발생했습니다.');
     } finally {
@@ -150,6 +186,7 @@ const PromptRegisterPage = () => {
                   placeholder="프롬프트 이름을 입력하세요"
                   required
                 />
+                {errors.promptName && <div className="error-text">{errors.promptName}</div>}
               </div>
 
               {/* 프롬프트 설명 */}
@@ -164,6 +201,7 @@ const PromptRegisterPage = () => {
                   rows={4}
                   required
                 />
+                {errors.promptDescription && <div className="error-text">{errors.promptDescription}</div>}
               </div>
 
               {/* 프롬프트 내용 */}
@@ -178,6 +216,7 @@ const PromptRegisterPage = () => {
                   rows={6}
                   required
                 />
+                {errors.promptContent && <div className="error-text">{errors.promptContent}</div>}
               </div>
 
               {/* 가격 */}
@@ -193,6 +232,7 @@ const PromptRegisterPage = () => {
                   min={0}
                   required
                 />
+                {errors.price && <div className="error-text">{errors.price}</div>}
               </div>
 
               {/* 예시 파일 업로드 */}
@@ -223,6 +263,7 @@ const PromptRegisterPage = () => {
                     </div>
                   )}
                 </div>
+                {errors.exampleFile && <div className="error-text">{errors.exampleFile}</div>}
               </div>
 
               {/* 모델 카테고리 */}
@@ -258,18 +299,17 @@ const PromptRegisterPage = () => {
               </div>
 
               {error && <div className="error-message">{error}</div>}
+
+              {/* 등록 버튼 */}
+              <button 
+                type="submit" 
+                className={`register-button ${!isFormValid ? 'disabled-look' : ''}`}
+                disabled={uploading}
+              >
+                {uploading ? '등록 중...' : '등록하기'}
+              </button>
             </form>
           </div>
-
-          {/* 등록 버튼 */}
-          <button 
-            type="submit" 
-            className="register-button"
-            onClick={handleSubmit}
-            disabled={uploading}
-          >
-            {uploading ? '등록 중...' : '등록하기'}
-          </button>
         </div>
       </div>
     </div>

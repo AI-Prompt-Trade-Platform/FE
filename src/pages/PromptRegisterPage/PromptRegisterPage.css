@@ -1,7 +1,9 @@
 /* 전체 컨테이너 */
 .prompt-register-container {
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
   background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  background-attachment: fixed;
   color: white;
   display: flex;
   flex-direction: column;
@@ -51,8 +53,9 @@
 /* 메인 컨텐츠 */
 .register-content {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 2rem;
   padding: 2rem;
   max-width: 1400px;
@@ -67,6 +70,9 @@
   align-items: center;
   justify-content: flex-start;
   padding: 2rem;
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
 }
 
 .section-title {
@@ -89,10 +95,36 @@
   transform: scale(1.15);
   transform-origin: top;
   transition: transform 0.3s ease-in-out;
+  height: 420px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-preview .prompt-card .card-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.card-preview .prompt-card .card-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-preview .prompt-card .card-description {
+  flex-grow: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* 오른쪽: 폼 섹션 */
 .form-section {
+  flex: 1 1 420px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -100,9 +132,7 @@
 
 .form-container {
   flex: 1;
-  overflow-y: auto;
   padding: 1rem;
-  max-height: calc(100vh - 200px);
 }
 
 .form-container::-webkit-scrollbar {
@@ -220,22 +250,8 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* 에러 메시지 */
-.error-message {
-  background: rgba(255, 107, 107, 0.2);
-  border: 1px solid rgba(255, 107, 107, 0.5);
-  border-radius: 6px;
-  padding: 0.75rem;
-  color: #ff6b6b;
-  text-align: center;
-}
-
 /* 등록 버튼 */
 .register-button {
-  position: sticky;
-  bottom: 1rem;
-  right: 1rem;
-  align-self: flex-end;
   background: linear-gradient(135deg, #4a9eff 0%, #0066cc 100%);
   border: none;
   border-radius: 50px;
@@ -246,44 +262,73 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(74, 158, 255, 0.4);
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   min-width: 120px;
+  width: 100%;
 }
 
 .register-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(74, 158, 255, 0.6);
-  background: linear-gradient(135deg, #5aa7ff 0%, #1a75d9 100%);
+  box-shadow: 0 6px 22px rgba(74, 158, 255, 0.5);
 }
 
 .register-button:active {
   transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(74, 158, 255, 0.3);
+}
+
+.register-button.disabled-look {
+  background: #555;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.register-button.disabled-look:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .register-button:disabled {
-  opacity: 0.6;
+  background: #555;
   cursor: not-allowed;
-  transform: none;
+  box-shadow: none;
+}
+
+/* 에러 메시지 */
+.error-text {
+  color: #ff8c8c;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  animation: errorFadeIn 0.3s ease-in-out;
+}
+
+@keyframes errorFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-message {
+  background: rgba(255, 107, 107, 0.2);
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  border-radius: 6px;
+  padding: 0.75rem;
+  color: #ff6b6b;
+  text-align: center;
 }
 
 /* 반응형 디자인 */
 @media (max-width: 1024px) {
   .register-content {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  .preview-section {
-    order: 2;
     padding: 1rem;
-  }
-  
-  .form-section {
-    order: 1;
-  }
-  
-  .form-container {
-    max-height: 60vh;
+    gap: 1rem;
   }
 }
 
@@ -316,7 +361,6 @@
   
   .form-container {
     padding: 0.5rem;
-    max-height: 50vh;
   }
   
   .register-button {
@@ -324,4 +368,20 @@
     align-self: stretch;
     margin: 1rem 0.5rem 0.5rem 0.5rem;
   }
+}
+
+.prompt-register-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #0f132a;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+.prp-navbar {
+  /* ... existing code ... */
 }

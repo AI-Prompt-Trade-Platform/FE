@@ -38,11 +38,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Global styles={globalStyle} />
-          <div className='app'>
-            {/* AuthControls는 Auth0Provider 내부에서만 작동하므로 Auth0Provider 내부에 있어야 합니다. */}
-            {/* Router 컴포넌트는 App 컴포넌트 내에 있으므로 Auth0Provider의 영향을 받습니다. */}
-            <AppRouter />
-          </div>
+          <AppRouter />
         </BrowserRouter>
       </QueryClientProvider>
     // </Auth0Provider>
