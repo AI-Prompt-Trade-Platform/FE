@@ -138,16 +138,7 @@
   line-height: 1.5;
 }
 
-/* 검색 결과 그리드 */
-.search-results {
-  margin-top: 20px;
-}
-
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 24px;
-}
+/* 검색 결과는 PromptSection 컴포넌트 사용 */
 
 /* 검색 결과 없음 */
 .no-results {
@@ -218,6 +209,23 @@
   font-weight: bold;
 }
 
+/* 추천 프롬프트 캐러셀 스타일 */
+.no-results .prompt-carousel-section {
+  text-align: left;
+  margin-top: 40px;
+}
+
+/* 추천 프롬프트 제목 색상 */
+.no-results .prompt-carousel-section .carousel-title {
+  color: #4a9eff;
+  background: linear-gradient(135deg, #4a9eff 0%, #4a9eff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+
 /* 반응형 디자인 */
 @media (max-width: 1024px) {
   .search-header-content,
@@ -226,10 +234,9 @@
     padding-right: 30px;
   }
   
-  .results-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
+  /* PromptSection 컴포넌트가 반응형 처리 */
+  
+
 }
 
 @media (max-width: 768px) {
@@ -257,10 +264,9 @@
     padding-right: 20px;
   }
   
-  .results-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
+  /* PromptSection 컴포넌트가 반응형 처리 */
+  
+
   
   .error-state {
     flex-direction: column;
@@ -300,4 +306,6 @@
   .no-results h2 {
     font-size: 1.5rem;
   }
+  
+
 } 

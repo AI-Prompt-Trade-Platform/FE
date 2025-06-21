@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import StarryBackground from '../components/Background/StarryBackground';
-import PromptCard from '../components/PromptCard/PromptCard';
+import PromptCarousel from '../components/PromptCarousel/PromptCarousel';
 import './SearchPage.css';
 
 const SearchPage = () => {
@@ -9,6 +9,7 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [totalCount, setTotalCount] = useState(0);
+  const [suggestedPrompts, setSuggestedPrompts] = useState([]);
   
   const location = useLocation();
   const query = new URLSearchParams(location.search).get('q') || '';
@@ -46,19 +47,66 @@ const SearchPage = () => {
         thumbnail: item.thumbnailImageUrl || `https://picsum.photos/400/300?random=${item.promptId}`,
         author: item.ownerProfileName || 'AI Assistant',
         rating: item.rate || 4.5,
+        downloads: item.salesCount || Math.floor(Math.random() * 500) + 100,
         uses: item.salesCount || Math.floor(Math.random() * 500) + 100,
-        price: item.price || 0
+        price: item.price || 0,
+        tags: item.hashTags || ['AI', '프롬프트']
       }));
       
       setSearchResults(transformedData);
       setTotalCount(data.totalElements || transformedData.length);
+      
+      // 검색 결과가 없으면 추천 프롬프트 가져오기
+      if (transformedData.length === 0) {
+        await fetchSuggestedPrompts(searchQuery);
+      }
     } catch (err) {
       console.error('검색 오류:', err);
       setError(err.message || '검색 중 오류가 발생했습니다');
       setSearchResults([]);
       setTotalCount(0);
+      // 오류 시에도 추천 프롬프트 가져오기
+      await fetchSuggestedPrompts(searchQuery);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSuggestedPrompts = async (searchQuery) => {
+    try {
+      // 검색어의 첫 글자 추출
+      const firstChar = searchQuery.charAt(0);
+      
+      // 첫 글자로 시작하는 프롬프트들 검색
+      const response = await fetch(`http://localhost:8080/api/home/prompts/search?keyword=${encodeURIComponent(firstChar)}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const contentArray = data.content || [];
+        
+        // 최대 6개의 추천 프롬프트만 표시
+        const transformedSuggestions = contentArray.slice(0, 6).map(item => ({
+          id: item.promptId,
+          title: item.promptName,
+          description: item.description,
+          category: item.typeCategory,
+          subcategory: item.typeCategory,
+          thumbnail: item.thumbnailImageUrl || `https://picsum.photos/400/300?random=${item.promptId}`,
+          author: item.ownerProfileName || 'AI Assistant',
+          rating: item.rate || 4.5,
+          downloads: item.salesCount || Math.floor(Math.random() * 500) + 100,
+          uses: item.salesCount || Math.floor(Math.random() * 500) + 100,
+          price: item.price || 0,
+          tags: item.hashTags || ['AI', '프롬프트']
+        }));
+        
+        setSuggestedPrompts(transformedSuggestions);
+      } else {
+        setSuggestedPrompts([]);
+      }
+    } catch (err) {
+      console.error('추천 프롬프트 가져오기 오류:', err);
+      setSuggestedPrompts([]);
     }
   };
 
@@ -75,12 +123,6 @@ const SearchPage = () => {
             </h1>
             <div className="search-stats">
               <span className="result-count">{totalCount}개의 프롬프트</span>
-              {totalCount > 0 && (
-                <>
-                  <span className="stats-divider">•</span>
-                  <span className="search-quality">AI 검증 완료</span>
-                </>
-              )}
             </div>
           </div>
         </div>
@@ -105,33 +147,39 @@ const SearchPage = () => {
           )}
 
           {!loading && !error && searchResults.length > 0 && (
-            <div className="search-results">
-              <div className="results-grid">
-                {searchResults.map((prompt) => (
-                  <PromptCard 
-                    key={prompt.id} 
-                    prompt={prompt}
-                  />
-                ))}
-              </div>
-            </div>
+            <PromptCarousel 
+              title={`검색 결과 (${totalCount}개)`}
+              prompts={searchResults}
+            />
           )}
 
           {!loading && !error && searchResults.length === 0 && query && (
             <div className="no-results">
               <div className="no-results-content">
                 <div className="no-results-icon">🔍</div>
-                <h2>검색 결과가 없습니다</h2>
-                <p>'{query}'에 대한 프롬프트를 찾을 수 없습니다.</p>
-                <div className="search-suggestions">
-                  <h4>다음과 같이 시도해보세요:</h4>
-                  <ul>
-                    <li>다른 키워드로 검색해보세요</li>
-                    <li>더 간단한 단어를 사용해보세요</li>
-                    <li>카테고리별로 탐색해보세요</li>
-                  </ul>
-                </div>
+                <h2>혹시 이 프롬프트를 찾으셨나요?</h2>
+                <p>'{query}'와 관련된 프롬프트를 찾지 못했지만, 비슷한 프롬프트들을 추천해드립니다.</p>
+                
+                {suggestedPrompts.length === 0 && (
+                  <div className="search-suggestions">
+                    <h4>다음과 같이 시도해보세요:</h4>
+                    <ul>
+                      <li>다른 키워드로 검색해보세요</li>
+                      <li>더 간단한 단어를 사용해보세요</li>
+                      <li>카테고리별로 탐색해보세요</li>
+                    </ul>
+                  </div>
+                )}
               </div>
+              
+              {suggestedPrompts.length > 0 && (
+                <div className="suggested-prompts-wrapper">
+                  <PromptCarousel 
+                    title="추천 프롬프트"
+                    prompts={suggestedPrompts}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

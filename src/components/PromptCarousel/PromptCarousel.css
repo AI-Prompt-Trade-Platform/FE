@@ -29,6 +29,8 @@
   width: 100%;
   position: relative;
   padding: 10px 0 20px 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch; /* iOS에서 부드러운 스크롤 */
 }
 
 .carousel-track {
@@ -36,6 +38,7 @@
   transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
   will-change: transform;
   overflow: visible;
+  touch-action: pan-y; /* 세로 스크롤은 허용하되 가로 스크롤은 제어 */
 }
 
 .carousel-slide {
@@ -43,6 +46,14 @@
   padding: 0 10px;
   box-sizing: border-box;
   overflow: visible;
+  display: flex;
+  align-items: stretch;
+}
+
+.carousel-slide .prompt-card {
+  width: 100%;
+  max-height: 450px;
+  min-height: 400px;
 }
 
 .carousel-controls {

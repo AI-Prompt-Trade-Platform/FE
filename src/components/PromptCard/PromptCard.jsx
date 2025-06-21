@@ -27,12 +27,12 @@ const PromptCard = ({ prompt }) => {
             </svg>
           </div>
         )}
-        <div className="card-category">{category}</div>
+        <div className="card-category">{category || '기타'}</div>
       </div>
       
       <div className="card-content">
-        <h3 className="card-title">{title}</h3>
-        <p className="card-description">{description}</p>
+        <h3 className="card-title">{title || '제목 없음'}</h3>
+        <p className="card-description">{description || '설명이 없습니다.'}</p>
         
         <div className="card-tags">
           {tags?.map((tag, index) => (
@@ -46,17 +46,17 @@ const PromptCard = ({ prompt }) => {
               <svg className="star-icon" width="16" height="16" viewBox="0 0 24 24" fill="#ffd700" stroke="#ffd700">
                 <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
               </svg>
-              <span>{rating}</span>
+              <span>{rating || 0}</span>
             </div>
-            <div className="downloads">{downloads}+ 다운로드</div>
+            <div className="downloads">{(downloads || 0).toLocaleString()}+ 다운로드</div>
           </div>
           <div className="card-price">
-            {price === 0 ? '무료' : `₩${price.toLocaleString()}`}
+            {(price || 0) === 0 ? '무료' : `₩${(price || 0).toLocaleString()}`}
           </div>
         </div>
         
         <div className="card-author">
-          by {author}
+          by {author || 'Unknown'}
         </div>
       </div>
     </div>

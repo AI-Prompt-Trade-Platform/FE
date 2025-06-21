@@ -100,51 +100,70 @@
 }
 
 .hamburger.active span:nth-child(1) {
-  transform: rotate(45deg);
-  top: 50%;
-  transform-origin: center;
+  transform: rotate(45deg) translate(0, 8px);
+  top: 0;
 }
 
 .hamburger.active span:nth-child(2) {
   opacity: 0;
+  transform: translateX(20px);
 }
 
 .hamburger.active span:nth-child(3) {
-  transform: rotate(-45deg);
-  bottom: 50%;
-  transform-origin: center;
+  transform: rotate(-45deg) translate(0, -8px);
+  bottom: 0;
 }
 
 /* 모바일 메뉴 */
 .mobile-menu {
-  display: none;
-  background: linear-gradient(145deg, #1e1e1e 0%, #252525 100%);
+  background: linear-gradient(145deg, rgba(30, 30, 30, 0.95) 0%, rgba(37, 37, 37, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 20px;
+  padding: 0 20px;
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  transform: translateY(-10px);
+  max-height: 0;
+  overflow: hidden;
   opacity: 0;
-  transition: all 0.3s ease;
+  transform: translateY(-10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
 .mobile-menu.active {
-  display: block;
-  transform: translateY(0);
+  max-height: 400px;
+  padding: 20px;
   opacity: 1;
+  transform: translateY(0);
   pointer-events: all;
 }
 
 .mobile-search {
   margin-bottom: 20px;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: all 0.3s ease 0.1s;
+}
+
+.mobile-menu.active .mobile-search {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .mobile-nav {
   /* 모바일 네비게이션 스타일은 Navigation.css에서 처리 */
+  transform: translateY(10px);
+  opacity: 0;
+  transition: all 0.3s ease 0.2s;
+}
+
+.mobile-menu.active .mobile-nav {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 /* 개선된 반응형 디자인 */
@@ -196,6 +215,10 @@
   .mobile-menu {
     padding: 15px;
   }
+  
+  .mobile-menu.active {
+    max-height: 450px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -209,5 +232,9 @@
 
   .mobile-menu {
     padding: 12px;
+  }
+  
+  .mobile-menu.active {
+    max-height: 500px;
   }
 } 

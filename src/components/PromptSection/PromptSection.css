@@ -39,10 +39,12 @@
 }
 
 .cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: 25px;
   overflow: visible;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .no-prompts {
@@ -67,7 +69,7 @@
   }
   
   .cards-container {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 20px;
     overflow: visible;
   }
