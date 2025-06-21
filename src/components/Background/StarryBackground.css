@@ -1,0 +1,153 @@
+.starry-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 고정된 별들 */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  width: 3px;
+  height: 3px;
+  animation: twinkle infinite ease-in-out;
+  box-shadow: 
+    0 0 6px rgba(255, 255, 255, 0.8),
+    0 0 10px rgba(74, 158, 255, 0.5);
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* 별똥별들 */
+.meteors {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.meteor-group {
+  position: absolute;
+  top: -10px;
+  /* right는 인라인 스타일로 지정 */
+  pointer-events: none;
+}
+
+.meteor-head {
+  position: absolute;
+  background: radial-gradient(circle, #fff 60%, #4a9eff 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 16px 4px #4a9eff99, 0 0 32px 8px #fff2;
+  animation: meteor-fall-diag linear forwards;
+}
+
+.meteor-trail {
+  position: absolute;
+  background: radial-gradient(circle, #4a9eff 0%, #fff 60%, transparent 100%);
+  border-radius: 50%;
+  animation: meteor-fall-diag linear forwards;
+  pointer-events: none;
+}
+
+@keyframes meteor-fall-diag {
+  0% {
+    transform: translateY(-50px) translateX(50px) scale(1) rotate(-45deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120vh) translateX(-120vw) scale(0.7) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+/* 다양한 색상의 별똥별 */
+.meteor:nth-child(3n) {
+  background: radial-gradient(circle, #ffffff 0%, #667eea 50%, transparent 100%);
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.9),
+    0 0 18px rgba(102, 126, 234, 0.8),
+    0 0 40px rgba(246, 136, 194, 0.8),
+    0 0 30px rgba(102, 126, 234, 0.4);
+}
+
+.meteor:nth-child(3n)::before {
+  background: linear-gradient(
+    90deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(102, 126, 234, 0.7) 20%, 
+    rgba(102, 126, 234, 0.3) 60%, 
+    transparent 100%
+  );
+  width: 120px;
+  height: 1px;
+  box-shadow: 0 0 8px rgba(102, 126, 234, 0.6);
+}
+
+.meteor:nth-child(5n) {
+  background: radial-gradient(circle, #ffffff 0%, #f093fb 50%, transparent 100%);
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.9),
+    0 0 18px rgba(240, 147, 251, 0.8),
+    0 0 30px rgba(240, 147, 251, 0.4);
+}
+
+.meteor:nth-child(5n)::before {
+  background: linear-gradient(
+    90deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(240, 147, 251, 0.7) 20%, 
+    rgba(240, 147, 251, 0.3) 60%, 
+    transparent 100%
+  );
+  width: 110px;
+  height: 1px;
+  box-shadow: 0 0 8px rgba(240, 147, 251, 0.6);
+}
+
+.twinkle-stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.twinkle-star {
+  position: absolute;
+  background: radial-gradient(circle, #fff 70%, #4a9eff 100%);
+  border-radius: 50%;
+  opacity: 0.7;
+  animation: twinkle-blink infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes twinkle-blink {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+} 
