@@ -39,25 +39,37 @@ const HomePage = () => {
         setError(null);
         refreshMessage(); // 새로운 로딩 메시지 생성
         
-        // 백엔드 API 호출 시도
-        const [popularResponse, latestResponse] = await Promise.all([
+        // Promise.all을 allSettled로 변경하여 일부 API 실패에 대응
+        const results = await Promise.allSettled([
           promptAPI.getPopularPrompts(8),
           promptAPI.getLatestPrompts(8)
         ]);
 
-        console.log('백엔드 데이터 로드 성공:', { popularResponse, latestResponse });
+        console.log('백엔드 API 호출 결과:', results);
+
+        const popularResult = results[0];
+        const latestResult = results[1];
         
-        const transformedPopular = transformBackendData(popularResponse);
-        const transformedLatest = transformBackendData(latestResponse);
-        
-        setPopularPrompts(transformedPopular);
-        setLatestPrompts(transformedLatest);
+        if (popularResult.status === 'fulfilled') {
+          const transformedPopular = transformBackendData(popularResult.value);
+          setPopularPrompts(transformedPopular);
+        } else {
+          console.error('인기 프롬프트 로드 실패:', popularResult.reason);
+          setPopularPrompts([]); // 실패 시 빈 배열로 설정
+        }
+
+        if (latestResult.status === 'fulfilled') {
+          const transformedLatest = transformBackendData(latestResult.value);
+          setLatestPrompts(transformedLatest);
+        } else {
+          console.error('최신 프롬프트 로드 실패:', latestResult.reason);
+          setLatestPrompts([]); // 실패 시 빈 배열로 설정
+        }
         
       } catch (err) {
-        console.warn('백엔드 API 호출 실패:', err.message);
-        setError('데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-        
-        // 백엔드 연결 실패 시 빈 배열로 설정
+        // allSettled는 자체적으로 에러를 throw하지 않지만, 다른 예외 상황을 위해 유지
+        console.warn('데이터 fetching 중 예외 발생:', err.message);
+        setError('데이터를 불러오는 중 예기치 않은 오류가 발생했습니다.');
         setPopularPrompts([]);
         setLatestPrompts([]);
       } finally {

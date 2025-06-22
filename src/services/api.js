@@ -106,10 +106,6 @@ export const promptAPI = {
   getPromptById: (id) => 
     apiClient.get(`/prompts/${id}`),
   
-  // 프롬프트 상세 정보 조회 (구매 여부 포함)
-  getPromptDetail: (id) => 
-    apiClient.get(`/prompts/${id}`),
-  
   // 프롬프트 리뷰 목록 조회
   getPromptReviews: (id, page = 0, size = 10) => 
     apiClient.get(`/api/reviews/${id}`),
@@ -167,7 +163,7 @@ export const userAPI = {
   
   // 위시리스트 추가
   addToWishlist: (promptId) => 
-    apiClient.post('/wishlist', { promptId }),
+    apiClient.post(`/wishlist/${promptId}`),
   
   // 위시리스트 제거
   removeFromWishlist: (promptId) => 
@@ -198,6 +194,10 @@ export const statsAPI = {
   // 프롬프트 통계
   getPromptStats: (promptId) => 
     apiClient.get(`/stats/prompts/${promptId}`),
+  
+  // 수익 모니터링 데이터 조회
+  getMonitoringData: (period = 'MONTH') =>
+    apiClient.get(`/mypage/monitoring?period=${period}`),
 };
 
 

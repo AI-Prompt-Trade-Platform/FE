@@ -10,6 +10,7 @@ const PromptCard = ({ prompt, onClick }) => {
     rating,
     price,
     author,
+    ownerProfileName,
     thumbnail,
     tags,
     downloads
@@ -62,7 +63,7 @@ const PromptCard = ({ prompt, onClick }) => {
         </div>
         
         <div className="card-author">
-          by {author || 'Unknown'}
+          by {author?.name || ownerProfileName || author || 'Unknown'}
         </div>
       </div>
     </div>

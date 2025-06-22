@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { setAuthToken } from '../services/api';
+import { setAuthToken, initializeAuth } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -21,6 +21,11 @@ export const AuthProvider = ({ children }) => {
     logout,
     getAccessTokenSilently,
   } = useAuth0();
+
+  // 앱 시작 시 로컬 스토리지에서 토큰을 즉시 로드
+  useEffect(() => {
+    initializeAuth();
+  }, []); // 최초 렌더링 시 한 번만 실행
 
   // Auth0 토큰을 API 클라이언트에 설정
   useEffect(() => {

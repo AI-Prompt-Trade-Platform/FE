@@ -14,3 +14,56 @@
     overflow: visible;
     padding-top: 20px;
 }
+
+.empty-wishlist {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 20px;
+    min-height: calc(100vh - 200px); /* 헤더/푸터 높이에 따라 조정 */
+}
+
+.empty-wishlist-content {
+    text-align: center;
+    padding: 50px 40px;
+    border-radius: 16px;
+    background: rgba(30, 30, 30, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    max-width: 500px;
+    width: 100%;
+}
+
+.empty-wishlist-icon {
+    font-size: 3.5rem;
+    margin-bottom: 24px;
+    display: inline-block;
+    animation: gently-bob 3.5s ease-in-out infinite;
+}
+
+.empty-wishlist .main-text {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #e0e0e0;
+    margin: 0 0 12px 0;
+}
+
+.empty-wishlist .sub-text {
+    font-size: 1rem;
+    color: #a0a0a0;
+    line-height: 1.5;
+}
+
+@keyframes gently-bob {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}

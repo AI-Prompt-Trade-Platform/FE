@@ -105,7 +105,11 @@ const WishlistPage = () => {
                         <div className="error-message">불러오기 실패: {error}</div>
                     ) : wishlist.length === 0 ? (
                         <div className="empty-wishlist">
-                            <p>위시리스트가 비어 있습니다.</p>
+                            <div className="empty-wishlist-content">
+                                <div className="empty-wishlist-icon">✨</div>
+                                <p className="main-text">위시리스트가 비어 있습니다.</p>
+                                <p className="sub-text">마음에 드는 프롬프트를 찾아<br/>위시리스트에 추가해보세요!</p>
+                            </div>
                         </div>
                     ) : (
                         <div className="wishlist-content">

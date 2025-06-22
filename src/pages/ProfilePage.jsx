@@ -3,6 +3,7 @@ import StarryBackground from '../components/Background/StarryBackground';
 import UserProfileBanner from '../components/UserProfile/UserProfileBanner';
 import ProfileTabs from '../components/UserProfile/ProfileTabs';
 import PromptCarousel from '../components/PromptCarousel/PromptCarousel';
+import PromptDetailModal from '../components/PromptDetailModal/PromptDetailModal';
 import { useAuth } from '../contexts/AuthContext';
 import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
 import './ProfilePage.css';
@@ -16,6 +17,10 @@ const ProfilePage = () => {
     const { loadingMessage, refreshMessage } = useLoadingMessage(true);
     const shouldShowLoading = useMinimumLoadingTime(loading, 800);
     const shouldShowUpdating = useMinimumLoadingTime(updating, 500);
+
+    // 모달 상태 추가
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedPromptId, setSelectedPromptId] = useState(null);
 
     // 탭 데이터 상태 추가
     const [purchasedPrompts, setPurchasedPrompts] = useState([]);
@@ -102,21 +107,18 @@ const ProfilePage = () => {
             const data = await response.json();
             console.log('판매 중인 프롬프트 데이터:', data);
             
-            // 백엔드에서 제공하는 데이터를 직접 활용
+            // 백엔드에서 제공하는 데이터를 프론트엔드 구조에 맞게 변환
             const formattedPrompts = data.content.map(prompt => ({
-                id: prompt.promptId,
-                title: prompt.promptName || '제목 없음',
+                id: prompt.id, // promptId -> id
+                title: prompt.title || '제목 없음', // promptName -> title
                 description: prompt.description || '설명 없음',
-                category: prompt.typeCategory || '기타',
-                rating: prompt.rate || parseFloat(prompt.aiInspectionRate) || 0,
+                category: prompt.categories?.typeName || '기타',
+                rating: prompt.averageRating || 0,
                 price: prompt.price || 0,
-                author: userProfile?.profileName || '내 프롬프트',
+                author: { name: prompt.ownerProfileName || userProfile?.profileName || '내 프롬프트' },
                 thumbnail: prompt.thumbnailImageUrl || '/default-thumbnail.png',
                 tags: prompt.hashTags || [],
                 downloads: prompt.salesCount || 0,
-                totalRevenue: prompt.totalRevenue || 0,
-                createdAt: prompt.createdAt,
-                aiInspectionRate: prompt.aiInspectionRate
             }));
             
             setSellingPrompts(formattedPrompts);
@@ -169,7 +171,7 @@ const ProfilePage = () => {
                 category: prompt.typeCategory || '기타',
                 rating: prompt.rate || parseFloat(prompt.aiInspectionRate) || 0,
                 price: prompt.price || 0,
-                author: prompt.ownerProfileName || '판매자 정보 없음',
+                author: { name: prompt.ownerProfileName || '판매자 정보 없음' },
                 thumbnail: prompt.thumbnailImageUrl || '/default-thumbnail.png',
                 tags: prompt.hashTags || [],
                 downloads: prompt.salesCount || 0,
@@ -222,6 +224,18 @@ const ProfilePage = () => {
         } finally {
             setTabLoading(false);
         }
+    };
+
+    // 카드 클릭 핸들러
+    const handleCardClick = (promptId) => {
+        setSelectedPromptId(promptId);
+        setIsModalOpen(true);
+    };
+
+    // 모달 닫기 핸들러
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedPromptId(null);
     };
 
     // 페이지 변경 처리
@@ -373,6 +387,7 @@ const ProfilePage = () => {
                 <PromptCarousel
                     title="판매 중인 프롬프트"
                     prompts={sellingPrompts}
+                    onCardClick={handleCardClick}
                 />
                 {totalPages > 1 && (
                     <div className="pagination">
@@ -415,6 +430,7 @@ const ProfilePage = () => {
                 <PromptCarousel
                     title="구매한 프롬프트"
                     prompts={purchasedPrompts}
+                    onCardClick={handleCardClick}
                 />
 
                 {totalPages > 1 && (
@@ -547,6 +563,13 @@ const ProfilePage = () => {
                     {renderTabContent()}
                 </div>
             </main>
+
+            {isModalOpen && (
+                <PromptDetailModal
+                    promptId={selectedPromptId}
+                    onClose={handleCloseModal}
+                />
+            )}
         </div>
     );
 };
