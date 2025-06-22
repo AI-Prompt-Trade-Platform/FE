@@ -25,7 +25,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       
       // 병렬로 데이터 요청
       const [detailResponse, reviewsResponse, aiEvaluationResponse, imagesResponse] = await Promise.allSettled([
-        promptAPI.getPromptDetail(promptId),
+        promptAPI.getPromptById(promptId),
         promptAPI.getPromptReviews(promptId, 0, 5),
         promptAPI.getPromptAiEvaluation(promptId),
         promptAPI.getPromptImages(promptId)
