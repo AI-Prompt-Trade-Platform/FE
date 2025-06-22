@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PromptCard from '../PromptCard/PromptCard';
+import PromptDetailModal from '../PromptDetailModal/PromptDetailModal';
 import './PromptCarousel.css';
 
 const PromptCarousel = ({ prompts, title }) => {
@@ -7,6 +8,7 @@ const PromptCarousel = ({ prompts, title }) => {
   const [visibleCount, setVisibleCount] = useState(3);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [selectedPromptId, setSelectedPromptId] = useState(null);
   const trackRef = useRef(null);
   const maxIndex = Math.max(0, prompts.length - visibleCount);
 
@@ -83,59 +85,60 @@ const PromptCarousel = ({ prompts, title }) => {
     }
   };
 
+  // 프롬프트 카드 클릭 핸들러
+  const handlePromptClick = (prompt) => {
+    setSelectedPromptId(prompt.id);
+  };
+
+  // 모달 닫기 핸들러
+  const handleModalClose = () => {
+    setSelectedPromptId(null);
+  };
+
+  // 구매 성공 핸들러
+  const handlePurchaseSuccess = (promptId) => {
+    console.log('구매 성공:', promptId);
+    // 필요시 상태 업데이트 로직 추가
+  };
+
   return (
-    <section className="prompt-carousel-section">
-      <div className="carousel-header">
-        <h2 className="carousel-title">{title}</h2>
-        <div className="carousel-controls">
-          <button onClick={goPrev} disabled={current === 0} className="carousel-btn">◀</button>
-          <button onClick={goNext} disabled={current === maxIndex} className="carousel-btn">▶</button>
+    <>
+      <section className="prompt-carousel-section">
+        <div className="carousel-header">
+          <h2 className="carousel-title">{title}</h2>
+          <div className="carousel-controls">
+            <button onClick={goPrev} disabled={current === 0} className="carousel-btn">◀</button>
+            <button onClick={goNext} disabled={current === maxIndex} className="carousel-btn">▶</button>
+          </div>
         </div>
-      </div>
-      <div className="carousel-track-wrapper">
-        <div
-          ref={trackRef}
-          className="carousel-track"
-          style={{ transform: `translateX(-${current * (100 / visibleCount)}%)` }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {prompts.map((prompt) => (
-            <div className="carousel-slide" key={prompt.id} style={{ width: `${100 / visibleCount}%` }}>
-              <PromptCard prompt={prompt} />
-            </div>
-          ))}
+        <div className="carousel-track-wrapper">
+          <div
+            ref={trackRef}
+            className="carousel-track"
+            style={{ transform: `translateX(-${current * (100 / visibleCount)}%)` }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {prompts.map((prompt) => (
+              <div className="carousel-slide" key={prompt.id} style={{ width: `${100 / visibleCount}%` }}>
+                <PromptCard prompt={prompt} onClick={handlePromptClick} />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* 프롬프트 상세 모달 */}
+      {selectedPromptId && (
+        <PromptDetailModal
+          promptId={selectedPromptId}
+          onClose={handleModalClose}
+          onPurchase={handlePurchaseSuccess}
+        />
+      )}
+    </>
   );
-
-
-
-//   return (
-//     <section className="prompt-carousel-section">
-//         <div className="carousel-header">
-//             <h2 className="carousel-title">{title}</h2>
-//             <div className="carousel-controls">
-//                 <button onClick={goPrev} disabled={current === 0} className="carousel-btn">◀</button>
-//                 <button onClick={goNext} disabled={current === maxIndex} className="carousel-btn">▶</button>
-//             </div>
-//         </div>
-//         <div className="carousel-track-wrapper">
-//             <div
-//                 className="carousel-track"
-//                 style={{ transform: `translateX(-${current * (100 / visibleCount)}%)` }}
-//             >
-//                 {prompts.map((prompt) => (
-//                     <div className="carousel-slide" key={prompt.id} style={{ width: `${100 / visibleCount}%` }}>
-//                         <PromptCard prompt={prompt} />
-//                     </div>
-//                 ))}
-//             </div>
-//         </div>
-//     </section>
-// );
 };
 
 export default PromptCarousel; 

@@ -1,21 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import StarryBackground from '../components/Background/StarryBackground';
+import { useAuth0 } from '@auth0/auth0-react'; 
 import './AboutPage.css';
 
 const AboutPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loginWithRedirect, isAuthenticated } = useAuth0();
   const [currentSection, setCurrentSection] = useState(0);
   const [isVisible, setIsVisible] = useState({});
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
+  
+  // 로그인 상태 확인 후 홈으로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated) {
+      // 사용자가 로그인되어 있으면 홈페이지로 리다이렉션
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
-  // 무료로 시작하기 버튼 클릭 핸들러
-  const handleStartFree = () => {
-    login(); // 로그인 페이지로 이동
-  };
+  // 무료로 시작하기 버튼 클릭 핸들러 - Auth0 로그인
+  const handleStartFree = () => loginWithRedirect();
 
   // 프롬프트 둘러보기 버튼 클릭 핸들러
   const handleExplorePrompts = () => {
@@ -123,13 +129,14 @@ const AboutPage = () => {
           </p>
           
           <div className="hero-actions">
-            <button 
-              className="cta-primary"
-              onClick={handleStartFree}
-            >
-              <span>지금 시작하기</span>
-              <div className="button-particles"></div>
-            </button>
+          {!isAuthenticated && (
+        <button
+          className="login-button"
+          onClick={() => loginWithRedirect()}
+        >
+          로그인 / 회원가입
+        </button>
+      )}
             <button 
               className="cta-secondary"
               onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}

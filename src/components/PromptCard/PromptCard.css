@@ -18,11 +18,8 @@
 }
 
 .prompt-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: 
-    0 16px 32px rgba(0, 0, 0, 0.4),
-    0 0 20px rgba(74, 158, 255, 0.3),
-    0 0 0 1px rgba(74, 158, 255, 0.5) inset;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 196, 204, 0.3);
   border-color: #4a9eff;
   z-index: 10;
 }

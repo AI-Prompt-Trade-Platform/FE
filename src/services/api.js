@@ -106,6 +106,22 @@ export const promptAPI = {
   getPromptById: (id) => 
     apiClient.get(`/prompts/${id}`),
   
+  // 프롬프트 상세 정보 조회 (구매 여부 포함)
+  getPromptDetail: (id) => 
+    apiClient.get(`/prompts/${id}`),
+  
+  // 프롬프트 리뷰 목록 조회
+  getPromptReviews: (id, page = 0, size = 10) => 
+    apiClient.get(`/api/reviews/${id}`),
+  
+  // 프롬프트 AI 평가 조회
+  getPromptAiEvaluation: (id) => 
+    apiClient.get(`/prompts/${id}/ai-evaluation`),
+  
+  // 프롬프트 이미지/썸네일 목록 조회
+  getPromptImages: (id) => 
+    apiClient.get(`/prompts/${id}/images`),
+  
   // 프롬프트 생성
   createPrompt: (promptData) => 
     apiClient.post('/prompts', promptData),

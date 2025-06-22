@@ -3,6 +3,8 @@ import StarryBackground from '../components/Background/StarryBackground';
 import UserProfileBanner from '../components/UserProfile/UserProfileBanner';
 import ProfileTabs from '../components/UserProfile/ProfileTabs';
 import PromptCarousel from '../components/PromptCarousel/PromptCarousel';
+import { useAuth } from '../contexts/AuthContext';
+import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
@@ -11,6 +13,9 @@ const ProfilePage = () => {
     const [error, setError] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
     const [updating, setUpdating] = useState(false);
+    const { loadingMessage, refreshMessage } = useLoadingMessage(true);
+    const shouldShowLoading = useMinimumLoadingTime(loading, 800);
+    const shouldShowUpdating = useMinimumLoadingTime(updating, 500);
 
     // 탭 데이터 상태 추가
     const [purchasedPrompts, setPurchasedPrompts] = useState([]);
@@ -24,14 +29,25 @@ const ProfilePage = () => {
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
 
-    // Auth0 토큰 (테스트용으로 유지)
-    const authToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InVsSVVkQWFOV3VJbmdqaFVqbVlrUiJ9.eyJpc3MiOiJodHRwczovL2Rldi1vbXVkdTQ2NWVtazN0MmpqLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJFN0w4VDRYVVZIRWRuSUhMS2hacGFlcGdMMlk5Z1h3Y0BjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9hcGkucHJ1bXB0LmxvY2FsIiwiaWF0IjoxNzUwNDA3MjAzLCJleHAiOjE3NTA0OTM2MDMsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsImF6cCI6IkU3TDhUNFhVVkhFZG5JSExLaFpwYWVwZ0wyWTlnWHdjIn0.SkE15UHNc9KmtPE264ZI2qKYZv_4D0EokUmDEoqTtVCCwaEjoDBRT8w904ed4sht5Wi1kC-HbIo1kzxAqPfvLDqN3jZYYr-tC8P0j8rAPAmyY_jkvbOJL_t-zd7lRdF-rwsxo34ttBjHicdnj9qvk-Mzg8EBz4Jr1WM9lbXeAPjX1FFUDo9EXSAinDETYxTIlBka45VLmutRyjzvM4IDpSgqrEZaCmLt2g0zFCYFE4fiIdUPufnUXtekQEvX4Dkdz6CQHC13TDU7eQ8SLdqQeaEkGzg0PHXfKMV9V7TS4mCkO5jwSn3y7Iruym8iZUWefpPti7fRfJp6CWI0nLoMpQ";
+    // Auth Context 사용
+    const { getAccessTokenSilently, isLoggedIn, isLoading, user } = useAuth();
 
     // 사용자 프로필 정보 가져오기
     const fetchUserProfile = async () => {
         try {
             setLoading(true);
             setError(null);
+            refreshMessage(); // 새로운 로딩 메시지 생성
+
+            // 인증되지 않은 경우 처리
+            if (!isLoggedIn) {
+                setError('로그인이 필요합니다.');
+                setLoading(false);
+                return;
+            }
+
+            // 유효한 토큰 가져오기
+            const authToken = await getAccessTokenSilently();
 
             const response = await fetch('http://localhost:8080/api/mypage/profile', {
                 method: 'GET',
@@ -59,6 +75,16 @@ const ProfilePage = () => {
         try {
             setTabLoading(true);
             setTabError(null);
+
+            // 인증되지 않은 경우 처리
+            if (!isLoggedIn) {
+                setTabError('로그인이 필요합니다.');
+                setTabLoading(false);
+                return;
+            }
+
+            // 유효한 토큰 가져오기
+            const authToken = await getAccessTokenSilently();
 
             const url = `http://localhost:8080/api/mypage/prompts/selling?page=${page}&size=${size}`;
             const response = await fetch(url, {
@@ -109,6 +135,16 @@ const ProfilePage = () => {
             setTabLoading(true);
             setTabError(null);
 
+            // 인증되지 않은 경우 처리
+            if (!isLoggedIn) {
+                setTabError('로그인이 필요합니다.');
+                setTabLoading(false);
+                return;
+            }
+
+            // 유효한 토큰 가져오기
+            const authToken = await getAccessTokenSilently();
+
             const url = `http://localhost:8080/api/mypage/prompts/purchased?page=${page}&size=${size}`;
             const response = await fetch(url, {
                 method: 'GET',
@@ -156,6 +192,16 @@ const ProfilePage = () => {
             setTabLoading(true);
             setTabError(null);
 
+            // 인증되지 않은 경우 처리
+            if (!isLoggedIn) {
+                setTabError('로그인이 필요합니다.');
+                setTabLoading(false);
+                return;
+            }
+
+            // 유효한 토큰 가져오기
+            const authToken = await getAccessTokenSilently();
+
             const url = `http://localhost:8080/api/mypage/monitoring?period=${period}`;
             const response = await fetch(url, {
                 method: 'GET',
@@ -188,23 +234,37 @@ const ProfilePage = () => {
     };
 
     useEffect(() => {
-        fetchUserProfile();
-    }, []);
+        // Auth가 로딩 중이 아닐 때만 실행
+        if (!isLoading) {
+            fetchUserProfile();
+        }
+    }, [isLoggedIn, isLoading]);
 
     // 탭 변경 시 해당 데이터 로드
     useEffect(() => {
-        if (activeTab === 'purchased') {
-            fetchPurchasedPrompts(0, pageSize); // 탭 변경 시 첫 페이지부터 로드
-        } else if (activeTab === 'selling') {
-            fetchSellingPrompts(0, pageSize); // 탭 변경 시 첫 페이지부터 로드
-        } else if (activeTab === 'summary') {
-            fetchSalesSummary();
+        // Auth가 로딩 중이 아니고 로그인된 상태일 때만 실행
+        if (!isLoading && isLoggedIn) {
+            if (activeTab === 'purchased') {
+                fetchPurchasedPrompts(0, pageSize); // 탭 변경 시 첫 페이지부터 로드
+            } else if (activeTab === 'selling') {
+                fetchSellingPrompts(0, pageSize); // 탭 변경 시 첫 페이지부터 로드
+            } else if (activeTab === 'summary') {
+                fetchSalesSummary();
+            }
         }
-    }, [activeTab]);
+    }, [activeTab, isLoggedIn, isLoading]);
 
     // 이미지 파일을 서버에 업로드하는 함수
     const uploadImage = async (file, type) => {
         if (!file) return null;
+
+        // 인증되지 않은 경우 처리
+        if (!isLoggedIn) {
+            throw new Error('로그인이 필요합니다.');
+        }
+
+        // 유효한 토큰 가져오기
+        const authToken = await getAccessTokenSilently();
 
         const formData = new FormData();
         formData.append('file', file);
@@ -237,6 +297,16 @@ const ProfilePage = () => {
     const handleProfileUpdate = async (updateData) => {
         try {
             setUpdating(true);
+
+            // 인증되지 않은 경우 처리
+            if (!isLoggedIn) {
+                alert('로그인이 필요합니다.');
+                setUpdating(false);
+                return;
+            }
+
+            // 유효한 토큰 가져오기
+            const authToken = await getAccessTokenSilently();
 
             let profileImgUrl = userProfile.profileImgUrl;
             let bannerImgUrl = userProfile.bannerImgUrl;
@@ -420,7 +490,7 @@ const ProfilePage = () => {
             return (
                 <div className="loading-container">
                     <div className="loading-spinner"></div>
-                    <p className="loading-message">데이터를 불러오는 중...</p>
+                    <p className="loading-message">{loadingMessage}</p>
                 </div>
             );
         }
@@ -440,22 +510,22 @@ const ProfilePage = () => {
         <div className="profile-page">
             <StarryBackground />
             <main className="profile-main">
-                {loading ? (
+                {shouldShowLoading ? (
                     <div className="loading-container">
                         <div className="loading-spinner"></div>
-                        <p className="loading-message">프로필 정보를 불러오는 중...</p>
+                        <p className="loading-message">{loadingMessage}</p>
                     </div>
-                ) : updating ? (
+                ) : shouldShowUpdating ? (
                     <div className="loading-container">
                         <div className="loading-spinner"></div>
-                        <p className="loading-message">프로필 정보를 업데이트하는 중...</p>
+                        <p className="loading-message">{loadingMessage}</p>
                     </div>
                 ) : error ? (
                     <div className="error-message">프로필 정보 불러오기 실패: {error}</div>
                 ) : (
                     <UserProfileBanner
                         userInfo={{
-                            name: userProfile?.profileName || '사용자',
+                            name: user?.name || user?.email || userProfile?.profileName || '사용자',
                             bio: userProfile?.introduction || '소개글이 없습니다.',
                         }}
                         profileImage={userProfile?.profileImgUrl}

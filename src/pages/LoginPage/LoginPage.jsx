@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
-import StarryBackground from '../../components/mainBackground/StarryBackground';
+import StarryBackground from '../../components/Background/StarryBackground';
 
 // 로그인 버튼 스니펫 (홈화면에 로그인버튼과 함께 옮겨야함)===================
 const LoginPage = () => {

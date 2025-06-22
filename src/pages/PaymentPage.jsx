@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarryBackground from '../components/Background/StarryBackground';
+import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
 import './PaymentPage.css';
 
 const PaymentPage = () => {
@@ -9,6 +10,8 @@ const PaymentPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(null);
+  const { loadingMessage, refreshMessage } = useLoadingMessage(true);
+  const shouldShowLoading = useMinimumLoadingTime(loading, 800);
   const navigate = useNavigate();
 
   // 인증 토큰 (실제 환경에서는 Auth 컨텍스트나 상태 관리 라이브러리에서 가져와야 함)
@@ -136,6 +139,8 @@ const PaymentPage = () => {
     }
 
     setLoading(true);
+    refreshMessage(); // 새로운 로딩 메시지 생성
+    
     const tossPayments = window.TossPayments('test_ck_Poxy1XQL8R1WlLW1eNDXr7nO5Wml');
     const orderId = 'order_' + new Date().getTime();
 
@@ -162,6 +167,13 @@ const PaymentPage = () => {
       <StarryBackground />
       <main className="payment-container">
         <h1 className="payment-title">포인트 충전</h1>
+
+        {shouldShowLoading && (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p className="loading-message">{loadingMessage}</p>
+          </div>
+        )}
 
         {paymentSuccess && (
           <div className="payment-success-message">
@@ -205,7 +217,7 @@ const PaymentPage = () => {
           onClick={handlePayment}
           disabled={loading || !userProfile}
         >
-          {loading ? '처리 중...' : '결제하기'}
+          {loading ? loadingMessage : '결제하기'}
         </button>
       </main>
     </div>

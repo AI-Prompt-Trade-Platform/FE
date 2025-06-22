@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import StarryBackground from '../components/Background/StarryBackground';
 import PromptCarousel from '../components/PromptCarousel/PromptCarousel';
+import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
 import './SearchPage.css';
 
 const SearchPage = () => {
@@ -11,6 +12,9 @@ const SearchPage = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [suggestedPrompts, setSuggestedPrompts] = useState([]);
   
+  const { loadingMessage, refreshMessage } = useLoadingMessage(true);
+  const shouldShowLoading = useMinimumLoadingTime(loading, 800);
+  const navigate = useNavigate();
   const location = useLocation();
   const query = new URLSearchParams(location.search).get('q') || '';
 
@@ -21,10 +25,13 @@ const SearchPage = () => {
   }, [query]);
 
   const performSearch = async (searchQuery) => {
-    setLoading(true);
-    setError('');
+    if (!searchQuery.trim()) return;
     
     try {
+      setLoading(true);
+      setError('');
+      refreshMessage();
+      
       const response = await fetch(`http://localhost:8080/api/home/prompts/search?keyword=${encodeURIComponent(searchQuery)}`);
       
       if (!response.ok) {
@@ -129,10 +136,10 @@ const SearchPage = () => {
 
         {/* 검색 결과 컨테이너 */}
         <div className="search-content">
-          {loading && (
+          {shouldShowLoading && (
             <div className="loading-state">
               <div className="loading-spinner"></div>
-              <p className="loading-text">검색 중...</p>
+              <p className="loading-text">{loadingMessage}</p>
             </div>
           )}
 

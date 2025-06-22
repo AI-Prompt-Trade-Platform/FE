@@ -3,41 +3,16 @@ import Banner from '../components/Banner/Banner';
 import PromptCarousel from '../components/PromptCarousel/PromptCarousel';
 import StarryBackground from '../components/Background/StarryBackground';
 import { promptAPI } from '../services/api';
+import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
 import './HomePage.css';
-
-const loadingMessages = [
-  'ChatGPT 일시키는 중... 🤖',
-  'Sora 째직질 당하는 중... 🏃‍♂️',
-  'AI가 커피 내리는 중... ☕️',
-  '프롬프트를 열심히 긁어오는 중... 🧹',
-  '별똥별에 소원 비는 중... 🌠',
-  '서버가 열심히 달리는 중... 🚀',
-  '프롬프트를 AI가 손질하는 중... ✂️',
-  'GPT가 머리 굴리는 중... 🧠',
-  '프롬프트에 마법 거는 중... ✨',
-  'AI가 야근하는 중... 🌙',
-  '서버가 스트레칭 중... 🧘‍♂️',
-  '프롬프트에 영혼을 불어넣는 중... 👻',
-  'GPT가 잠깐 딴짓하는 중... 😴',
-  'AI가 데이터 샤워 중... 🚿',
-  '프롬프트에 사랑을 담는 중... 💖',
-  '서버가 커피 타임 갖는 중... ☕️',
-  'AI가 영감을 찾는 중... 💡',
-  '프롬프트에 버그 잡는 중... 🐛',
-  'GPT가 농땡이 부리는 중... 🦥',
-  'AI가 프롬프트에 주문 거는 중... 🪄'
-];
-
-const getRandomLoadingMessage = () => {
-  return loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-};
 
 const HomePage = () => {
   const [popularPrompts, setPopularPrompts] = useState([]);
   const [latestPrompts, setLatestPrompts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [loadingMessage] = useState(getRandomLoadingMessage());
+  const { loadingMessage, refreshMessage } = useLoadingMessage(true);
+  const shouldShowLoading = useMinimumLoadingTime(loading, 1000); // 최소 1초 표시
 
   // 샘플 데이터 (백엔드 연결 실패 시 사용)
   const samplePopularPrompts = [
@@ -157,6 +132,7 @@ const HomePage = () => {
       try {
         setLoading(true);
         setError(null);
+        refreshMessage(); // 새로운 로딩 메시지 생성
         
         // 백엔드 API 호출 시도
         const [popularResponse, latestResponse] = await Promise.all([
@@ -185,9 +161,9 @@ const HomePage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [refreshMessage]);
 
-  if (loading) {
+  if (shouldShowLoading) {
     return (
       <div className="home-page">
         <StarryBackground />

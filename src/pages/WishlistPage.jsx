@@ -1,23 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import PromptSection from '../components/PromptSection/PromptSection';
 import StarryBackground from '../components/Background/StarryBackground';
+import { useAuth } from '../contexts/AuthContext';
+import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
 import './WishlistPage.css';
 
 const WishlistPage = () => {
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // Auth0 토큰 (테스트용으로 유지)
-    const authToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InVsSVVkQWFOV3VJbmdqaFVqbVlrUiJ9.eyJpc3MiOiJodHRwczovL2Rldi1vbXVkdTQ2NWVtazN0MmpqLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJFN0w4VDRYVVZIRWRuSUhMS2hacGFlcGdMMlk5Z1h3Y0BjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9hcGkucHJ1bXB0LmxvY2FsIiwiaWF0IjoxNzUwNDA3MjAzLCJleHAiOjE3NTA0OTM2MDMsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsImF6cCI6IkU3TDhUNFhVVkhFZG5JSExLaFpwYWVwZ0wyWTlnWHdjIn0.SkE15UHNc9KmtPE264ZI2qKYZv_4D0EokUmDEoqTtVCCwaEjoDBRT8w904ed4sht5Wi1kC-HbIo1kzxAqPfvLDqN3jZYYr-tC8P0j8rAPAmyY_jkvbOJL_t-zd7lRdF-rwsxo34ttBjHicdnj9qvk-Mzg8EBz4Jr1WM9lbXeAPjX1FFUDo9EXSAinDETYxTIlBka45VLmutRyjzvM4IDpSgqrEZaCmLt2g0zFCYFE4fiIdUPufnUXtekQEvX4Dkdz6CQHC13TDU7eQ8SLdqQeaEkGzg0PHXfKMV9V7TS4mCkO5jwSn3y7Iruym8iZUWefpPti7fRfJp6CWI0nLoMpQ";
+    const { getAccessTokenSilently, isLoggedIn, isLoading } = useAuth();
+    const { loadingMessage, refreshMessage } = useLoadingMessage(true);
+    const shouldShowLoading = useMinimumLoadingTime(loading, 800);
 
     useEffect(() => {
         const fetchWishlist = async () => {
             try {
                 setLoading(true);
+                refreshMessage(); // 새로운 로딩 메시지 생성
+                
+                // 디버깅용 로그
+                console.log('Auth 상태:', { isLoggedIn, isLoading });
+
+                // 인증되지 않은 경우 처리
+                if (!isLoggedIn) {
+                    console.log('로그인되지 않음, 에러 처리');
+                    setError('로그인이 필요합니다.');
+                    setLoading(false);
+                    return;
+                }
+
+                // 유효한 토큰 가져오기
+                const authToken = await getAccessTokenSilently();
 
                 // 위시리스트 API 호출
-                const wishlistUrl = 'http://localhost:8080/api/wishlist';
+                const wishlistUrl = '/api/wishlist';
                 console.log(`위시리스트 API 요청 시작: ${wishlistUrl}`);
 
                 const wishlistResponse = await fetch(wishlistUrl, {
@@ -68,18 +85,21 @@ const WishlistPage = () => {
             }
         };
 
-        fetchWishlist();
-    }, []);
+        // Auth가 로딩 중이 아닐 때만 실행
+        if (!isLoading) {
+            fetchWishlist();
+        }
+    }, [isLoggedIn, isLoading, getAccessTokenSilently]);
 
     return (
         <div className="wishlist-page">
             <StarryBackground />
             <main className="wishlist-main">
                 <div className="content-area">
-                    {loading ? (
+                    {shouldShowLoading ? (
                         <div className="loading-container">
                             <div className="loading-spinner"></div>
-                            <p className="loading-message">위시리스트를 불러오는 중...</p>
+                            <p className="loading-message">{loadingMessage}</p>
                         </div>
                     ) : error ? (
                         <div className="error-message">불러오기 실패: {error}</div>

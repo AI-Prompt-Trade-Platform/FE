@@ -25,6 +25,14 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
       navigate('/discover');
     } else if (item.name === '소개') {
       navigate('/about');
+    } else if (item.name === '프로필') {
+      navigate('/profile');
+    } else if (item.name === '대시보드') {
+      navigate('/monitoring');
+    } else if (item.name === '위시리스트') {
+      navigate('/wishlist');
+    } else if (item.name === '결제') {
+      navigate('/payment');
     }
     if (onItemClick) onItemClick();
   };
@@ -47,6 +55,10 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
     if (itemName === '홈' && location.pathname === '/') return true;
     if (itemName === '탐색' && location.pathname === '/discover') return true;
     if (itemName === '소개' && location.pathname === '/about') return true;
+    if (itemName === '프로필' && location.pathname === '/profile') return true;
+    if (itemName === '대시보드' && location.pathname === '/monitoring') return true;
+    if (itemName === '위시리스트' && location.pathname === '/wishlist') return true;
+    if (itemName === '결제' && location.pathname === '/payment') return true;
     return false;
   };
 
@@ -58,10 +70,10 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
 
   const loggedInItems = [
     { name: '홈', href: '#', active: getActiveState('홈'), icon: '🏠' },
-    { name: '프로필', href: '#', icon: '👤' },
-    { name: '대시보드', href: '#', icon: '📊' },
-    { name: '위시리스트', href: '#', icon: '❤️' },
-    { name: '결제', href: '#', icon: '💳' }
+    { name: '프로필', href: '#', active: getActiveState('프로필'), icon: '👤' },
+    { name: '대시보드', href: '#', active: getActiveState('대시보드'), icon: '📊' },
+    { name: '위시리스트', href: '#', active: getActiveState('위시리스트'), icon: '❤️' },
+    { name: '결제', href: '#', active: getActiveState('결제'), icon: '💳' }
   ];
 
   const navItems = isLoggedIn ? loggedInItems : loggedOutItems;

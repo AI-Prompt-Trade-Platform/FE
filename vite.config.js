@@ -13,10 +13,6 @@ export default defineConfig({
       }
     }
   },
-  define: {
-    'import.meta.env.VITE_AUTH0_DOMAIN': JSON.stringify('dev-q64r0n0blzhir6y0.us.auth0.com'),
-    'import.meta.env.VITE_AUTH0_CLIENT_ID': JSON.stringify('your-client-id-here'),
-    'import.meta.env.VITE_AUTH0_AUDIENCE': JSON.stringify('https://api.prumpt.local'),
-    'import.meta.env.VITE_API_URL': JSON.stringify('http://localhost:8080/api'),
-  }
+  // define 섹션 제거 - .env 파일이 정상적으로 로드되도록 함
+  // 환경변수는 .env 파일에서 관리됩니다
 })

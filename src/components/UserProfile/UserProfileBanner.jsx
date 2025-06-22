@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import './UserProfileBanner.css';
 
 const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerImage, onProfileUpdate }) => {
@@ -8,6 +9,7 @@ const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerIma
     const [previewAvatarImage, setPreviewAvatarImage] = useState(avatarImage);
     const [bannerFile, setBannerFile] = useState(null);
     const [avatarFile, setAvatarFile] = useState(null);
+    const { user } = useAuth();
     
     const fileInputRef = useRef(null);
     const avatarInputRef = useRef(null);
@@ -177,6 +179,12 @@ const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerIma
         setEditInfo(prev => ({ ...prev, [name]: value }));
     };
 
+    // 실제 사용자 이름을 가져오는 함수
+    const getDisplayName = () => {
+        // Auth Context의 user 정보를 우선 사용 (소셜 로그인에서 가져온 실제 이름)
+        return user?.name || user?.email || userInfo.name || '사용자';
+    };
+
     return (
         <div className="user-profile-banner">
             <div 
@@ -212,7 +220,7 @@ const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerIma
                     {isEditing ? (
                         <div className="profile-edit-form">
                             {/* 이름 필드를 프로필 이름과 동일한 스타일로 표시 */}
-                            <h2 className="readonly-name">{userInfo.name || '사용자'}</h2>
+                            <h2 className="readonly-name">{getDisplayName()}</h2>
                             <textarea
                                 name="bio"
                                 value={editInfo.bio}
@@ -227,7 +235,7 @@ const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerIma
                         </div>
                     ) : (
                         <>
-                            <h2 className="profile-name">{userInfo.name || '사용자'}</h2>
+                            <h2 className="profile-name">{getDisplayName()}</h2>
                             <p className="profile-bio">{userInfo.bio || '소개글이 없습니다.'}</p>
                             <button onClick={handleEditClick} className="edit-profile-button">
                                 프로필 수정
@@ -246,7 +254,7 @@ const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerIma
                         <img src={previewAvatarImage} alt="프로필 아바타" className="avatar-image" />
                     ) : (
                         <div className="avatar-circle">
-                            {(userInfo.name || '사용자').charAt(0).toUpperCase()}
+                            {getDisplayName().charAt(0).toUpperCase()}
                         </div>
                     )}
                     <input
