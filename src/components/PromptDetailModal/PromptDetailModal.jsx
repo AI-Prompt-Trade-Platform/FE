@@ -12,6 +12,20 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [error, setError] = useState(null);
 
+  // 모달 열릴 때 배경 스크롤 막기
+  useEffect(() => {
+    // 현재 body의 overflow 상태 저장
+    const originalOverflow = document.body.style.overflow;
+    
+    // 배경 스크롤 막기
+    document.body.style.overflow = 'hidden';
+    
+    // 컴포넌트 언마운트 시 원래 상태로 복원
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   useEffect(() => {
     if (promptId) {
       fetchPromptData();
@@ -73,6 +87,20 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
             comment: "대체로 만족스럽지만 몇 가지 개선이 필요합니다.",
             author: "creator456", 
             createdAt: "1주일 전"
+          },
+          {
+            id: 3,
+            rating: 4,
+            comment: "대체로 만족스럽지만 몇 가지 개선이 필요합니다.",
+            author: "creator456", 
+            createdAt: "1주일 전"
+          },
+          {
+            id: 4,
+            rating: 4,
+            comment: "대체로 만족스럽지만 몇 가지 개선이 필요합니다.",
+            author: "creator456", 
+            createdAt: "1주일 전"
           }
         ]);
       }
@@ -96,8 +124,9 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
         console.warn('이미지 데이터 로드 실패:', imagesResponse.reason);
         // 샘플 이미지 데이터
         setImages([
-          { id: 1, url: '/placeholder-image-1.jpg', alt: '프롬프트 이미지 1' },
-          { id: 2, url: '/placeholder-image-2.jpg', alt: '프롬프트 이미지 2' }
+          { id: 1, url: 'https://picsum.photos/seed/prompt1/1200/200', alt: '프롬프트 예시 이미지 1' },
+          { id: 2, url: 'https://picsum.photos/seed/prompt2/1200/200', alt: '프롬프트 예시 이미지 2' },
+          { id: 3, url: 'https://picsum.photos/seed/prompt3/1200/200', alt: '프롬프트 예시 이미지 3' }
         ]);
       }
 

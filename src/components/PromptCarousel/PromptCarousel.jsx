@@ -112,20 +112,26 @@ const PromptCarousel = ({ prompts, title }) => {
           </div>
         </div>
         <div className="carousel-track-wrapper">
-          <div
-            ref={trackRef}
-            className="carousel-track"
-            style={{ transform: `translateX(-${current * (100 / visibleCount)}%)` }}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            {prompts.map((prompt) => (
-              <div className="carousel-slide" key={prompt.id} style={{ width: `${100 / visibleCount}%` }}>
-                <PromptCard prompt={prompt} onClick={handlePromptClick} />
-              </div>
-            ))}
-          </div>
+          {prompts && prompts.length > 0 ? (
+            <div
+              ref={trackRef}
+              className="carousel-track"
+              style={{ transform: `translateX(-${current * (100 / visibleCount)}%)` }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {prompts.map((prompt) => (
+                <div className="carousel-slide" key={prompt.id} style={{ width: `${100 / visibleCount}%` }}>
+                  <PromptCard prompt={prompt} onClick={handlePromptClick} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="carousel-empty">
+              <p>✨ 표시할 프롬프트가 없습니다. ✨</p>
+            </div>
+          )}
         </div>
       </section>
 

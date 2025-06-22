@@ -134,4 +134,23 @@
   .carousel-track-wrapper {
     padding: 6px 0 12px 0;
   }
+}
+
+.carousel-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 200px; /* 카드와 비슷한 높이 */
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #999;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.carousel-empty p {
+  padding: 20px;
+  text-align: center;
 } 
