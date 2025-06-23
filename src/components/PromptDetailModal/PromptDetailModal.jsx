@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { promptAPI, userAPI, setAuthToken } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAlert } from '../../contexts/AlertContext';
 import './PromptDetailModal.css';
 
 const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
   const { user, getAccessTokenSilently } = useAuth();
+  const { showSuccess, showError } = useAlert();
   const [isClosing, setIsClosing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [promptDetail, setPromptDetail] = useState(null);
@@ -38,6 +40,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       setError(null);
       
       const promptData = await promptAPI.getPromptById(promptId);
+      console.log('PromptDetailModal - API 응답 데이터:', promptData);
 
       setPromptDetail({
         id: promptData.id,
@@ -64,14 +67,63 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
         setReviews([]);
       }
 
-      const gradeMap = { A: '프리미엄', B: 'Excellent', C: 'Good', D: 'Standard' };
+      // AI 등급 설정 - 등급과 이유 분리
+      const gradeMap = { 
+        'A': 'Excellent', 
+        'B': 'Good', 
+        'C': 'Standard', 
+        'D': 'Basic'
+      };
+      
+      // 다양한 필드명 확인
+      const aiGradeData = promptData.aiInspectionRate || 
+                         promptData.ai_inspection_rate || 
+                         promptData.aiGrade ||
+                         promptData.ai_grade ||
+                         promptData.grade ||
+                         promptData.aiRating ||
+                         promptData.ai_rating ||
+                         null;
+      
+      console.log('AI 등급 원본 데이터:', aiGradeData);
+      
+      // 등급과 이유 분리 (예: "A - 우수한 구조와 명확한 지시사항")
+      let grade = 'N/A';
+      let reason = '';
+      
+      if (aiGradeData) {
+        const gradeStr = aiGradeData.toString();
+        if (gradeStr.includes(' - ')) {
+          const parts = gradeStr.split(' - ');
+          grade = gradeMap[parts[0].trim().toUpperCase()] || parts[0].trim();
+          reason = parts[1].trim();
+        } else {
+          // 등급만 있는 경우
+          grade = gradeMap[gradeStr.trim().toUpperCase()] || gradeStr.trim();
+        }
+      }
+      
       setAiEvaluation({
-        grade: gradeMap[promptData.aiInspectionRate] || 'N/A',
+        grade: grade,
+        reason: reason,
+        raw: aiGradeData
       });
 
       if (promptData.thumbnailImageUrl) {
-        setExamples([{ url: promptData.thumbnailImageUrl, type: 'image' }]);
+        console.log('🖼️ 썸네일 URL:', promptData.thumbnailImageUrl);
+        console.log('🔗 URL 타입 확인:', typeof promptData.thumbnailImageUrl);
+        
+        // S3 URL을 CloudFront URL로 변환 (필요한 경우)
+        let imageUrl = promptData.thumbnailImageUrl;
+        if (imageUrl.includes('.s3.') || imageUrl.includes('s3.amazonaws.com')) {
+          console.log('⚠️ S3 직접 URL 감지 - CloudFront URL로 변환 필요');
+          // 여기에 CloudFront 도메인으로 변환하는 로직 추가 필요
+          // 예: imageUrl = imageUrl.replace('버킷명.s3.리전.amazonaws.com', 'CloudFront도메인');
+        }
+        
+        setExamples([{ url: imageUrl, type: 'image' }]);
       } else {
+        console.log('❌ thumbnailImageUrl이 없습니다');
         // API 응답에 examples 배열이 있을 경우를 대비한 로직 (확장성)
         setExamples(promptData.examples || []);
       }
@@ -99,7 +151,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       await promptAPI.purchasePrompt(promptId);
       
       // 3. 성공 처리
-      alert('프롬프트 구매가 완료되었습니다!');
+      showSuccess('프롬프트 구매가 완료되었습니다!');
       onPurchase?.(promptId);
       fetchPromptData(); // 최신 데이터로 다시 로드
 
@@ -109,7 +161,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       const errorMessage = err.message.includes('402') 
         ? '포인트가 부족합니다. 포인트를 충전해주세요.'
         : '구매 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
-      alert(errorMessage);
+      showError(errorMessage);
     }
   };
 
@@ -121,14 +173,14 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       await userAPI.addToWishlist(promptId); // Add/Remove API is the same
 
       if (promptDetail.bookmarked) {
-        alert('위시리스트에서 삭제되었습니다.');
+        showSuccess('위시리스트에서 삭제되었습니다.');
       } else {
-        alert('위시리스트에 추가되었습니다.');
+        showSuccess('위시리스트에 추가되었습니다.');
       }
       setPromptDetail(prev => ({ ...prev, bookmarked: !prev.bookmarked }));
     } catch (err) {
       console.error('위시리스트 처리 중 오류:', err);
-      alert('위시리스트 처리 중 오류가 발생했습니다.');
+      showError('위시리스트 처리 중 오류가 발생했습니다.');
     } finally {
       setIsTogglingWishlist(false);
     }
@@ -141,7 +193,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
         setTimeout(() => setIsCopied(false), 2000); // 2초 후 초기 상태로
       }, (err) => {
         console.error('클립보드 복사 실패:', err);
-        alert('프롬프트를 복사하는데 실패했습니다.');
+        showError('프롬프트를 복사하는데 실패했습니다.');
       });
     }
   };
@@ -204,9 +256,10 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
   
   const getGradeClass = (grade) => {
     const gradeLower = grade?.toLowerCase() || 'none';
-    if (gradeLower.includes('premium')) return 'grade-premium';
     if (gradeLower.includes('excellent')) return 'grade-excellent';
     if (gradeLower.includes('good')) return 'grade-good';
+    if (gradeLower.includes('standard')) return 'grade-standard';
+    if (gradeLower.includes('basic')) return 'grade-basic';
     return 'grade-standard';
   }
 
@@ -254,7 +307,21 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
           {examples.length > 0 ? (
             <div className="example-carousel">
               {getFileType(examples[currentExampleIndex]?.url) === 'image' && (
-                <img src={examples[currentExampleIndex].url} alt={`Example ${currentExampleIndex + 1}`} className="example-media" />
+                <img 
+                  src={examples[currentExampleIndex].url} 
+                  alt={`Example ${currentExampleIndex + 1}`} 
+                  className="example-media"
+                  onError={(e) => {
+                    console.error('🚫 이미지 로딩 실패:', e.target.src);
+                    console.error('🚫 에러 상세:', e);
+                    // 대체 이미지로 교체
+                    e.target.src = '/default-thumbnail.png';
+                    // 또는 부모 요소를 플레이스홀더로 교체
+                  }}
+                  onLoad={() => {
+                    console.log('✅ 이미지 로딩 성공:', examples[currentExampleIndex].url);
+                  }}
+                />
               )}
               {getFileType(examples[currentExampleIndex]?.url) === 'video' && (
                 <video src={examples[currentExampleIndex].url} controls autoPlay muted loop className="example-media" />
@@ -290,6 +357,16 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
               AI 등급: {aiEvaluation?.grade || 'N/A'}
             </div>
            </div>
+
+           {/* AI 평가 이유 섹션 - 이유가 있을 때만 표시 */}
+           {aiEvaluation?.reason && (
+             <div className="ai-evaluation-section">
+               <div className="ai-evaluation-reason">
+                 <span className="reason-label">AI 평가:</span>
+                 <span className="reason-text">{aiEvaluation.reason}</span>
+               </div>
+             </div>
+           )}
 
            <div className="purchase-section">
               <div className="price-info">

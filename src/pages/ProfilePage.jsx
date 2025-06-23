@@ -5,6 +5,7 @@ import ProfileTabs from '../components/UserProfile/ProfileTabs';
 import PromptCarousel from '../components/PromptCarousel/PromptCarousel';
 import PromptDetailModal from '../components/PromptDetailModal/PromptDetailModal';
 import { useAuth } from '../contexts/AuthContext';
+import { useAlert } from '../contexts/AlertContext';
 import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
 import './ProfilePage.css';
 
@@ -36,6 +37,7 @@ const ProfilePage = () => {
 
     // Auth Context 사용
     const { getAccessTokenSilently, isLoggedIn, isLoading, user } = useAuth();
+    const { showError, showSuccess } = useAlert();
 
     // 사용자 프로필 정보 가져오기
     const fetchUserProfile = async () => {
@@ -108,18 +110,31 @@ const ProfilePage = () => {
             console.log('판매 중인 프롬프트 데이터:', data);
             
             // 백엔드에서 제공하는 데이터를 프론트엔드 구조에 맞게 변환
-            const formattedPrompts = data.content.map(prompt => ({
-                id: prompt.id, // promptId -> id
-                title: prompt.title || '제목 없음', // promptName -> title
-                description: prompt.description || '설명 없음',
-                category: prompt.categories?.typeName || '기타',
-                rating: prompt.averageRating || 0,
-                price: prompt.price || 0,
-                author: { name: prompt.ownerProfileName || userProfile?.profileName || '내 프롬프트' },
-                thumbnail: prompt.thumbnailImageUrl || '/default-thumbnail.png',
-                tags: prompt.hashTags || [],
-                downloads: prompt.salesCount || 0,
-            }));
+            const formattedPrompts = data.content.map(prompt => {
+                // AI 등급 데이터 확인 - 다양한 필드명 지원
+                const aiGradeData = prompt.aiInspectionRate || 
+                                   prompt.ai_inspection_rate || 
+                                   prompt.aiGrade ||
+                                   prompt.ai_grade ||
+                                   prompt.grade ||
+                                   prompt.aiRating ||
+                                   prompt.ai_rating ||
+                                   null;
+                
+                return {
+                    id: prompt.id, // promptId -> id
+                    title: prompt.title || '제목 없음', // promptName -> title
+                    description: prompt.description || '설명 없음',
+                    category: prompt.categories?.typeName || '기타',
+                    rating: prompt.averageRating || 0,
+                    price: prompt.price || 0,
+                    author: { name: prompt.ownerProfileName || userProfile?.profileName || '내 프롬프트' },
+                    thumbnail: prompt.thumbnailImageUrl || '/default-thumbnail.png',
+                    tags: prompt.hashTags || [],
+                    downloads: prompt.salesCount || 0,
+                    aiInspectionRate: aiGradeData
+                };
+            });
             
             setSellingPrompts(formattedPrompts);
             setTotalPages(data.totalPages || 0);
@@ -164,19 +179,32 @@ const ProfilePage = () => {
             console.log('구매한 프롬프트 데이터:', data);
             
             // 백엔드에서 제공하는 데이터를 직접 활용
-            const formattedPrompts = data.content.map(prompt => ({
-                id: prompt.promptId,
-                title: prompt.promptName || '제목 없음',
-                description: prompt.description || '설명 없음',
-                category: prompt.typeCategory || '기타',
-                rating: prompt.rate || parseFloat(prompt.aiInspectionRate) || 0,
-                price: prompt.price || 0,
-                author: { name: prompt.ownerProfileName || '판매자 정보 없음' },
-                thumbnail: prompt.thumbnailImageUrl || '/default-thumbnail.png',
-                tags: prompt.hashTags || [],
-                downloads: prompt.salesCount || 0,
-                purchasedAt: prompt.purchasedAt
-            }));
+            const formattedPrompts = data.content.map(prompt => {
+                // AI 등급 데이터 확인 - 다양한 필드명 지원
+                const aiGradeData = prompt.aiInspectionRate || 
+                                   prompt.ai_inspection_rate || 
+                                   prompt.aiGrade ||
+                                   prompt.ai_grade ||
+                                   prompt.grade ||
+                                   prompt.aiRating ||
+                                   prompt.ai_rating ||
+                                   null;
+                
+                return {
+                    id: prompt.promptId,
+                    title: prompt.promptName || '제목 없음',
+                    description: prompt.description || '설명 없음',
+                    category: prompt.typeCategory || '기타',
+                    rating: prompt.rate || parseFloat(prompt.aiInspectionRate) || 0,
+                    price: prompt.price || 0,
+                    author: { name: prompt.ownerProfileName || '판매자 정보 없음' },
+                    thumbnail: prompt.thumbnailImageUrl || '/default-thumbnail.png',
+                    tags: prompt.hashTags || [],
+                    downloads: prompt.salesCount || 0,
+                    purchasedAt: prompt.purchasedAt,
+                    aiInspectionRate: aiGradeData
+                };
+            });
             
             setPurchasedPrompts(formattedPrompts);
             setTotalPages(data.totalPages || 0);
@@ -227,9 +255,22 @@ const ProfilePage = () => {
     };
 
     // 카드 클릭 핸들러
-    const handleCardClick = (promptId) => {
-        setSelectedPromptId(promptId);
-        setIsModalOpen(true);
+    const handleCardClick = (prompt) => {
+        // 로그인 확인
+        if (!isLoggedIn) {
+            showError('로그인이 필요한 서비스입니다. 로그인 후 다시 시도해주세요.');
+            return;
+        }
+        
+        // prompt 객체에서 id 추출
+        const promptId = prompt.id || prompt.promptId;
+        if (promptId) {
+            setSelectedPromptId(promptId);
+            setIsModalOpen(true);
+        } else {
+            console.error('프롬프트 ID를 찾을 수 없습니다:', prompt);
+            showError('프롬프트 정보를 불러올 수 없습니다.');
+        }
     };
 
     // 모달 닫기 핸들러
@@ -268,53 +309,25 @@ const ProfilePage = () => {
         }
     }, [activeTab, isLoggedIn, isLoading]);
 
-    // 이미지 파일을 서버에 업로드하는 함수
-    const uploadImage = async (file, type) => {
-        if (!file) return null;
 
-        // 인증되지 않은 경우 처리
-        if (!isLoggedIn) {
-            throw new Error('로그인이 필요합니다.');
-        }
-
-        // 유효한 토큰 가져오기
-        const authToken = await getAccessTokenSilently();
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('type', type); // 'profile' 또는 'banner'
-
-        try {
-            // 이미지 업로드 API 엔드포인트
-            const uploadUrl = '/api/upload';
-            const response = await fetch(uploadUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`이미지 업로드 실패: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data.imageUrl; // 업로드된 이미지 URL 반환
-        } catch (error) {
-            console.error(`${type} 이미지 업로드 오류:`, error);
-            throw error;
-        }
-    };
 
     // 프로필 업데이트 처리 함수
     const handleProfileUpdate = async (updateData) => {
         try {
             setUpdating(true);
+            
+            console.log('🔍 handleProfileUpdate 시작');
+            console.log('📝 받은 updateData:', updateData);
+            console.log('📝 updateData 타입 체크:', {
+                profileName: typeof updateData.profileName,
+                introduction: typeof updateData.introduction,
+                avatarFile: typeof updateData.avatarFile,
+                bannerFile: typeof updateData.bannerFile
+            });
 
             // 인증되지 않은 경우 처리
             if (!isLoggedIn) {
-                alert('로그인이 필요합니다.');
+                showError('로그인이 필요합니다.');
                 setUpdating(false);
                 return;
             }
@@ -322,31 +335,35 @@ const ProfilePage = () => {
             // 유효한 토큰 가져오기
             const authToken = await getAccessTokenSilently();
 
-            let profileImgUrl = userProfile.profileImgUrl;
-            let bannerImgUrl = userProfile.bannerImgUrl;
-
-            // 1. 이미지 파일 업로드
+            // FormData로 파일과 함께 전송
+            const formData = new FormData();
+            formData.append('profileName', updateData.profileName);
+            formData.append('introduction', updateData.introduction);
+            
+            // 파일이 있으면 추가
             if (updateData.avatarFile) {
-                profileImgUrl = await uploadImage(updateData.avatarFile, 'profile');
+                console.log('📷 아바타 파일 추가:', updateData.avatarFile);
+                formData.append('profileImg', updateData.avatarFile);
             }
             if (updateData.bannerFile) {
-                bannerImgUrl = await uploadImage(updateData.bannerFile, 'banner');
+                console.log('🖼️ 배너 파일 추가:', updateData.bannerFile);
+                formData.append('bannerImg', updateData.bannerFile);
             }
             
-            // 2. 프로필 정보 업데이트
+            console.log('📤 FormData로 전송할 데이터:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`  ${key}:`, value instanceof File ? `파일(${value.name})` : value);
+            }
+            
+            // FormData로 프로필 정보 업데이트
             const updateUrl = '/api/mypage/me/profile/update';
             const updateResponse = await fetch(updateUrl, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${authToken}`
+                    // Content-Type을 설정하지 않음 (FormData가 자동으로 multipart/form-data 설정)
                 },
-                body: JSON.stringify({
-                    profileName: updateData.profileName,
-                    introduction: updateData.introduction,
-                    profileImgUrl: profileImgUrl,
-                    bannerImgUrl: bannerImgUrl
-                })
+                body: formData
             });
             if (!updateResponse.ok) {
                 const errorText = await updateResponse.text();
@@ -361,10 +378,10 @@ const ProfilePage = () => {
             setUserProfile(updatedProfile);
 
             // 성공 메시지 표시
-            alert('프로필이 성공적으로 업데이트되었습니다.');
+            showSuccess('프로필이 성공적으로 업데이트되었습니다.');
         } catch (err) {
             console.error('프로필 업데이트 오류:', err);
-            alert(`프로필 업데이트 실패: ${err.message || '알 수 없는 오류'}`);
+            showError(`프로필 업데이트 실패: ${err.message || '알 수 없는 오류'}`);
             throw err;
         } finally {
             setUpdating(false);

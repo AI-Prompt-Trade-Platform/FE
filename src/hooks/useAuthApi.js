@@ -14,11 +14,16 @@ export function useAuthApi() {
         const token = await getAccessTokenSilently();
 
         // 2) 헤더 설정 병합
+        // FormData를 보낼 때는 Content-Type을 설정하지 않음
         const headers = {
-            'Content-Type': 'application/json',
             ...fetchOptions.headers,
             Authorization: `Bearer ${token}`,
         };
+        
+        // FormData가 아닌 경우에만 Content-Type 설정
+        if (!(fetchOptions.body instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
 
         // 3) API 호출
         const res = await fetch(endpoint, {

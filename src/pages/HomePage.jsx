@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Banner from '../components/Banner/Banner';
 import PromptCarousel from '../components/PromptCarousel/PromptCarousel';
 import StarryBackground from '../components/Background/StarryBackground';
+import PromptDetailModal from '../components/PromptDetailModal/PromptDetailModal';
+import LoginRequiredModal from '../components/auth/LoginRequiredModal';
 import { promptAPI } from '../services/api';
 import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
+import { useAuth } from '../contexts/AuthContext';
+import { useAlert } from '../contexts/AlertContext';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -11,8 +15,50 @@ const HomePage = () => {
   const [latestPrompts, setLatestPrompts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedPromptId, setSelectedPromptId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { loadingMessage, refreshMessage } = useLoadingMessage(true);
   const shouldShowLoading = useMinimumLoadingTime(loading, 1000); // 최소 1초 표시
+  const { isLoggedIn, login } = useAuth();
+  const { showError } = useAlert();
+
+  // 카드 클릭 핸들러
+  const handleCardClick = (prompt) => {
+    // 로그인 확인
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    
+    // prompt 객체에서 id 추출
+    const promptId = prompt.id || prompt.promptId;
+    if (promptId) {
+      setSelectedPromptId(promptId);
+      setIsModalOpen(true);
+    } else {
+      console.error('프롬프트 ID를 찾을 수 없습니다:', prompt);
+      showError('프롬프트 정보를 불러올 수 없습니다.');
+    }
+  };
+
+  // 모달 닫기 핸들러
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPromptId(null);
+  };
+
+  // 로그인 모달 핸들러
+  const handleCloseLoginModal = () => {
+    setIsLoginModalOpen(false);
+  };
+
+  const handleLoginRedirect = () => {
+    // Auth0 로그인 실행
+    login();
+    // 모달 닫기
+    setIsLoginModalOpen(false);
+  };
 
   // 백엔드 데이터를 프론트엔드 구조에 맞게 변환하는 함수
   const transformBackendData = (backendData) => {
@@ -28,7 +74,8 @@ const HomePage = () => {
       author: item.author || item.ownerProfileName || '작성자 미상',
       downloads: item.downloads || item.salesCount || 0,
       tags: item.tags || item.hashTags || [],
-      thumbnail: item.thumbnail || item.thumbnailImageUrl || null
+      thumbnail: item.thumbnail || item.thumbnailImageUrl || null,
+      aiInspectionRate: item.aiInspectionRate || null
     }));
   };
 
@@ -41,8 +88,8 @@ const HomePage = () => {
         
         // Promise.all을 allSettled로 변경하여 일부 API 실패에 대응
         const results = await Promise.allSettled([
-          promptAPI.getPopularPrompts(8),
-          promptAPI.getLatestPrompts(8)
+          promptAPI.getPopularPrompts(10),
+          promptAPI.getLatestPrompts(10)
         ]);
 
         console.log('백엔드 API 호출 결과:', results);
@@ -52,6 +99,7 @@ const HomePage = () => {
         
         if (popularResult.status === 'fulfilled') {
           const transformedPopular = transformBackendData(popularResult.value);
+          console.log('홈페이지 - 인기 프롬프트 목록:', transformedPopular.map(p => ({ id: p.id, title: p.title })));
           setPopularPrompts(transformedPopular);
         } else {
           console.error('인기 프롬프트 로드 실패:', popularResult.reason);
@@ -60,6 +108,7 @@ const HomePage = () => {
 
         if (latestResult.status === 'fulfilled') {
           const transformedLatest = transformBackendData(latestResult.value);
+          console.log('홈페이지 - 최신 프롬프트 목록:', transformedLatest.map(p => ({ id: p.id, title: p.title })));
           setLatestPrompts(transformedLatest);
         } else {
           console.error('최신 프롬프트 로드 실패:', latestResult.reason);
@@ -106,13 +155,31 @@ const HomePage = () => {
           <PromptCarousel 
             title="🔥 인기 프롬프트" 
             prompts={popularPrompts}
+            onCardClick={handleCardClick}
           />
           <PromptCarousel 
             title="✨ 최신 프롬프트" 
             prompts={latestPrompts}
+            onCardClick={handleCardClick}
           />
         </div>
       </main>
+      
+      {/* 프롬프트 상세 모달 */}
+      {isModalOpen && selectedPromptId && (
+        <PromptDetailModal
+          promptId={selectedPromptId}
+          onClose={handleCloseModal}
+        />
+      )}
+
+      {isLoginModalOpen && (
+        <LoginRequiredModal
+          isOpen={isLoginModalOpen}
+          onClose={handleCloseLoginModal}
+          onLogin={handleLoginRedirect}
+        />
+      )}
     </div>
   );
 };

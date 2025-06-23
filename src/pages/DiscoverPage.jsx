@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarryBackground from '../components/Background/StarryBackground';
 import PromptCard from '../components/PromptCard/PromptCard';
+import PromptDetailModal from '../components/PromptDetailModal/PromptDetailModal';
+import LoginRequiredModal from '../components/auth/LoginRequiredModal';
+import { useAuth } from '../contexts/AuthContext';
 import './DiscoverPage.css';
 
 const DiscoverPage = () => {
@@ -10,6 +13,10 @@ const DiscoverPage = () => {
   const [answers, setAnswers] = useState({});
   const [recommendedPrompt, setRecommendedPrompt] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedPromptId, setSelectedPromptId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { isLoggedIn, login } = useAuth();
 
   // 질문 데이터
   const questions = [
@@ -83,7 +90,8 @@ const DiscoverPage = () => {
           author: item.author || item.ownerProfileName || '작성자 미상',
           downloads: item.downloads || item.salesCount || 0,
           tags: item.tags || item.hashTags || [],
-          thumbnail: item.thumbnail || item.thumbnailImageUrl || null
+          thumbnail: item.thumbnail || item.thumbnailImageUrl || null,
+          aiInspectionRate: item.aiInspectionRate || null
         }));
       };
       
@@ -386,6 +394,43 @@ const DiscoverPage = () => {
 
   const currentQuestion = questions[currentStep];
 
+  // 카드 클릭 핸들러
+  const handleCardClick = (prompt) => {
+    // 로그인 확인
+    if (!isLoggedIn) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    
+    // prompt 객체에서 id 추출
+    const promptId = prompt.id || prompt.promptId;
+    if (promptId) {
+      setSelectedPromptId(promptId);
+      setIsModalOpen(true);
+    } else {
+      console.error('프롬프트 ID를 찾을 수 없습니다:', prompt);
+      alert('프롬프트 정보를 불러올 수 없습니다.');
+    }
+  };
+
+  // 모달 닫기 핸들러
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPromptId(null);
+  };
+
+  // 로그인 모달 핸들러
+  const handleCloseLoginModal = () => {
+    setIsLoginModalOpen(false);
+  };
+
+  const handleLoginRedirect = () => {
+    // Auth0 로그인 실행
+    login();
+    // 모달 닫기
+    setIsLoginModalOpen(false);
+  };
+
   return (
     <div className="discover-page">
       <StarryBackground />
@@ -472,7 +517,7 @@ const DiscoverPage = () => {
             </div>
 
             <div className="recommended-prompt">
-              <PromptCard prompt={recommendedPrompt} />
+              <PromptCard prompt={recommendedPrompt} onClick={handleCardClick} />
             </div>
 
             <div className="recommendation-actions">
@@ -498,6 +543,23 @@ const DiscoverPage = () => {
           </div>
         )}
       </div>
+
+      {/* 프롬프트 상세 모달 */}
+      {isModalOpen && selectedPromptId && (
+        <PromptDetailModal
+          promptId={selectedPromptId}
+          onClose={handleCloseModal}
+        />
+      )}
+
+      {/* 로그인 모달 */}
+      {isLoginModalOpen && (
+        <LoginRequiredModal
+          isOpen={isLoginModalOpen}
+          onClose={handleCloseLoginModal}
+          onLogin={handleLoginRedirect}
+        />
+      )}
     </div>
   );
 };

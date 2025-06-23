@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAlert } from '../../contexts/AlertContext';
 import PromptCard from '../../components/PromptCard/PromptCard';
 import './PromptRegisterPage.css';
 import { useAuthApi } from '../../hooks/useAuthApi';
+import { useAuth } from '../../contexts/AuthContext';
 import { useDropzone } from 'react-dropzone';
 
 // 예시 카테고리
@@ -30,6 +32,7 @@ const initialForm = {
 
 const PromptRegisterPage = () => {
   const navigate = useNavigate();
+  const { showSuccess } = useAlert();
   const [form, setForm] = useState(initialForm);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
@@ -115,17 +118,17 @@ const PromptRegisterPage = () => {
       formData.append('modelCategoryIds', form.modelCategoryId);
       formData.append('typeCategoryIds', form.typeCategoryId);
 
+      // useAuthApi의 authFetch를 사용
       const response = await authFetch('/api/prompts', {
         method: 'POST',
         body: formData,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: '응답 처리 중 오류 발생' }));
-        throw new Error(errorData.message || '프롬프트 등록에 실패했습니다.');
-      }
+      // authFetch가 자동으로 JSON 파싱을 시도하므로, 
+      // 성공 시에는 response가 이미 파싱된 객체일 것입니다.
+      console.log('프롬프트 등록 성공:', response);
       
-      alert('프롬프트가 성공적으로 등록되었습니다!');
+      showSuccess('프롬프트가 성공적으로 등록되었습니다!');
       setForm(initialForm);
       navigate(-1);
     } catch (err) {

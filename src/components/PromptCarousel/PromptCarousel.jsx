@@ -3,7 +3,7 @@ import PromptCard from '../PromptCard/PromptCard';
 import PromptDetailModal from '../PromptDetailModal/PromptDetailModal';
 import './PromptCarousel.css';
 
-const PromptCarousel = ({ prompts, title }) => {
+const PromptCarousel = ({ prompts, title, onCardClick }) => {
   const [current, setCurrent] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
   const [touchStart, setTouchStart] = useState(0);
@@ -87,7 +87,13 @@ const PromptCarousel = ({ prompts, title }) => {
 
   // 프롬프트 카드 클릭 핸들러
   const handlePromptClick = (prompt) => {
-    setSelectedPromptId(prompt.id);
+    // 외부에서 전달받은 onCardClick이 있으면 사용, 없으면 기본 동작
+    if (onCardClick) {
+      onCardClick(prompt);
+    } else {
+      // 기본 동작: 모달 열기
+      setSelectedPromptId(prompt.id);
+    }
   };
 
   // 모달 닫기 핸들러
@@ -135,8 +141,8 @@ const PromptCarousel = ({ prompts, title }) => {
         </div>
       </section>
 
-      {/* 프롬프트 상세 모달 */}
-      {selectedPromptId && (
+      {/* 프롬프트 상세 모달 - onCardClick이 제공되지 않았을 때만 렌더링 */}
+      {!onCardClick && selectedPromptId && (
         <PromptDetailModal
           promptId={selectedPromptId}
           onClose={handleModalClose}

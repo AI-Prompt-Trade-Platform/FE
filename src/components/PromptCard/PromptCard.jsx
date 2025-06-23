@@ -12,8 +12,10 @@ const PromptCard = ({ prompt, onClick }) => {
     author,
     ownerProfileName,
     thumbnail,
+    thumbnailImageUrl,
     tags,
-    downloads
+    downloads,
+    aiInspectionRate
   } = prompt;
 
   const handleClick = () => {
@@ -22,16 +24,57 @@ const PromptCard = ({ prompt, onClick }) => {
     }
   };
 
+  // AI 등급 변환 함수 - A등급만 표시
+  const getAIGrade = (rate) => {
+    if (!rate) return null;
+    
+    // 다양한 형태의 AI 등급 데이터 처리
+    const rateStr = rate.toString().toLowerCase();
+    
+    // "A", "excellent", "A - 이유" 등의 형태 모두 처리
+    if (rateStr.startsWith('a') || rateStr.includes('excellent')) {
+      return 'EXCELLENT';
+    }
+    
+    // 첫 글자가 'A'인 경우도 처리
+    const firstChar = rate.toString().charAt(0).toUpperCase();
+    return firstChar === 'A' ? 'EXCELLENT' : null;
+  };
+
+  // AI 등급 클래스 결정 함수
+  const getGradeClass = (rate) => {
+    if (!rate) return '';
+    
+    const rateStr = rate.toString().toLowerCase();
+    
+    // "A", "excellent", "A - 이유" 등의 형태 모두 처리
+    if (rateStr.startsWith('a') || rateStr.includes('excellent')) {
+      return 'grade-excellent';
+    }
+    
+    const firstChar = rate.toString().charAt(0).toUpperCase();
+    return firstChar === 'A' ? 'grade-excellent' : '';
+  };
+
+  const aiGrade = getAIGrade(aiInspectionRate);
+  
+
+
   return (
     <div className="prompt-card" onClick={handleClick}>
       <div className="card-thumbnail">
-        {thumbnail ? (
-          <img src={thumbnail} alt={title} />
+        {(thumbnailImageUrl || thumbnail) ? (
+          <img src={thumbnailImageUrl || thumbnail} alt={title} />
         ) : (
           <div className="placeholder-thumbnail">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
             </svg>
+          </div>
+        )}
+        {aiGrade && (
+          <div className={`card-ai-grade ${getGradeClass(aiInspectionRate)}`}>
+            AI {aiGrade}
           </div>
         )}
         <div className="card-category">{category || '기타'}</div>

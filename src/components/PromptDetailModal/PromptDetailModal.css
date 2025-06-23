@@ -20,7 +20,7 @@
   justify-content: center;
   align-items: center;
   z-index: 1050;
-  padding: 1rem;
+  padding: clamp(1.5rem, 3vh, 3rem);
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -28,8 +28,8 @@
   background-color: var(--modal-bg);
   color: var(--text-primary);
   border-radius: 16px;
-  width: min(95vw, 1100px);
-  height: min(90vh, 800px);
+  width: min(92vw, 1100px);
+  height: min(85vh, 750px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border: 1px solid var(--modal-border-color);
   overflow: hidden;
@@ -167,10 +167,10 @@
   border: 1px solid;
 }
 
-.grade-premium { background-color: rgba(255, 215, 0, 0.1); border-color: #ffd700; color: #ffd700; }
-.grade-excellent { background-color: rgba(0, 196, 204, 0.1); border-color: #00c4cc; color: #00c4cc; }
-.grade-good { background-color: rgba(0, 255, 136, 0.1); border-color: #00ff88; color: #00ff88; }
-.grade-standard { background-color: rgba(138, 146, 154, 0.1); border-color: #8a929a; color: #8a929a; }
+.grade-excellent { background-color: rgba(255, 215, 0, 0.1); border-color: #ffd700; color: #ffd700; }
+.grade-good { background-color: rgba(0, 196, 204, 0.1); border-color: #00c4cc; color: #00c4cc; }
+.grade-standard { background-color: rgba(0, 255, 136, 0.1); border-color: #00ff88; color: #00ff88; }
+.grade-basic { background-color: rgba(138, 146, 154, 0.1); border-color: #8a929a; color: #8a929a; }
 
 /* Main Body Layout */
 .modal-body {
@@ -360,6 +360,9 @@ h3 {
 
 /* Mobile specific */
 @media (max-width: 480px) {
+  .modal-overlay {
+    padding: 0.5rem;
+  }
   .modal-content.large-modal {
     width: 100%;
     height: 100%;
@@ -380,7 +383,7 @@ h3 {
 .modal-content.with-split-layout {
   flex-direction: row;
   padding: 0;
-  height: min(95vh, 850px);
+  height: min(85vh, 780px);
   position: relative;
 }
 
@@ -448,12 +451,12 @@ h3 {
 @media (max-width: 900px) {
   .modal-content.with-split-layout {
     flex-direction: column;
-    height: min(95vh, 900px);
-    width: min(95vw, 500px);
+    height: min(88vh, 820px);
+    width: min(92vw, 500px);
   }
   .modal-media-column {
     flex: 4; /* Takes ~40% of height */
-    min-height: 250px;
+    min-height: 220px;
   }
   .modal-info-column {
     flex: 6; /* Takes ~60% of height */
@@ -505,4 +508,30 @@ h3 {
 
 .copy-prompt-btn:active {
   background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* AI Evaluation Reason Section */
+.ai-evaluation-section {
+  padding: 0.75rem clamp(1rem, 2vw, 1.5rem);
+  background-color: rgba(74, 158, 255, 0.05);
+  border-left: 3px solid rgba(74, 158, 255, 0.5);
+  margin-bottom: 1rem;
+}
+
+.ai-evaluation-reason {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+}
+
+.reason-label {
+  font-weight: 600;
+  color: rgba(74, 158, 255, 0.9);
+  flex-shrink: 0;
+}
+
+.reason-text {
+  color: var(--text-secondary);
+  line-height: 1.5;
 } 

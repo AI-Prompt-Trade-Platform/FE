@@ -20,6 +20,12 @@ const WishlistPage = () => {
     
     // 모달 핸들러 추가
     const handleCardClick = (promptId) => {
+        // 로그인 확인 (이중 확인)
+        if (!isLoggedIn) {
+            alert('로그인이 필요한 서비스입니다. 로그인 후 다시 시도해주세요.');
+            return;
+        }
+        
         setSelectedPromptId(promptId);
         setIsModalOpen(true);
     };
@@ -62,6 +68,7 @@ const WishlistPage = () => {
                 rating: item.rate || parseFloat(item.aiInspectionRate) || 0,
                 thumbnail: item.thumbnailImageUrl || '',
                 tags: item.hashTags || [],
+                aiInspectionRate: item.aiInspectionRate || null
             }));
 
             setWishlist(formattedPrompts);

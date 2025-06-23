@@ -5,18 +5,18 @@ function SalesSummary({ thisMonthProfit, totalSalesCount, avgRate, period }) {
   const formatNumber = (num) => (num !== undefined && num !== null ? num.toLocaleString("ko-KR") : "0");
 
   // 기간에 따른 제목 설정
-  let incomeTitle = "최근 한달";
-  let salesCountTitle = "총 판매 건수";
+  let incomeTitle = "수익";
+  let salesCountTitle = "판매 건수";
   let avgRateTitle = "평균 평점";
 
   if (period === "HALF_YEAR") {
-    incomeTitle = "최근 6개월";
-    salesCountTitle = "6개월 총 판매 건수";
-    avgRateTitle = "6개월 평균 평점";
+    incomeTitle = "6개월 수익";
+    salesCountTitle = "6개월 판매";
+    avgRateTitle = "6개월 평점";
   } else if (period === "YEAR") {
-    incomeTitle = "최근 1년";
-    salesCountTitle = "1년 총 판매 건수";
-    avgRateTitle = "1년 평균 평점";
+    incomeTitle = "1년 수익";
+    salesCountTitle = "1년 판매";
+    avgRateTitle = "1년 평점";
   }
 
   return (

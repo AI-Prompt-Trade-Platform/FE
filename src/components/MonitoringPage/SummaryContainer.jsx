@@ -5,10 +5,7 @@ import PromptCardList from "../PromptList/PromptCardList";
 import { userAPI, statsAPI } from "../../services/api";
 
 
-const monitoringStyle = {
-  width: "100%",
-  margin: "auto"
-}
+
 
 
 function SalesSummaryContainer() {
@@ -57,25 +54,15 @@ function SalesSummaryContainer() {
   }, [period]);
 
   return (
-    <div style={monitoringStyle}>
-      {/* 네비게이션바 컴포넌트 */}
-        <p style={{ fontSize: "3rem", textAlign: "left", color: "white", fontWeight: "bold", marginTop: "20px", marginBottom: "20px" }}>
-          수익 모니터링
-        </p>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
+    <div className="monitoring-summary-container">
+      <h1 className="monitoring-title">
+        수익 모니터링
+      </h1>
+      <div className="period-selector-container">
         <select
           value={period}
           onChange={e => setPeriod(e.target.value)}
-          style={{
-            background: "#232323",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "8px 16px",
-            fontSize: "1rem",
-            outline: "none",
-            cursor: "pointer",
-          }}
+          className="period-selector"
         >
           <option value="MONTH">이번달</option>
           <option value="HALF_YEAR">6개월</option>
@@ -89,20 +76,13 @@ function SalesSummaryContainer() {
         period={period}
       />
       <SalesChart data={dailyProfit} period={period} />
-      <h2 className="carousel-title" style={{textAlign: "left", color: "white", fontWeight: "bold", marginTop: "20px", marginBottom: "20px" }}>판매중인 프롬프트</h2>
+      <h2 className="section-title">판매중인 프롬프트</h2>
       {isLoading ? (
-        <div style={{ color: 'white', padding: '2rem', textAlign: 'center' }}>데이터를 불러오는 중...</div>
+        <div className="loading-message">데이터를 불러오는 중...</div>
       ) : sellingPrompts.length > 0 ? (
         <PromptCardList prompts={sellingPrompts} />
       ) : (
-        <div style={{
-          color: 'var(--text-secondary, #a0a0a0)',
-          padding: '3rem',
-          textAlign: 'center',
-          backgroundColor: 'var(--content-bg, #222)',
-          borderRadius: '12px',
-          border: '1px solid var(--divider-color, #3a3a3a)'
-        }}>
+        <div className="empty-message">
           판매중인 프롬프트가 없습니다.
         </div>
       )}

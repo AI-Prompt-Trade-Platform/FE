@@ -148,12 +148,17 @@ const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerIma
         // 이미지 파일 업로드 및 프로필 정보 업데이트
         if (onProfileUpdate) {
             try {
-                await onProfileUpdate({
-                    profileName: editInfo.name,
-                    introduction: editInfo.bio,
+                const updateData = {
+                    profileName: userInfo.profileName || userInfo.name || getDisplayName(), // 기존 이름 유지
+                    introduction: editInfo.bio || editInfo.introduction || '',
                     bannerFile,
                     avatarFile
-                });
+                };
+                
+                console.log('🔍 UserProfileBanner에서 전달할 데이터:', updateData);
+                console.log('🔍 editInfo 전체:', editInfo);
+                
+                await onProfileUpdate(updateData);
                 // 성공적으로 업데이트되면 편집 모드 종료
                 setIsEditing(false);
                 // 파일 상태 초기화
@@ -219,11 +224,11 @@ const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerIma
                 <div className="profile-info">
                     {isEditing ? (
                         <div className="profile-edit-form">
-                            {/* 이름 필드를 프로필 이름과 동일한 스타일로 표시 */}
                             <h2 className="readonly-name">{getDisplayName()}</h2>
+                            <p className="readonly-name-info">이름은 변경할 수 없습니다</p>
                             <textarea
                                 name="bio"
-                                value={editInfo.bio}
+                                value={editInfo.bio || editInfo.introduction || ''}
                                 onChange={handleInputChange}
                                 className="edit-bio-input"
                                 placeholder="자기소개를 입력하세요"
