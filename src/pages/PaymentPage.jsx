@@ -2,20 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarryBackground from '../components/Background/StarryBackground';
 import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
+import { useAuth } from '../contexts/AuthContext';
 import './PaymentPage.css';
 
 const PaymentPage = () => {
   const [selectedAmount, setSelectedAmount] = useState(1000);
   const [loading, setLoading] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState(null); // 'success' | 'fail' | null
   const [paymentAmount, setPaymentAmount] = useState(null);
   const { loadingMessage, refreshMessage } = useLoadingMessage(true);
   const shouldShowLoading = useMinimumLoadingTime(loading, 800);
   const navigate = useNavigate();
-
-  // 인증 토큰 (실제 환경에서는 Auth 컨텍스트나 상태 관리 라이브러리에서 가져와야 함)
-  const authToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InVsSVVkQWFOV3VJbmdqaFVqbVlrUiJ9.eyJpc3MiOiJodHRwczovL2Rldi1vbXVkdTQ2NWVtazN0MmpqLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJFN0w4VDRYVVZIRWRuSUhMS2hacGFlcGdMMlk5Z1h3Y0BjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9hcGkucHJ1bXB0LmxvY2FsIiwiaWF0IjoxNzUwNDA3MjAzLCJleHAiOjE3NTA0OTM2MDMsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsImF6cCI6IkU3TDhUNFhVVkhFZG5JSExLaFpwYWVwZ0wyWTlnWHdjIn0.SkE15UHNc9KmtPE264ZI2qKYZv_4D0EokUmDEoqTtVCCwaEjoDBRT8w904ed4sht5Wi1kC-HbIo1kzxAqPfvLDqN3jZYYr-tC8P0j8rAPAmyY_jkvbOJL_t-zd7lRdF-rwsxo34ttBjHicdnj9qvk-Mzg8EBz4Jr1WM9lbXeAPjX1FFUDo9EXSAinDETYxTIlBka45VLmutRyjzvM4IDpSgqrEZaCmLt2g0zFCYFE4fiIdUPufnUXtekQEvX4Dkdz6CQHC13TDU7eQ8SLdqQeaEkGzg0PHXfKMV9V7TS4mCkO5jwSn3y7Iruym8iZUWefpPti7fRfJp6CWI0nLoMpQ";
+  const { getAccessTokenSilently, user } = useAuth();
 
   // 포인트 옵션 정의
   const pointOptions = [
@@ -39,7 +38,8 @@ const PaymentPage = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/mypage/profile', {
+      const authToken = await getAccessTokenSilently();
+      const response = await fetch('/api/mypage/profile', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -58,74 +58,93 @@ const PaymentPage = () => {
     }
   };
 
-  const confirmPayment = async (paymentKey, orderId, amount, userId) => {
+  const confirmPayment = async (paymentKey, orderId, amount) => {
     try {
-      // URL 파라미터 인코딩
+      const authToken = await getAccessTokenSilently();
+      // 백엔드가 POST 메소드와 URL 파라미터를 함께 기대하므로, URL을 재구성합니다.
       const encodedPaymentKey = encodeURIComponent(paymentKey);
       const encodedOrderId = encodeURIComponent(orderId);
-
-      // PaymentWidgetController에서 제공하는 GET 엔드포인트 사용
-      const url = `http://localhost:8080/api/payments/confirm?paymentKey=${encodedPaymentKey}&orderId=${encodedOrderId}&amount=${amount}&userId=${userId}`;
+      // 백엔드 컨트롤러에서 userId를 토큰에서 추출하므로 프론트에서 보낼 필요가 없습니다.
+      const url = `/api/payments/confirm?paymentKey=${encodedPaymentKey}&orderId=${encodedOrderId}&amount=${amount}`;
 
       console.log('결제 확인 요청 URL:', url);
 
       const response = await fetch(url, {
-        method: 'GET',
+        method: 'POST', // POST 메소드 유지
         headers: {
           'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
-        }
+          // 'Content-Type' 헤더는 요청 본문이 없으므로 제거합니다.
+        },
+        // 요청 본문을 제거합니다.
       });
 
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`결제 확인 실패: ${response.status} ${errorBody}`);
+      }
+      
       const result = await response.text();
       console.log('결제 확인 성공:', result);
       return result;
     } catch (error) {
-      error('결제 확인 오류:', error);
+      console.error('결제 확인 오류:', error);
       throw error;
     }
   };
 
   const handlePaymentSuccess = async (amount) => {
-    setPaymentSuccess(true);
+    setPaymentStatus('success');
     setPaymentAmount(amount);
     await fetchUserProfile(); // 포인트 갱신
 
-    // 5초 후 성공 메시지 숨기기
+    // 5초 후 성공 메시지 숨기기 및 상태 초기화
     setTimeout(() => {
-      setPaymentSuccess(false);
+      setPaymentStatus(null);
       setPaymentAmount(null);
-      // 결제 완료 후 다시 결제 페이지로 리다이렉트 (URL 파라미터 제거)
-      navigate('/payment', { replace: true });
     }, 5000);
   };
 
   useEffect(() => {
-    const init = async () => {
-      const profile = await fetchUserProfile();
-
+    const processPaymentResult = async () => {
+      // URL 파라미터를 컴포넌트 상태로 먼저 가져옵니다.
       const urlParams = new URLSearchParams(window.location.search);
       const paymentKey = urlParams.get('paymentKey');
       const orderId = urlParams.get('orderId');
       const amount = urlParams.get('amount');
+      const isFail = urlParams.get('fail') === 'true';
+
+      // URL에서 파라미터를 즉시 제거하여 중복 처리를 방지합니다.
+      if (paymentKey || isFail) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      if (isFail) {
+        setPaymentStatus('fail');
+        // 5초 후 실패 메시지 숨기기
+        setTimeout(() => setPaymentStatus(null), 5000);
+        return;
+      }
 
       if (paymentKey && orderId && amount) {
         setLoading(true);
         try {
-          if (!profile || !profile.userId) throw new Error('사용자 ID 누락');
-          await confirmPayment(paymentKey, orderId, parseInt(amount), profile.userId);
+          if (!user) throw new Error('사용자 정보가 없습니다.');
+          await confirmPayment(paymentKey, orderId, parseInt(amount));
           await handlePaymentSuccess(amount);
         } catch (e) {
-          alert('결제 확인 실패: ' + e.message);
+          console.error(e);
+          setPaymentStatus('fail');
+          // 5초 후 실패 메시지 숨기기
+          setTimeout(() => setPaymentStatus(null), 5000);
         } finally {
           setLoading(false);
-          // URL 파라미터 제거 (history API 사용)
-          window.history.replaceState({}, document.title, window.location.pathname);
         }
       }
     };
-    init();
-  }, []);
+    
+    fetchUserProfile(); // 페이지 첫 로드 시 사용자 정보 가져오기
+    processPaymentResult(); // 결제 결과 처리
+  }, [user]); // user 객체가 로드되면 이 effect를 다시 실행합니다.
 
   const handlePayment = () => {
     if (!window.TossPayments) {
@@ -175,15 +194,15 @@ const PaymentPage = () => {
           </div>
         )}
 
-        {paymentSuccess && (
+        {paymentStatus === 'success' && (
           <div className="payment-success-message">
-            <p>결제가 완료되었습니다! {paymentAmount}포인트가 충전되었습니다.</p>
+            <p>결제가 완료되었습니다! {Number(paymentAmount).toLocaleString()}포인트가 충전되었습니다.</p>
           </div>
         )}
 
-        {window.location.search.includes('fail=true') && (
+        {paymentStatus === 'fail' && (
           <div className="payment-error-message">
-            <p>결제가 취소되었거나 실패했습니다.</p>
+            <p>결제가 취소되었거나 실패했습니다. 문제가 지속되면 고객센터로 문의해주세요.</p>
           </div>
         )}
 

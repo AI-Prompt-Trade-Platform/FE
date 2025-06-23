@@ -33,6 +33,8 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
       navigate('/wishlist');
     } else if (item.name === '결제') {
       navigate('/payment');
+    } else if (item.name === '프롬프트 판매') {
+      navigate('/prompt-register');
     }
     if (onItemClick) onItemClick();
   };
@@ -59,6 +61,7 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
     if (itemName === '대시보드' && location.pathname === '/monitoring') return true;
     if (itemName === '위시리스트' && location.pathname === '/wishlist') return true;
     if (itemName === '결제' && location.pathname === '/payment') return true;
+    if (itemName === '프롬프트 판매' && location.pathname === '/prompt-register') return true;
     return false;
   };
 
@@ -92,6 +95,16 @@ const Navigation = ({ isMobile = false, onItemClick }) => {
             <span className="nav-text">{item.name}</span>
           </button>
         ))}
+        
+        {isLoggedIn && (
+          <button 
+            className={`nav-item sell-prompt-btn ${getActiveState('프롬프트 판매') ? 'active' : ''}`}
+            onClick={() => handleNavClick({ name: '프롬프트 판매' })}
+          >
+            {isMobile && <span className="nav-icon">💰</span>}
+            <span className="nav-text">프롬프트 판매</span>
+          </button>
+        )}
         
         {!isLoggedIn ? (
           <button className="nav-item login-btn" onClick={handleLogin}>

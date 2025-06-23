@@ -54,7 +54,7 @@ const ProfilePage = () => {
             // 유효한 토큰 가져오기
             const authToken = await getAccessTokenSilently();
 
-            const response = await fetch('http://localhost:8080/api/mypage/profile', {
+            const response = await fetch('/api/mypage/profile', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
@@ -91,7 +91,7 @@ const ProfilePage = () => {
             // 유효한 토큰 가져오기
             const authToken = await getAccessTokenSilently();
 
-            const url = `http://localhost:8080/api/mypage/prompts/selling?page=${page}&size=${size}`;
+            const url = `/api/mypage/prompts/selling?page=${page}&size=${size}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -147,7 +147,7 @@ const ProfilePage = () => {
             // 유효한 토큰 가져오기
             const authToken = await getAccessTokenSilently();
 
-            const url = `http://localhost:8080/api/mypage/prompts/purchased?page=${page}&size=${size}`;
+            const url = `/api/mypage/prompts/purchased?page=${page}&size=${size}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -204,7 +204,7 @@ const ProfilePage = () => {
             // 유효한 토큰 가져오기
             const authToken = await getAccessTokenSilently();
 
-            const url = `http://localhost:8080/api/mypage/monitoring?period=${period}`;
+            const url = `/api/mypage/monitoring?period=${period}`;
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -285,8 +285,8 @@ const ProfilePage = () => {
         formData.append('type', type); // 'profile' 또는 'banner'
 
         try {
-            // 이미지 업로드 API 엔드포인트 (실제 구현 필요)
-            const uploadUrl = 'http://localhost:8080/api/upload';
+            // 이미지 업로드 API 엔드포인트
+            const uploadUrl = '/api/upload';
             const response = await fetch(uploadUrl, {
                 method: 'POST',
                 headers: {
@@ -325,14 +325,16 @@ const ProfilePage = () => {
             let profileImgUrl = userProfile.profileImgUrl;
             let bannerImgUrl = userProfile.bannerImgUrl;
 
+            // 1. 이미지 파일 업로드
             if (updateData.avatarFile) {
-                profileImgUrl = URL.createObjectURL(updateData.avatarFile);
+                profileImgUrl = await uploadImage(updateData.avatarFile, 'profile');
             }
             if (updateData.bannerFile) {
-                bannerImgUrl = URL.createObjectURL(updateData.bannerFile);
+                bannerImgUrl = await uploadImage(updateData.bannerFile, 'banner');
             }
-
-            const updateUrl = 'http://localhost:8080/api/mypage/me/profile/update';
+            
+            // 2. 프로필 정보 업데이트
+            const updateUrl = '/api/mypage/me/profile/update';
             const updateResponse = await fetch(updateUrl, {
                 method: 'PUT',
                 headers: {
@@ -543,6 +545,7 @@ const ProfilePage = () => {
                         userInfo={{
                             name: user?.name || user?.email || userProfile?.profileName || '사용자',
                             bio: userProfile?.introduction || '소개글이 없습니다.',
+                            points: userProfile?.point,
                         }}
                         profileImage={userProfile?.profileImgUrl}
                         avatarImage={userProfile?.profileImgUrl}

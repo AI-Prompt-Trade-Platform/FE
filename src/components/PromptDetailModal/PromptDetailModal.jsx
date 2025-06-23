@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { promptAPI, userAPI } from '../../services/api';
+import { promptAPI, userAPI, setAuthToken } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import './PromptDetailModal.css';
 
 const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
-  const { user } = useAuth();
+  const { user, getAccessTokenSilently } = useAuth();
   const [isClosing, setIsClosing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [promptDetail, setPromptDetail] = useState(null);
@@ -91,12 +91,25 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
 
   const handlePurchase = async () => {
     try {
+      // 1. 구매 요청 전, 인증 토큰을 가져와 API 클라이언트에 설정
+      const token = await getAccessTokenSilently();
+      setAuthToken(token);
+      
+      // 2. 정의된 API 함수 호출
       await promptAPI.purchasePrompt(promptId);
+      
+      // 3. 성공 처리
+      alert('프롬프트 구매가 완료되었습니다!');
       onPurchase?.(promptId);
-      fetchPromptData();
+      fetchPromptData(); // 최신 데이터로 다시 로드
+
     } catch (err) {
       console.error('구매 중 오류:', err);
-      alert('구매 중 오류가 발생했습니다.');
+      // 사용자에게 더 친절한 오류 메시지 표시
+      const errorMessage = err.message.includes('402') 
+        ? '포인트가 부족합니다. 포인트를 충전해주세요.'
+        : '구매 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      alert(errorMessage);
     }
   };
 

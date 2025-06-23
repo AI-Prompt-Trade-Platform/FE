@@ -237,6 +237,15 @@ const UserProfileBanner = ({ userInfo = {}, profileImage, avatarImage, bannerIma
                         <>
                             <h2 className="profile-name">{getDisplayName()}</h2>
                             <p className="profile-bio">{userInfo.bio || '소개글이 없습니다.'}</p>
+                            {typeof userInfo.points === 'number' && (
+                                <div className="profile-points">
+                                    <svg className="point-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10,10-4.48,10-10S17.52,2,12,2z M12,20c-4.41,0-8-3.59-8-8s3.59-8,8-8,8,3.59,8,8S16.41,20,12,20z"/>
+                                        <path d="M12,6c-3.31,0-6,2.69-6,6s2.69,6,6,6,6-2.69,6-6S15.31,6,12,6z M12,16c-2.21,0-4-1.79-4-4s1.79-4,4-4,4,1.79,4,4S14.21,16,12,16z"/>
+                                    </svg>
+                                    <span>보유 포인트: {userInfo.points.toLocaleString()} P</span>
+                                </div>
+                            )}
                             <button onClick={handleEditClick} className="edit-profile-button">
                                 프로필 수정
                             </button>

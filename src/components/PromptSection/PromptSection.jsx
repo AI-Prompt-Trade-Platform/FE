@@ -2,14 +2,13 @@ import React from 'react';
 import PromptCard from '../PromptCard/PromptCard';
 import './PromptSection.css';
 
-const PromptSection = ({ title = "프롬프트", prompts = [], showMore = false }) => {
+const PromptSection = ({prompts = [], showMore = false, onCardClick }) => {
   // prompts가 배열이 아닌 경우 빈 배열로 설정
   const safePrompts = Array.isArray(prompts) ? prompts : [];
 
   return (
     <section className="prompt-section">
       <div className="section-header">
-        <h2 className="section-title">{title}</h2>
         {showMore && (
           <button className="view-all-button">
             전체보기
@@ -23,7 +22,7 @@ const PromptSection = ({ title = "프롬프트", prompts = [], showMore = false 
       <div className="cards-container">
         {safePrompts.length > 0 ? (
           safePrompts.map((prompt) => (
-            <PromptCard key={prompt.id} prompt={prompt} />
+            <PromptCard key={prompt.id} prompt={prompt} onClick={() => onCardClick?.(prompt.id)} />
           ))
         ) : (
           <div className="no-prompts">

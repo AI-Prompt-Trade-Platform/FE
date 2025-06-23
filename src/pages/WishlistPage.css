@@ -8,11 +8,22 @@
 }
 
 .wishlist-main {
-    padding: 0;
+    padding: 20px 0 0;
     position: relative;
     z-index: 2;
     overflow: visible;
-    padding-top: 20px;
+}
+
+.wishlist-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    text-align: center;
+    margin: 20px 0 40px;
+    background: linear-gradient(135deg, #d8b4fe, #a78bfa, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
 }
 
 .empty-wishlist {

@@ -20,7 +20,7 @@ const TYPE_CATEGORIES = [
 const initialForm = {
   promptName: '',
   promptContent: '',
-  promptDescription: '',
+  description: '',
   price: '',
   exampleFile: null,
   exampleType: 'IMAGE',
@@ -38,10 +38,10 @@ const PromptRegisterPage = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const { promptName, promptDescription, promptContent, price, exampleFile } = form;
+    const { promptName, description, promptContent, price, exampleFile } = form;
     const isValid =
       promptName.trim() !== '' &&
-      promptDescription.trim() !== '' &&
+      description.trim() !== '' &&
       promptContent.trim() !== '' &&
       price.toString().trim() !== '' &&
       exampleFile !== null;
@@ -51,7 +51,7 @@ const PromptRegisterPage = () => {
   const showValidationErrors = () => {
     const newErrors = {};
     if (form.promptName.trim() === '') newErrors.promptName = '프롬프트 이름을 입력해주세요.';
-    if (form.promptDescription.trim() === '') newErrors.promptDescription = '프롬프트 설명을 입력해주세요.';
+    if (form.description.trim() === '') newErrors.description = '프롬프트 설명을 입력해주세요.';
     if (form.promptContent.trim() === '') newErrors.promptContent = '프롬프트 내용을 입력해주세요.';
     if (form.price.toString().trim() === '') newErrors.price = '가격을 입력해주세요.';
     if (form.exampleFile === null) newErrors.exampleFile = '예시 파일을 업로드해주세요.';
@@ -106,7 +106,7 @@ const PromptRegisterPage = () => {
       const formData = new FormData();
       formData.append('promptName', form.promptName);
       formData.append('promptContent', form.promptContent);
-      formData.append('promptDescription', form.promptDescription);
+      formData.append('description', form.description);
       formData.append('price', form.price);
       if (form.exampleFile) {
         formData.append('exampleFile', form.exampleFile);
@@ -115,15 +115,16 @@ const PromptRegisterPage = () => {
       formData.append('modelCategoryIds', form.modelCategoryId);
       formData.append('typeCategoryIds', form.typeCategoryId);
 
-      const token = await authFetch('/api/prompts', { method: 'POST' }).catch(()=>null);
-      const realToken = token?.token || localStorage.getItem('access_token');
-      await fetch('/api/prompts', {
+      const response = await authFetch('/api/prompts', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${realToken}` 
-        },
-        body: formData
+        body: formData,
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: '응답 처리 중 오류 발생' }));
+        throw new Error(errorData.message || '프롬프트 등록에 실패했습니다.');
+      }
+      
       alert('프롬프트가 성공적으로 등록되었습니다!');
       setForm(initialForm);
       navigate(-1);
@@ -138,7 +139,7 @@ const PromptRegisterPage = () => {
   const previewPrompt = {
     id: 'preview',
     title: form.promptName || '프롬프트 제목을 입력하세요',
-    description: form.promptDescription || '프롬프트 설명을 입력하세요.',
+    description: form.description || '프롬프트 설명을 입력하세요.',
     category: TYPE_CATEGORIES.find(cat => cat.id.toString() === form.typeCategoryId)?.name || '카테고리',
     rating: 0.0,
     price: parseInt(form.price) || 0,
@@ -149,17 +150,6 @@ const PromptRegisterPage = () => {
 
   return (
     <div className="prompt-register-container">
-      {/* 네비게이션 바 */}
-      <nav className="register-navbar">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="m15 18-6-6 6-6"/>
-          </svg>
-        </button>
-        <h1 className="navbar-title">Prumpt2.0</h1>
-        <div></div> {/* 균형을 위한 빈 div */}
-      </nav>
-
       {/* 메인 컨텐츠 */}
       <div className="register-content">
         {/* 왼쪽: PromptCard 미리보기 */}
@@ -191,17 +181,17 @@ const PromptRegisterPage = () => {
 
               {/* 프롬프트 설명 */}
               <div className="input-group">
-                <label htmlFor="promptDescription">프롬프트 설명</label>
+                <label htmlFor="description">프롬프트 설명</label>
                 <textarea
-                  id="promptDescription"
-                  name="promptDescription"
-                  value={form.promptDescription}
+                  id="description"
+                  name="description"
+                  value={form.description}
                   onChange={handleChange}
                   placeholder="프롬프트에 대한 설명을 입력하세요."
                   rows={4}
                   required
                 />
-                {errors.promptDescription && <div className="error-text">{errors.promptDescription}</div>}
+                {errors.description && <div className="error-text">{errors.description}</div>}
               </div>
 
               {/* 프롬프트 내용 */}
