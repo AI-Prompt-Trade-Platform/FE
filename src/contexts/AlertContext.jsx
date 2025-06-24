@@ -9,29 +9,52 @@ export const AlertProvider = ({ children }) => {
     title: '',
     message: '',
     type: 'info',
-    confirmText: '확인'
+    confirmText: '확인',
+    cancelText: null,
+    onConfirm: null,
+    onCancel: null
   });
 
-  const showAlert = ({ title, message, type = 'info', confirmText = '확인' }) => {
+  const showAlert = ({ title, message, type = 'info', confirmText = '확인', cancelText = null, onConfirm = null, onCancel = null }) => {
     setAlert({
       isOpen: true,
       title,
       message,
       type,
-      confirmText
+      confirmText,
+      cancelText,
+      onConfirm,
+      onCancel
     });
   };
 
   const hideAlert = () => {
     setAlert(prev => ({
       ...prev,
-      isOpen: false
+      isOpen: false,
+      onConfirm: null,
+      onCancel: null,
+      cancelText: null
     }));
   };
 
+  const handleConfirm = () => {
+    if (alert.onConfirm) {
+      alert.onConfirm();
+    }
+    hideAlert();
+  };
+
+  const handleCancel = () => {
+    if (alert.onCancel) {
+      alert.onCancel();
+    }
+    hideAlert();
+  };
+
   // 편의 메서드들
-  const showSuccess = (message, title = '성공') => {
-    showAlert({ title, message, type: 'success' });
+  const showSuccess = (message, title = '성공', onConfirm = null) => {
+    showAlert({ title, message, type: 'success', onConfirm });
   };
 
   const showError = (message, title = '오류') => {
@@ -46,13 +69,28 @@ export const AlertProvider = ({ children }) => {
     showAlert({ title, message, type: 'info' });
   };
 
+  const showConfirm = (message, title = '확인', onConfirm = null, onCancel = null) => {
+    showAlert({ 
+      title, 
+      message, 
+      type: 'warning', 
+      confirmText: '확인', 
+      cancelText: '취소',
+      onConfirm,
+      onCancel
+    });
+  };
+
   const contextValue = {
     showAlert,
     showSuccess,
     showError,
     showWarning,
     showInfo,
-    hideAlert
+    showConfirm,
+    hideAlert,
+    handleConfirm,
+    handleCancel
   };
 
   return (
@@ -61,10 +99,13 @@ export const AlertProvider = ({ children }) => {
       <AlertModal
         isOpen={alert.isOpen}
         onClose={hideAlert}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
         title={alert.title}
         message={alert.message}
         type={alert.type}
         confirmText={alert.confirmText}
+        cancelText={alert.cancelText}
       />
     </AlertContext.Provider>
   );

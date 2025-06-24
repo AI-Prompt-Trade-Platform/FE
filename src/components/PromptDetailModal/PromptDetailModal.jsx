@@ -7,7 +7,7 @@ import './PromptDetailModal.css';
 
 const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
   const { user, getAccessTokenSilently } = useAuth();
-  const { showSuccess, showError } = useAlert();
+  const { showSuccess, showError, showConfirm } = useAlert();
   const [isClosing, setIsClosing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [promptDetail, setPromptDetail] = useState(null);
@@ -18,6 +18,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
   const [error, setError] = useState(null);
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // 모달 열릴 때 배경 스크롤 막기
   useEffect(() => {
@@ -67,14 +68,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
         setReviews([]);
       }
 
-      // AI 등급 설정 - 등급과 이유 분리
-      const gradeMap = { 
-        'A': 'Excellent', 
-        'B': 'Good', 
-        'C': 'Standard', 
-        'D': 'Basic'
-      };
-      
+      // AI 등급 설정 - 새로운 포맷: "[등급][이유]"
       // 다양한 필드명 확인
       const aiGradeData = promptData.aiInspectionRate || 
                          promptData.ai_inspection_rate || 
@@ -87,19 +81,28 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       
       console.log('AI 등급 원본 데이터:', aiGradeData);
       
-      // 등급과 이유 분리 (예: "A - 우수한 구조와 명확한 지시사항")
+      // 등급과 이유 분리 (예: "[S][스타일과 분위기 묘사가 구체적임]")
       let grade = 'N/A';
       let reason = '';
       
       if (aiGradeData) {
-        const gradeStr = aiGradeData.toString();
-        if (gradeStr.includes(' - ')) {
-          const parts = gradeStr.split(' - ');
-          grade = gradeMap[parts[0].trim().toUpperCase()] || parts[0].trim();
-          reason = parts[1].trim();
+        const gradeStr = aiGradeData.toString().trim();
+        // 대괄호 패턴으로 등급과 이유 추출
+        const match = gradeStr.match(/\[([A-Z])\]\[(.+?)\]/);
+        if (match) {
+          grade = match[1].toUpperCase(); // 등급 (S, A, B, C, D 등)
+          reason = match[2]; // 이유
+          console.log('대괄호 패턴 파싱 성공:', { grade, reason });
         } else {
-          // 등급만 있는 경우
-          grade = gradeMap[gradeStr.trim().toUpperCase()] || gradeStr.trim();
+          // 기존 공백 기반 파싱도 유지 (호환성)
+          const parts = gradeStr.split(' ');
+          if (parts.length > 0) {
+            grade = parts[0].toUpperCase();
+            if (parts.length > 1) {
+              reason = parts.slice(1).join(' ');
+            }
+          }
+          console.log('공백 패턴 파싱 사용:', { grade, reason });
         }
       }
       
@@ -109,23 +112,43 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
         raw: aiGradeData
       });
 
+      // 이미지 URL 확인 - thumbnailImageUrl 우선 확인
+      console.log('🔍 thumbnailImageUrl 확인:', promptData.thumbnailImageUrl);
+      console.log('📄 API 응답 전체 키들:', Object.keys(promptData));
+
       if (promptData.thumbnailImageUrl) {
-        console.log('🖼️ 썸네일 URL:', promptData.thumbnailImageUrl);
-        console.log('🔗 URL 타입 확인:', typeof promptData.thumbnailImageUrl);
+        const imageUrl = promptData.thumbnailImageUrl;
+        console.log('🖼️ 썸네일 URL 발견:', imageUrl);
+        console.log('🔗 URL 타입:', typeof imageUrl);
+        console.log('🔗 URL 길이:', imageUrl.length);
+        console.log('🔗 URL 시작 부분:', imageUrl.substring(0, 50));
         
-        // S3 URL을 CloudFront URL로 변환 (필요한 경우)
-        let imageUrl = promptData.thumbnailImageUrl;
-        if (imageUrl.includes('.s3.') || imageUrl.includes('s3.amazonaws.com')) {
-          console.log('⚠️ S3 직접 URL 감지 - CloudFront URL로 변환 필요');
-          // 여기에 CloudFront 도메인으로 변환하는 로직 추가 필요
-          // 예: imageUrl = imageUrl.replace('버킷명.s3.리전.amazonaws.com', 'CloudFront도메인');
+        // URL 유효성 기본 검사
+        if (typeof imageUrl === 'string' && imageUrl.trim().length > 0) {
+          // S3 URL을 CloudFront URL로 변환 (필요한 경우)
+          let finalImageUrl = imageUrl.trim();
+          if (finalImageUrl.includes('.s3.') || finalImageUrl.includes('s3.amazonaws.com')) {
+            console.log('⚠️ S3 직접 URL 감지 - CloudFront URL로 변환 필요');
+            // 여기에 CloudFront 도메인으로 변환하는 로직 추가 필요
+            // 예: finalImageUrl = finalImageUrl.replace('버킷명.s3.리전.amazonaws.com', 'CloudFront도메인');
+          }
+          
+          setExamples([{ url: finalImageUrl, type: 'image' }]);
+          console.log('✅ 이미지 설정 완료:', finalImageUrl);
+          console.log('📋 examples 배열:', [{ url: finalImageUrl, type: 'image' }]);
+        } else {
+          console.log('❌ 유효하지 않은 이미지 URL:', imageUrl);
+          setExamples([]);
         }
-        
-        setExamples([{ url: imageUrl, type: 'image' }]);
       } else {
-        console.log('❌ thumbnailImageUrl이 없습니다');
-        // API 응답에 examples 배열이 있을 경우를 대비한 로직 (확장성)
-        setExamples(promptData.examples || []);
+        console.log('❌ thumbnailImageUrl 필드가 없거나 빈 값입니다');
+        console.log('🔍 다른 이미지 관련 필드들 확인:');
+        console.log('- thumbnail:', promptData.thumbnail);
+        console.log('- imageUrl:', promptData.imageUrl);
+        console.log('- image:', promptData.image);
+        console.log('- images:', promptData.images);
+        console.log('- examples:', promptData.examples);
+        setExamples([]);
       }
 
     } catch (err) {
@@ -198,6 +221,43 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
     }
   };
 
+  const handleDeletePrompt = async () => {
+    if (isDeleting) return;
+
+    // 커스텀 삭제 확인 모달
+    showConfirm(
+      '정말로 이 프롬프트를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+      '프롬프트 삭제',
+      async () => {
+        // 확인 버튼 클릭 시 실행
+        setIsDeleting(true);
+        try {
+          const token = await getAccessTokenSilently();
+          setAuthToken(token);
+          
+          await promptAPI.deletePrompt(promptId);
+          
+          handleClose(); // 모달 닫기
+          
+          // 커스텀 alert 모달창을 표시하고, 사용자가 닫으면 새로고침
+          showSuccess('프롬프트가 성공적으로 삭제되었습니다.', '성공', () => {
+            window.location.reload();
+          });
+          
+        } catch (err) {
+          console.error('프롬프트 삭제 중 오류:', err);
+          showError('프롬프트 삭제 중 오류가 발생했습니다.');
+        } finally {
+          setIsDeleting(false);
+        }
+      },
+      () => {
+        // 취소 버튼 클릭 시 실행 (아무것도 하지 않음)
+        console.log('삭제 취소됨');
+      }
+    );
+  };
+
   const handlePrevExample = () => {
     setCurrentExampleIndex(prev => (prev === 0 ? examples.length - 1 : prev - 1));
   };
@@ -255,12 +315,15 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
   };
   
   const getGradeClass = (grade) => {
-    const gradeLower = grade?.toLowerCase() || 'none';
-    if (gradeLower.includes('excellent')) return 'grade-excellent';
-    if (gradeLower.includes('good')) return 'grade-good';
-    if (gradeLower.includes('standard')) return 'grade-standard';
-    if (gradeLower.includes('basic')) return 'grade-basic';
-    return 'grade-standard';
+    const gradeUpper = grade?.toUpperCase() || 'NONE';
+    switch (gradeUpper) {
+      case 'S': return 'grade-s';
+      case 'A': return 'grade-a';
+      case 'B': return 'grade-b';
+      case 'C': return 'grade-c';
+      case 'D': return 'grade-d';
+      default: return 'grade-default';
+    }
   }
 
   // 현재 사용자가 프롬프트 소유자인지 판단
@@ -304,26 +367,84 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
 
         {/* --- 왼쪽 미디어 컬럼 --- */}
         <div className="modal-media-column">
+          {(() => {
+            console.log('🎬 렌더링 시 examples 상태:', examples);
+            console.log('📊 examples.length:', examples.length);
+            if (examples.length > 0) {
+              console.log('🖼️ 현재 표시할 이미지:', examples[currentExampleIndex]);
+            }
+            return null;
+          })()}
           {examples.length > 0 ? (
             <div className="example-carousel">
-              {getFileType(examples[currentExampleIndex]?.url) === 'image' && (
+              {examples[currentExampleIndex]?.type === 'image' && (
                 <img 
                   src={examples[currentExampleIndex].url} 
                   alt={`Example ${currentExampleIndex + 1}`} 
                   className="example-media"
                   onError={(e) => {
-                    console.error('🚫 이미지 로딩 실패:', e.target.src);
-                    console.error('🚫 에러 상세:', e);
-                    // 대체 이미지로 교체
-                    e.target.src = '/default-thumbnail.png';
-                    // 또는 부모 요소를 플레이스홀더로 교체
+                    console.error('🚫 이미지 로딩 실패:');
+                    console.error('📍 실패한 URL:', e.target.src);
+                    console.error('🔍 에러 이벤트:', e);
+                    console.error('🌐 현재 도메인:', window.location.origin);
+                    console.error('🔗 원본 URL:', examples[currentExampleIndex]?.url);
+                    
+                    // 네트워크 상태 확인
+                    if (!navigator.onLine) {
+                      console.error('📡 네트워크 연결 없음');
+                    }
+                    
+                    // CORS 에러일 가능성 체크
+                    if (e.target.src.includes('http') && !e.target.src.includes(window.location.origin)) {
+                      console.error('🚨 CORS 에러 가능성: 외부 도메인 이미지');
+                    }
+                    
+                    // 대체 이미지로 교체하지 않고 플레이스홀더 표시
+                    e.target.style.display = 'none';
+                    const placeholder = e.target.parentNode.querySelector('.error-placeholder');
+                    if (!placeholder) {
+                      const errorDiv = document.createElement('div');
+                      errorDiv.className = 'error-placeholder';
+                      errorDiv.style.cssText = `
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100%;
+                        color: #888;
+                        flex-direction: column;
+                        gap: 10px;
+                      `;
+                      errorDiv.innerHTML = `
+                        <div>❌ 이미지 로딩 실패</div>
+                        <div style="font-size: 0.8em; text-align: center; max-width: 300px; word-break: break-all;">
+                          ${e.target.src}
+                        </div>
+                      `;
+                      e.target.parentNode.appendChild(errorDiv);
+                    }
                   }}
-                  onLoad={() => {
+                  onLoad={(e) => {
                     console.log('✅ 이미지 로딩 성공:', examples[currentExampleIndex].url);
+                    console.log('📏 이미지 크기:', {
+                      width: e.target.naturalWidth,
+                      height: e.target.naturalHeight
+                    });
+                    console.log('🎯 이미지 DOM 요소:', e.target);
+                    console.log('📐 이미지 표시 크기:', {
+                      displayWidth: e.target.clientWidth,
+                      displayHeight: e.target.clientHeight,
+                      offsetWidth: e.target.offsetWidth,
+                      offsetHeight: e.target.offsetHeight
+                    });
+                    console.log('👀 이미지 가시성:', {
+                      display: getComputedStyle(e.target).display,
+                      visibility: getComputedStyle(e.target).visibility,
+                      opacity: getComputedStyle(e.target).opacity
+                    });
                   }}
                 />
               )}
-              {getFileType(examples[currentExampleIndex]?.url) === 'video' && (
+              {examples[currentExampleIndex]?.type === 'video' && (
                 <video src={examples[currentExampleIndex].url} controls autoPlay muted loop className="example-media" />
               )}
               {examples.length > 1 && (
@@ -354,19 +475,12 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
               <span className="rating-text">{promptDetail?.rating?.toFixed(1) || 0}/5.0</span>
             </div>
             <div className={`grade-badge ${getGradeClass(aiEvaluation?.grade)}`}>
-              AI 등급: {aiEvaluation?.grade || 'N/A'}
+              🤖 AI {aiEvaluation?.grade || 'N/A'}
+              {aiEvaluation?.reason && (
+                <span className="grade-reason"> · {aiEvaluation.reason}</span>
+              )}
             </div>
            </div>
-
-           {/* AI 평가 이유 섹션 - 이유가 있을 때만 표시 */}
-           {aiEvaluation?.reason && (
-             <div className="ai-evaluation-section">
-               <div className="ai-evaluation-reason">
-                 <span className="reason-label">AI 평가:</span>
-                 <span className="reason-text">{aiEvaluation.reason}</span>
-               </div>
-             </div>
-           )}
 
            <div className="purchase-section">
               <div className="price-info">
@@ -381,17 +495,27 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
                     구매하기
                   </button>
                 )}
-                <button
-                  className="wishlist-btn"
-                  onClick={handleWishlistToggle}
-                  disabled={isTogglingWishlist || isOwner}
-                >
-                  {isTogglingWishlist
-                    ? '처리 중...'
-                    : promptDetail?.bookmarked
-                    ? '위시리스트 삭제'
-                    : '위시리스트에 추가'}
-                </button>
+                {isOwner ? (
+                  <button
+                    className="delete-btn"
+                    onClick={handleDeletePrompt}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? '삭제 중...' : '프롬프트 삭제'}
+                  </button>
+                ) : (
+                  <button
+                    className="wishlist-btn"
+                    onClick={handleWishlistToggle}
+                    disabled={isTogglingWishlist}
+                  >
+                    {isTogglingWishlist
+                      ? '처리 중...'
+                      : promptDetail?.bookmarked
+                      ? '위시리스트 삭제'
+                      : '위시리스트에 추가'}
+                  </button>
+                )}
               </div>
             </div>
 

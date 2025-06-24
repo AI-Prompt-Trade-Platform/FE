@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './AlertModal.css';
 
-const AlertModal = ({ isOpen, onClose, title, message, type = 'info', confirmText = '확인' }) => {
+const AlertModal = ({ isOpen, onClose, onConfirm, onCancel, title, message, type = 'info', confirmText = '확인', cancelText = null }) => {
   const [isClosing, setIsClosing] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      setIsVisible(true);
       // 배경 스크롤 막기
       document.body.style.overflow = 'hidden';
     } else {
       // 배경 스크롤 복원
       document.body.style.overflow = 'unset';
+      // isOpen이 false가 되면 isClosing도 초기화
+      setIsClosing(false);
     }
 
     return () => {
@@ -24,8 +24,6 @@ const AlertModal = ({ isOpen, onClose, title, message, type = 'info', confirmTex
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
-      setIsClosing(false);
-      setIsVisible(false);
       onClose();
     }, 300);
   };
@@ -72,7 +70,7 @@ const AlertModal = ({ isOpen, onClose, title, message, type = 'info', confirmTex
     }
   };
 
-  if (!isVisible) return null;
+  if (!isOpen) return null;
 
   return ReactDOM.createPortal(
     <div 
@@ -92,13 +90,31 @@ const AlertModal = ({ isOpen, onClose, title, message, type = 'info', confirmTex
         </div>
         
         <div className="alert-modal-footer">
-          <button 
-            className={`alert-confirm-btn ${type}`}
-            onClick={handleClose}
-            autoFocus
-          >
-            {confirmText}
-          </button>
+          {cancelText ? (
+            <>
+              <button 
+                className="alert-cancel-btn"
+                onClick={onCancel || handleClose}
+              >
+                {cancelText}
+              </button>
+              <button 
+                className={`alert-confirm-btn ${type}`}
+                onClick={onConfirm || handleClose}
+                autoFocus
+              >
+                {confirmText}
+              </button>
+            </>
+          ) : (
+            <button 
+              className={`alert-confirm-btn ${type}`}
+              onClick={onConfirm || handleClose}
+              autoFocus
+            >
+              {confirmText}
+            </button>
+          )}
         </div>
         
         {/* 파티클 효과 (성공 알림용) */}

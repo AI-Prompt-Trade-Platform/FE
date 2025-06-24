@@ -6,18 +6,7 @@ import './PromptRegisterPage.css';
 import { useAuthApi } from '../../hooks/useAuthApi';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDropzone } from 'react-dropzone';
-
-// 예시 카테고리
-const MODEL_CATEGORIES = [
-  { id: 1, name: 'gpt-4o' },
-  { id: 2, name: 'Midjourney' },
-  { id: 3, name: 'gemini 2.5 Pro' },
-];
-const TYPE_CATEGORIES = [
-  { id: 1, name: '텍스트' },
-  { id: 2, name: '이미지 생성' },
-  { id: 3, name: '영상 생성' },
-];
+import { MODEL_CATEGORIES, TYPE_CATEGORIES } from '../../constants/categories';
 
 const initialForm = {
   promptName: '',

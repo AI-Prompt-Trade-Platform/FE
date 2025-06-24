@@ -3,7 +3,7 @@ import PromptCard from '../PromptCard/PromptCard';
 import PromptDetailModal from '../PromptDetailModal/PromptDetailModal';
 import './PromptCarousel.css';
 
-const PromptCarousel = ({ prompts, title, onCardClick }) => {
+const PromptCarousel = ({ prompts, title, onCardClick, emptyMessage = "✨ 표시할 프롬프트가 없습니다. ✨" }) => {
   const [current, setCurrent] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
   const [touchStart, setTouchStart] = useState(0);
@@ -135,7 +135,7 @@ const PromptCarousel = ({ prompts, title, onCardClick }) => {
             </div>
           ) : (
             <div className="carousel-empty">
-              <p>✨ 표시할 프롬프트가 없습니다. ✨</p>
+              <p>{emptyMessage}</p>
             </div>
           )}
         </div>

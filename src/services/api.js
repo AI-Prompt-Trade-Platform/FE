@@ -120,7 +120,7 @@ export const promptAPI = {
   
   // 프롬프트 생성
   createPrompt: (promptData) => 
-    apiClient.post('/prompts', promptData),
+    apiClient.post('multipart/form-data', promptData),
   
   // 프롬프트 수정
   updatePrompt: (id, promptData) => 

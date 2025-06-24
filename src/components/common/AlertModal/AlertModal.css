@@ -102,6 +102,9 @@
 
 .alert-modal-footer {
   text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
 }
 
 .alert-confirm-btn {
@@ -153,6 +156,31 @@
 
 .alert-confirm-btn.warning:hover {
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.alert-cancel-btn {
+  background: transparent;
+  color: #9ca3af;
+  border: 2px solid #374151;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.alert-cancel-btn:hover {
+  color: #ffffff;
+  border-color: #6b7280;
+  background: rgba(75, 85, 99, 0.1);
+  transform: translateY(-1px);
+}
+
+.alert-cancel-btn:active {
+  transform: translateY(0);
 }
 
 /* 성공 알림 파티클 효과 */

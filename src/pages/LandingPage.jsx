@@ -27,6 +27,11 @@ const LandingPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // LandingPage 방문 기록 저장
+  useEffect(() => {
+    localStorage.setItem('hasVisitedLanding', 'true');
+  }, []);
+
   // 페이즈 전환
   useEffect(() => {
     const interval = setInterval(() => {
@@ -36,7 +41,7 @@ const LandingPage = () => {
   }, []);
 
   const handleStartClick = () => {
-    navigate('/');
+    navigate('/about');
   };
 
   const handleDiscoverClick = () => {
