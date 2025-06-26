@@ -4,24 +4,14 @@ import { Auth0Provider } from '@auth0/auth0-react'
 import './index.css'
 import App from './App.jsx'
 
-// .env 파일에서 환경변수 로드
-const domain = import.meta.env.VITE_AUTH0_DOMAIN
-const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID
-const audience = import.meta.env.VITE_AUTH0_AUDIENCE
+// .env 파일에서 환경변수 로드 (임시 더미값 포함)
+const domain = import.meta.env.VITE_AUTH0_DOMAIN || 'dummy-domain.auth0.com'
+const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID || 'dummy-client-id'
+const audience = import.meta.env.VITE_AUTH0_AUDIENCE || 'dummy-audience'
 
-console.log('🔍 Auth0 환경변수 확인:', { domain, clientId, audience })
-console.log('🔍 Raw 환경변수:', {
-  VITE_AUTH0_DOMAIN: import.meta.env.VITE_AUTH0_DOMAIN,
-  VITE_AUTH0_CLIENT_ID: import.meta.env.VITE_AUTH0_CLIENT_ID,
-  VITE_AUTH0_AUDIENCE: import.meta.env.VITE_AUTH0_AUDIENCE,
-  MODE: import.meta.env.MODE,
-  DEV: import.meta.env.DEV
-})
-
-// 환경변수가 로드되지 않았을 때 경고
-if (!domain || !clientId || !audience) {
-  console.error('❌ .env 파일이 제대로 로드되지 않았습니다!')
-  console.error('필요한 환경변수:', ['VITE_AUTH0_DOMAIN', 'VITE_AUTH0_CLIENT_ID', 'VITE_AUTH0_AUDIENCE'])
+// 환경변수 유효성 검증 (실제 프로덕션에서만 경고)
+if (import.meta.env.MODE === 'production' && (!import.meta.env.VITE_AUTH0_DOMAIN || !import.meta.env.VITE_AUTH0_CLIENT_ID || !import.meta.env.VITE_AUTH0_AUDIENCE)) {
+  console.warn('Auth0 environment variables are missing in production')
 }
 
 const container = document.getElementById('root');

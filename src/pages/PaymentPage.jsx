@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import StarryBackground from '../components/Background/StarryBackground';
 import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
 import { useAuth } from '../contexts/AuthContext';
+import { userAPI, paymentAPI, setAuthToken } from '../services/api';
 import './PaymentPage.css';
 
 const PaymentPage = () => {
@@ -39,17 +40,9 @@ const PaymentPage = () => {
   const fetchUserProfile = async () => {
     try {
       const authToken = await getAccessTokenSilently();
-      const response = await fetch('/api/mypage/profile', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) throw new Error('프로필 정보를 가져오는데 실패했습니다.');
-
-      const data = await response.json();
+      setAuthToken(authToken);
+      
+      const data = await userAPI.getProfile();
       setUserProfile(data);
       return data;
     } catch (error) {
@@ -61,21 +54,21 @@ const PaymentPage = () => {
   const confirmPayment = async (paymentKey, orderId, amount) => {
     try {
       const authToken = await getAccessTokenSilently();
-      // 백엔드가 POST 메소드와 URL 파라미터를 함께 기대하므로, URL을 재구성합니다.
+      setAuthToken(authToken);
+      
+      // 백엔드가 POST 메소드와 URL 파라미터를 함께 기대하므로, 커스텀 API 호출을 사용합니다.
       const encodedPaymentKey = encodeURIComponent(paymentKey);
       const encodedOrderId = encodeURIComponent(orderId);
-      // 백엔드 컨트롤러에서 userId를 토큰에서 추출하므로 프론트에서 보낼 필요가 없습니다.
-      const url = `/api/payments/confirm?paymentKey=${encodedPaymentKey}&orderId=${encodedOrderId}&amount=${amount}`;
+      const url = `/payments/confirm?paymentKey=${encodedPaymentKey}&orderId=${encodedOrderId}&amount=${amount}`;
 
       console.log('결제 확인 요청 URL:', url);
 
-      const response = await fetch(url, {
-        method: 'POST', // POST 메소드 유지
+      // API 클라이언트의 request 메서드를 직접 사용
+      const response = await fetch(`${userAPI.baseURL || 'https://api.prumpt2.store/api'}${url}`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${authToken}`,
-          // 'Content-Type' 헤더는 요청 본문이 없으므로 제거합니다.
         },
-        // 요청 본문을 제거합니다.
       });
 
       if (!response.ok) {

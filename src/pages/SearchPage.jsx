@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import StarryBackground from '../components/Background/StarryBackground';
 import PromptCarousel from '../components/PromptCarousel/PromptCarousel';
 import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
+import { promptAPI } from '../services/api';
 import './SearchPage.css';
 
 const SearchPage = () => {
@@ -32,13 +33,7 @@ const SearchPage = () => {
       setError('');
       refreshMessage();
       
-      const response = await fetch(`http://localhost:8080/api/home/prompts/search?keyword=${encodeURIComponent(searchQuery)}`);
-      
-      if (!response.ok) {
-        throw new Error('검색 중 오류가 발생했습니다');
-      }
-      
-      const data = await response.json();
+      const data = await promptAPI.searchPrompts(searchQuery);
       console.log('백엔드 응답 데이터:', data);
       
       // 백엔드 응답 구조에 맞게 데이터 추출
@@ -85,32 +80,26 @@ const SearchPage = () => {
       const firstChar = searchQuery.charAt(0);
       
       // 첫 글자로 시작하는 프롬프트들 검색
-      const response = await fetch(`http://localhost:8080/api/home/prompts/search?keyword=${encodeURIComponent(firstChar)}`);
+      const data = await promptAPI.searchPrompts(firstChar);
+      const contentArray = data.content || [];
       
-      if (response.ok) {
-        const data = await response.json();
-        const contentArray = data.content || [];
-        
-        // 최대 6개의 추천 프롬프트만 표시
-        const transformedSuggestions = contentArray.slice(0, 6).map(item => ({
-          id: item.promptId,
-          title: item.promptName,
-          description: item.description,
-          category: item.typeCategory,
-          subcategory: item.typeCategory,
-          thumbnail: item.thumbnailImageUrl || `https://picsum.photos/400/300?random=${item.promptId}`,
-          author: item.ownerProfileName || 'AI Assistant',
-          rating: item.rate || 4.5,
-          downloads: item.salesCount || Math.floor(Math.random() * 500) + 100,
-          uses: item.salesCount || Math.floor(Math.random() * 500) + 100,
-          price: item.price || 0,
-          tags: item.hashTags || ['AI', '프롬프트']
-        }));
-        
-        setSuggestedPrompts(transformedSuggestions);
-      } else {
-        setSuggestedPrompts([]);
-      }
+      // 최대 6개의 추천 프롬프트만 표시
+      const transformedSuggestions = contentArray.slice(0, 6).map(item => ({
+        id: item.promptId,
+        title: item.promptName,
+        description: item.description,
+        category: item.typeCategory,
+        subcategory: item.typeCategory,
+        thumbnail: item.thumbnailImageUrl || `https://picsum.photos/400/300?random=${item.promptId}`,
+        author: item.ownerProfileName || 'AI Assistant',
+        rating: item.rate || 4.5,
+        downloads: item.salesCount || Math.floor(Math.random() * 500) + 100,
+        uses: item.salesCount || Math.floor(Math.random() * 500) + 100,
+        price: item.price || 0,
+        tags: item.hashTags || ['AI', '프롬프트']
+      }));
+      
+      setSuggestedPrompts(transformedSuggestions);
     } catch (err) {
       console.error('추천 프롬프트 가져오기 오류:', err);
       setSuggestedPrompts([]);

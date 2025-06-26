@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:prod": "NODE_ENV=production vite build",
+    "build:s3": "vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy-check": "npm run lint && npm run build:s3"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",

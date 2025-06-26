@@ -1,5 +1,13 @@
-// API 기본 설정
+// API 기본 설정 - CloudFront 우회를 위해 직접 ALB 도메인 사용
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+
+// 디버깅: 현재 API URL 확인
+console.log('🔍 Current API Base URL:', API_BASE_URL);
+console.log('🔍 Environment Mode:', import.meta.env.MODE);
+console.log('🔍 VITE_API_URL:', import.meta.env.VITE_API_URL);
+
+// 프로덕션에서 localhost 사용 여부 확인
+const isProductionWithLocalhost = import.meta.env.MODE === 'production' && API_BASE_URL.includes('localhost');
 
 // HTTP 클라이언트 설정
 class ApiClient {
@@ -21,20 +29,66 @@ class ApiClient {
 
   // 기본 fetch 래퍼
   async request(endpoint, options = {}) {
+    // 프로덕션에서 localhost API 호출 방지
+    if (isProductionWithLocalhost) {
+      console.warn('API call skipped in production (localhost not available):', endpoint);
+      return { data: [], message: 'API not available in production' };
+    }
+
     const url = `${this.baseURL}${endpoint}`;
+    // FormData 요청의 경우 완성된 헤더를 그대로 사용
     const config = {
-      headers: {
+      ...options,
+      headers: options._skipDefaultHeaders ? options.headers : {
         ...this.defaultHeaders,
         ...options.headers,
       },
-      ...options,
     };
+
+    // 디버깅: 요청 정보 로깅
+    console.log('🌐 API 요청 정보:', {
+      url,
+      method: options.method || 'GET',
+      hasAuthToken: !!this.defaultHeaders['Authorization'],
+      authTokenPreview: this.defaultHeaders['Authorization'] ? 
+        this.defaultHeaders['Authorization'].substring(0, 20) + '...' : 'None',
+      headers: Object.keys(config.headers),
+      hasBody: !!options.body,
+      bodyType: options.body?.constructor?.name,
+    });
 
     try {
       const response = await fetch(url, config);
       
+      console.log('📡 API 응답 상태:', {
+        url,
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+      });
+      
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData = {};
+        const contentType = response.headers.get('content-type');
+        
+        try {
+          if (contentType && contentType.includes('application/json')) {
+            errorData = await response.json();
+          } else {
+            const errorText = await response.text();
+            console.log('❌ 비-JSON 오류 응답:', errorText);
+            errorData = { message: errorText };
+          }
+        } catch (parseError) {
+          console.log('❌ 오류 응답 파싱 실패:', parseError);
+        }
+        
+        console.log('❌ API 오류 상세:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+        });
+        
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
 
@@ -44,7 +98,7 @@ class ApiClient {
       }
       return response;
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error('❌ API request failed:', error);
       throw error;
     }
   }
@@ -55,18 +109,53 @@ class ApiClient {
   }
 
   post(endpoint, data, options = {}) {
+    const isFormData = data instanceof FormData;
+    
+    let headers;
+    if (isFormData) {
+      // FormData일 때는 Content-Type 헤더를 완전히 제거
+      const { 'Content-Type': _, ...headersWithoutContentType } = this.defaultHeaders;
+      const { 'content-type': __, ...cleanHeaders } = headersWithoutContentType;
+      headers = { ...cleanHeaders, ...options.headers };
+      
+      // options.headers에서도 Content-Type 제거
+      if (options.headers) {
+        const { 'Content-Type': ___, 'content-type': ____, ...cleanOptionsHeaders } = options.headers;
+        headers = { ...cleanHeaders, ...cleanOptionsHeaders };
+      }
+      
+      console.log('🧹 FormData용 헤더 정리 완료:', Object.keys(headers));
+    } else {
+      headers = { ...this.defaultHeaders, ...options.headers };
+    }
+    
     return this.request(endpoint, {
       ...options,
       method: 'POST',
-      body: JSON.stringify(data),
+      body: isFormData ? data : JSON.stringify(data),
+      headers,
+      _skipDefaultHeaders: isFormData, // FormData 요청 시 기본 헤더 병합 건너뛰기
     });
   }
 
   put(endpoint, data, options = {}) {
+    const isFormData = data instanceof FormData;
+    
+    let headers;
+    if (isFormData) {
+      // FormData일 때는 Content-Type 헤더를 완전히 제거
+      const { 'Content-Type': _, ...headersWithoutContentType } = this.defaultHeaders;
+      headers = { ...headersWithoutContentType, ...options.headers };
+    } else {
+      headers = { ...this.defaultHeaders, ...options.headers };
+    }
+    
     return this.request(endpoint, {
       ...options,
       method: 'PUT',
-      body: JSON.stringify(data),
+      body: isFormData ? data : JSON.stringify(data),
+      headers,
+      _skipDefaultHeaders: isFormData, // FormData 요청 시 기본 헤더 병합 건너뛰기
     });
   }
 
@@ -120,7 +209,7 @@ export const promptAPI = {
   
   // 프롬프트 생성
   createPrompt: (promptData) => 
-    apiClient.post('multipart/form-data', promptData),
+    apiClient.post('/prompts', promptData),
   
   // 프롬프트 수정
   updatePrompt: (id, promptData) => 

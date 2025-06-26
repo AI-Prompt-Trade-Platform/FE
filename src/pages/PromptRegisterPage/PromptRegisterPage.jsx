@@ -7,6 +7,7 @@ import { useAuthApi } from '../../hooks/useAuthApi';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDropzone } from 'react-dropzone';
 import { MODEL_CATEGORIES, TYPE_CATEGORIES } from '../../constants/categories';
+import { promptAPI } from '../../services/api';
 
 const initialForm = {
   promptName: '',
@@ -96,25 +97,55 @@ const PromptRegisterPage = () => {
     setUploading(true);
     try {
       const formData = new FormData();
+      
+      // 데이터 검증 및 로깅
+      console.log('🔍 전송할 데이터:', {
+        promptName: form.promptName,
+        promptContent: form.promptContent,
+        description: form.description,
+        price: form.price,
+        priceType: typeof form.price,
+        exampleFile: form.exampleFile?.name,
+        exampleType: form.exampleType,
+        modelCategoryId: form.modelCategoryId,
+        modelCategoryIdType: typeof form.modelCategoryId,
+        typeCategoryId: form.typeCategoryId,
+        typeCategoryIdType: typeof form.typeCategoryId,
+      });
+      
       formData.append('promptName', form.promptName);
       formData.append('promptContent', form.promptContent);
       formData.append('description', form.description);
-      formData.append('price', form.price);
+      
+      // price를 숫자로 확실히 변환
+      const priceNumber = parseInt(form.price, 10);
+      if (isNaN(priceNumber)) {
+        throw new Error('가격이 올바르지 않습니다.');
+      }
+      formData.append('price', priceNumber.toString());
+      
       if (form.exampleFile) {
         formData.append('exampleFile', form.exampleFile);
       }
       formData.append('exampleType', form.exampleType);
-      formData.append('modelCategoryIds', form.modelCategoryId);
-      formData.append('typeCategoryIds', form.typeCategoryId);
+      
+      // 카테고리 ID를 숫자로 확실히 변환
+      const modelCategoryNumber = parseInt(form.modelCategoryId, 10);
+      const typeCategoryNumber = parseInt(form.typeCategoryId, 10);
+      if (isNaN(modelCategoryNumber) || isNaN(typeCategoryNumber)) {
+        throw new Error('카테고리 ID가 올바르지 않습니다.');
+      }
+      formData.append('modelCategoryIds', modelCategoryNumber.toString());
+      formData.append('typeCategoryIds', typeCategoryNumber.toString());
 
-      // useAuthApi의 authFetch를 사용
-      const response = await authFetch('/api/prompts', {
-        method: 'POST',
-        body: formData,
-      });
+      console.log('📤 최종 FormData 내용:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`  ${key}:`, value instanceof File ? `파일(${value.name})` : value);
+      }
 
-      // authFetch가 자동으로 JSON 파싱을 시도하므로, 
-      // 성공 시에는 response가 이미 파싱된 객체일 것입니다.
+      // promptAPI를 사용하여 등록
+      const response = await promptAPI.createPrompt(formData);
+      
       console.log('프롬프트 등록 성공:', response);
       
       showSuccess('프롬프트가 성공적으로 등록되었습니다!');

@@ -1,23 +1,24 @@
 // src/components/PromptList.jsx
 import React, { useEffect, useState } from 'react';
-import { useAuthApi } from '../hooks/useAuthApi';
+import { promptAPI } from '../services/api';
 
 export default function PromptList() {
-    const { authFetch } = useAuthApi();
     const [prompts, setPrompts] = useState([]);
     const [error, setError] = useState();
 
     useEffect(() => {
         (async () => {
             try {
-                // /api/prompts 엔드포인트에 GET 요청
-                const data = await authFetch('/api/prompts', { method: 'GET' });
-                setPrompts(data);
+                // 인기 프롬프트 목록 가져오기 
+                const data = await promptAPI.getPopularPrompts(100); // 100개 가져오기
+                // 응답 구조에 맞게 데이터 추출
+                const promptList = data.content || data || [];
+                setPrompts(promptList);
             } catch (e) {
                 setError(e.message);
             }
         })();
-    }, [authFetch]);
+    }, []);
 
     if (error) return <div>데이터 로드 실패: {error}</div>;
 

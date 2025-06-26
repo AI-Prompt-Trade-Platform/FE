@@ -7,6 +7,7 @@ import PromptDetailModal from '../components/PromptDetailModal/PromptDetailModal
 import { useAuth } from '../contexts/AuthContext';
 import { useAlert } from '../contexts/AlertContext';
 import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
+import { userAPI, statsAPI, setAuthToken } from '../services/api';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
@@ -53,20 +54,11 @@ const ProfilePage = () => {
                 return;
             }
 
-            // 유효한 토큰 가져오기
+            // 유효한 토큰 가져오기 및 설정
             const authToken = await getAccessTokenSilently();
+            setAuthToken(authToken);
 
-            const response = await fetch('/api/mypage/profile', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`프로필 조회 실패: ${response.status}`);
-            }
-            const data = await response.json();
+            const data = await userAPI.getProfile();
             console.log('사용자 프로필 데이터:', data);
             setUserProfile(data);
         } catch (err) {
@@ -90,23 +82,11 @@ const ProfilePage = () => {
                 return;
             }
 
-            // 유효한 토큰 가져오기
+            // 유효한 토큰 가져오기 및 설정
             const authToken = await getAccessTokenSilently();
+            setAuthToken(authToken);
 
-            const url = `/api/mypage/prompts/selling?page=${page}&size=${size}`;
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`판매 중인 프롬프트 조회 실패: ${response.status}`);
-            }
-            
-            const data = await response.json();
+            const data = await userAPI.getSellingHistory(page, size);
             console.log('판매 중인 프롬프트 데이터:', data);
             
             // 백엔드에서 제공하는 데이터를 프론트엔드 구조에 맞게 변환
@@ -159,23 +139,11 @@ const ProfilePage = () => {
                 return;
             }
 
-            // 유효한 토큰 가져오기
+            // 유효한 토큰 가져오기 및 설정
             const authToken = await getAccessTokenSilently();
+            setAuthToken(authToken);
 
-            const url = `/api/mypage/prompts/purchased?page=${page}&size=${size}`;
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`구매한 프롬프트 조회 실패: ${response.status}`);
-            }
-            
-            const data = await response.json();
+            const data = await userAPI.getPurchaseHistory(page, size);
             console.log('구매한 프롬프트 데이터:', data);
             
             // 백엔드에서 제공하는 데이터를 직접 활용
@@ -229,21 +197,11 @@ const ProfilePage = () => {
                 return;
             }
 
-            // 유효한 토큰 가져오기
+            // 유효한 토큰 가져오기 및 설정
             const authToken = await getAccessTokenSilently();
+            setAuthToken(authToken);
 
-            const url = `/api/mypage/monitoring?period=${period}`;
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                throw new Error(`거래 요약 조회 실패: ${response.status}`);
-            }
-            const data = await response.json();
+            const data = await statsAPI.getMonitoringData(period);
             console.log('거래 요약 데이터:', data);
             setSalesSummary(data);
         } catch (err) {
@@ -332,8 +290,9 @@ const ProfilePage = () => {
                 return;
             }
 
-            // 유효한 토큰 가져오기
+            // 유효한 토큰 가져오기 및 설정
             const authToken = await getAccessTokenSilently();
+            setAuthToken(authToken);
 
             // FormData로 파일과 함께 전송
             const formData = new FormData();
@@ -355,23 +314,8 @@ const ProfilePage = () => {
                 console.log(`  ${key}:`, value instanceof File ? `파일(${value.name})` : value);
             }
             
-            // FormData로 프로필 정보 업데이트
-            const updateUrl = '/api/mypage/me/profile/update';
-            const updateResponse = await fetch(updateUrl, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                    // Content-Type을 설정하지 않음 (FormData가 자동으로 multipart/form-data 설정)
-                },
-                body: formData
-            });
-            if (!updateResponse.ok) {
-                const errorText = await updateResponse.text();
-                console.error('프로필 업데이트 API 응답 내용:', errorText);
-                throw new Error(`프로필 업데이트 API 오류: ${updateResponse.status}`);
-            }
-
-            const updatedProfile = await updateResponse.json();
+            // userAPI를 사용하여 프로필 업데이트
+            const updatedProfile = await userAPI.updateProfile(formData);
             console.log('업데이트된 프로필 데이터:', JSON.stringify(updatedProfile, null, 2));
 
             // 업데이트된 프로필 정보로 상태 갱신

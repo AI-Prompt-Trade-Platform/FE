@@ -4,6 +4,7 @@ import StarryBackground from '../components/Background/StarryBackground';
 import PromptDetailModal from '../components/PromptDetailModal/PromptDetailModal';
 import { useAuth } from '../contexts/AuthContext';
 import { useLoadingMessage, useMinimumLoadingTime } from '../hooks/useLoadingMessage';
+import { userAPI, setAuthToken } from '../services/api';
 import './WishlistPage.css';
 
 const WishlistPage = () => {
@@ -47,17 +48,10 @@ const WishlistPage = () => {
             }
 
             const authToken = await getAccessTokenSilently();
+            setAuthToken(authToken);
             
-            // API 클라이언트를 사용하는 대신 직접 fetch 호출
-            const response = await fetch('/api/wishlist', {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
-
-            if (!response.ok) {
-                throw new Error(`위시리스트 API 오류: ${response.status}`);
-            }
-
-            const wishlistData = await response.json();
+            // userAPI를 사용하여 위시리스트 조회
+            const wishlistData = await userAPI.getWishlist();
 
             const formattedPrompts = wishlistData.content.map(item => ({
                 id: item.promptId,

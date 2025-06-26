@@ -33,7 +33,7 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding: 120px 40px 80px;
+  padding: 80px 40px 80px;
   position: relative;
   overflow: hidden;
 }
@@ -232,6 +232,8 @@
   opacity: 0;
   transform: translateY(50px);
   transition: all 0.8s ease-out;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .stats-section.visible {
@@ -312,6 +314,8 @@
   opacity: 0;
   transform: translateY(50px);
   transition: all 0.8s ease-out;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .features-section.visible {
@@ -321,7 +325,8 @@
 
 .section-header {
   text-align: center;
-  margin-bottom: 80px;
+  max-width: 1200px;
+  margin: 0 auto 80px auto;
 }
 
 .section-title {
@@ -447,6 +452,8 @@
   opacity: 0;
   transform: translateY(50px);
   transition: all 0.8s ease-out;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .vision-section.visible {
@@ -610,6 +617,8 @@
   opacity: 0;
   transform: translateY(50px);
   transition: all 0.8s ease-out;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .cta-section.visible {
@@ -748,7 +757,7 @@
   .hero-section {
     flex-direction: column;
     text-align: center;
-    padding: 100px 20px 60px;
+    padding: 80px 20px 60px;
   }
 
   .hero-actions {
@@ -794,7 +803,7 @@
 
 @media (max-width: 480px) {
   .hero-section {
-    padding: 80px 15px 40px;
+    padding: 60px 15px 40px;
   }
 
   .stats-container {
