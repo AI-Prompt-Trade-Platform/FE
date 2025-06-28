@@ -19,6 +19,12 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
   const [isTogglingWishlist, setIsTogglingWishlist] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    rating: 5,
+    content: ''
+  });
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   // 모달 열릴 때 배경 스크롤 막기
   useEffect(() => {
@@ -326,6 +332,56 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
     }
   }
 
+  // 리뷰 작성 관련 핸들러들
+  const handleReviewRatingClick = (rating) => {
+    setReviewForm(prev => ({ ...prev, rating }));
+  };
+
+  const handleReviewContentChange = (e) => {
+    setReviewForm(prev => ({ ...prev, content: e.target.value }));
+  };
+
+  const handleSubmitReview = async () => {
+    if (!reviewForm.content.trim()) {
+      showError('리뷰 내용을 입력해주세요.');
+      return;
+    }
+
+    setIsSubmittingReview(true);
+    try {
+      const token = await getAccessTokenSilently();
+      setAuthToken(token);
+
+      const reviewData = {
+        promptId: parseInt(promptId),
+        rate: reviewForm.rating,
+        reviewContent: reviewForm.content
+      };
+
+      await promptAPI.createReview(reviewData);
+      
+      showSuccess('리뷰가 성공적으로 등록되었습니다!');
+      
+      // 리뷰 폼 초기화 및 숨기기
+      setReviewForm({ rating: 5, content: '' });
+      setShowReviewForm(false);
+      
+      // 프롬프트 데이터 새로고침 (리뷰 목록 업데이트)
+      await fetchPromptData();
+      
+    } catch (err) {
+      console.error('리뷰 작성 중 오류:', err);
+      showError('리뷰 작성 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
+
+  const cancelReviewForm = () => {
+    setReviewForm({ rating: 5, content: '' });
+    setShowReviewForm(false);
+  };
+
   // 현재 사용자가 프롬프트 소유자인지 판단
   const isOwner = user?.sub === promptDetail?.ownerAuth0Id;
 
@@ -551,6 +607,83 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
 
             <div className="reviews-section">
               <h3>구매자 리뷰</h3>
+              
+              {/* 리뷰 작성 버튼 및 폼 - 구매한 사용자만 표시 */}
+              {promptDetail?.userPurchased && !isOwner && (
+                <div className="review-write-section">
+                  {!showReviewForm ? (
+                    <button 
+                      className="write-review-btn"
+                      onClick={() => setShowReviewForm(true)}
+                    >
+                      리뷰 작성하기
+                    </button>
+                  ) : (
+                    <div className="review-form">
+                      <div className="review-form-header">
+                        <h4>리뷰 작성</h4>
+                        <button 
+                          className="form-close-btn"
+                          onClick={cancelReviewForm}
+                          disabled={isSubmittingReview}
+                        >
+                          ×
+                        </button>
+                      </div>
+                      
+                      <div className="rating-input-section">
+                        <label>별점</label>
+                        <div className="rating-input">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <button
+                              key={star}
+                              type="button"
+                              className={`star-btn ${star <= reviewForm.rating ? 'active' : ''}`}
+                              onClick={() => handleReviewRatingClick(star)}
+                              disabled={isSubmittingReview}
+                            >
+                              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+                              </svg>
+                            </button>
+                          ))}
+                          <span className="rating-text">({reviewForm.rating}/5)</span>
+                        </div>
+                      </div>
+
+                      <div className="content-input-section">
+                        <label htmlFor="review-content">리뷰 내용</label>
+                        <textarea
+                          id="review-content"
+                          value={reviewForm.content}
+                          onChange={handleReviewContentChange}
+                          placeholder="프롬프트에 대한 솔직한 리뷰를 작성해주세요..."
+                          rows="4"
+                          disabled={isSubmittingReview}
+                        />
+                      </div>
+
+                      <div className="review-form-actions">
+                        <button 
+                          className="cancel-btn"
+                          onClick={cancelReviewForm}
+                          disabled={isSubmittingReview}
+                        >
+                          취소
+                        </button>
+                        <button 
+                          className="submit-btn"
+                          onClick={handleSubmitReview}
+                          disabled={isSubmittingReview || !reviewForm.content.trim()}
+                        >
+                          {isSubmittingReview ? '등록 중...' : '리뷰 등록'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="reviews-list">
                 {reviews.length > 0 ? (
                   reviews.map(review => (

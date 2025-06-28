@@ -197,7 +197,11 @@ export const promptAPI = {
   
   // 프롬프트 리뷰 목록 조회
   getPromptReviews: (id, page = 0, size = 10) => 
-    apiClient.get(`/api/reviews/${id}`),
+    apiClient.get(`/reviews/${id}`),
+  
+  // 프롬프트 리뷰 작성
+  createReview: (reviewData) => 
+    apiClient.post('/reviews', reviewData),
   
   // 프롬프트 AI 평가 조회
   getPromptAiEvaluation: (id) => 
