@@ -3,6 +3,14 @@ import "./SalesSummary.css"; // CSS 파일 임포트
 
 function SalesSummary({ thisMonthProfit, totalSalesCount, avgRate, period }) {
   const formatNumber = (num) => (num !== undefined && num !== null ? num.toLocaleString("ko-KR") : "0");
+  
+  // 안전한 평점 포맷팅 함수 (RateAvgDto 객체 처리)
+  const formatRate = (rateDto) => {
+    if (!rateDto || rateDto.rateAvg === undefined || rateDto.rateAvg === null) return "0.0";
+    const numRate = Number(rateDto.rateAvg);
+    if (isNaN(numRate)) return "0.0";
+    return numRate.toFixed(1);
+  };
 
   // 기간에 따른 제목 설정
   let incomeTitle = "수익";
@@ -41,7 +49,7 @@ function SalesSummary({ thisMonthProfit, totalSalesCount, avgRate, period }) {
         <div className="summary-item">
           <div className="summary-item-title">{avgRateTitle}</div>
           <div className="summary-item-value">
-            {(avgRate !== undefined && avgRate !== null ? avgRate.toFixed(1) : "0.0")}/5.0
+            {formatRate(avgRate)}/5.0
           </div>
         </div>
       </div>

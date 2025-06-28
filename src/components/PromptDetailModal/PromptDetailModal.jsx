@@ -49,6 +49,12 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       const promptData = await promptAPI.getPromptById(promptId);
       console.log('PromptDetailModal - API 응답 데이터:', promptData);
 
+      // 🔍 프롬프트 API averageRating 구조 확인을 위한 로그  
+      console.log('🔍 프롬프트 API 응답 데이터:', promptData);
+      console.log('🔍 averageRating:', promptData.averageRating);
+      console.log('🔍 averageRating 타입:', typeof promptData.averageRating);
+      console.log('🔍 averageRating이 객체라면 rateAvg:', promptData.averageRating?.rateAvg);
+
       setPromptDetail({
         id: promptData.id,
         title: promptData.title,
@@ -56,7 +62,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
         content: promptData.content,
         price: promptData.price,
         author: promptData.ownerProfileName,
-        rating: promptData.averageRating,
+        rating: promptData.averageRating?.rateAvg || promptData.averageRating, // RateAvgDto 객체면 rateAvg 필드 사용
         userPurchased: promptData.userPurchased,
         bookmarked: promptData.bookmarked,
         ownerAuth0Id: promptData.auth0id,
@@ -528,7 +534,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
               <div className="stars-display">
                 {renderStars(promptDetail?.rating, 18)}
               </div>
-              <span className="rating-text">{promptDetail?.rating?.toFixed(1) || 0}/5.0</span>
+              <span className="rating-text">{promptDetail?.rating && typeof promptDetail.rating === 'number' ? promptDetail.rating.toFixed(1) : '0.0'}/5.0</span>
             </div>
             <div className={`grade-badge ${getGradeClass(aiEvaluation?.grade)}`}>
               🤖 AI {aiEvaluation?.grade || 'N/A'}

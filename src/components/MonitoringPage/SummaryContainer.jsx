@@ -29,14 +29,20 @@ function SalesSummaryContainer() {
           userAPI.getSellingHistory(0, 100)
         ]);
 
+        // 🔍 RateAvgDto 구조 확인을 위한 로그
+        console.log('🔍 모니터링 API 응답 데이터:', monitoringData);
+        console.log('🔍 avgRate (RateAvgDto):', monitoringData?.avgRate);
+        console.log('🔍 avgRate.rateAvg 값:', monitoringData?.avgRate?.rateAvg);
+        console.log('🔍 avgRate.userID 값:', monitoringData?.avgRate?.userID);
+
         // 모니터링 데이터 상태 업데이트
         if (monitoringData) {
           setSummary({
-            thisMonthProfit: monitoringData.thisMonthProfit || 0,
-            totalSalesCount: monitoringData.totalSalesCount || 0,
-            avgRate: monitoringData.avgRate || null,
+            thisMonthProfit: Number(monitoringData.thisMonthProfit) || 0,
+            totalSalesCount: Number(monitoringData.totalSalesCount) || 0,
+            avgRate: monitoringData.avgRate || null, // RateAvgDto 객체 그대로 전달
           });
-          setDailyProfit(monitoringData.dailyProfit || []);
+          setDailyProfit(Array.isArray(monitoringData.dailyProfit) ? monitoringData.dailyProfit : []);
         }
 
         // 판매중인 프롬프트 상태 업데이트
