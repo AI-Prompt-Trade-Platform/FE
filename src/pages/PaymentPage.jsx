@@ -64,7 +64,7 @@ const PaymentPage = () => {
       console.log('결제 확인 요청 URL:', url);
 
       // API 클라이언트의 request 메서드를 직접 사용
-      const response = await fetch(`${userAPI.baseURL || 'https://api.prumpt2.store/api'}${url}`, {
+      const response = await fetch(`${userAPI.baseURL || import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}${url}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authToken}`,
