@@ -93,28 +93,54 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       
       console.log('AI 등급 원본 데이터:', aiGradeData);
       
-      // 등급과 이유 분리 (예: "[S][스타일과 분위기 묘사가 구체적임]")
+      // 등급과 이유 분리 - 다양한 형태 지원
+      // 형태 1: "[S][스타일과 분위기 묘사가 구체적임]"
+      // 형태 2: "A 주요 요소들이 프롬프트와 잘 일치하고 분위기도 적절함"
       let grade = 'N/A';
       let reason = '';
       
       if (aiGradeData) {
-        const gradeStr = aiGradeData.toString().trim();
+        let gradeStr = aiGradeData.toString().trim();
+        
+        // 백틱 문자 제거 (``A 주요 객체와 스타일이 잘 구현됨`` -> A 주요 객체와 스타일이 잘 구현됨)
+        gradeStr = gradeStr.replace(/`/g, '').trim();
+        
+        console.log('백틱 제거 후 데이터:', gradeStr);
+        
         // 대괄호 패턴으로 등급과 이유 추출
-        const match = gradeStr.match(/\[([A-Z])\]\[(.+?)\]/);
-        if (match) {
-          grade = match[1].toUpperCase(); // 등급 (S, A, B, C, D 등)
-          reason = match[2]; // 이유
+        const bracketMatch = gradeStr.match(/\[([A-Z])\]\[(.+?)\]/);
+        if (bracketMatch) {
+          grade = bracketMatch[1].toUpperCase(); // 등급 (S, A, B, C, D 등)
+          reason = bracketMatch[2]; // 이유
           console.log('대괄호 패턴 파싱 성공:', { grade, reason });
         } else {
-          // 기존 공백 기반 파싱도 유지 (호환성)
-          const parts = gradeStr.split(' ');
-          if (parts.length > 0) {
-            grade = parts[0].toUpperCase();
-            if (parts.length > 1) {
-              reason = parts.slice(1).join(' ');
+          // 공백 기반 파싱 - 첫 번째 문자가 등급, 나머지는 이유
+          const firstChar = gradeStr.charAt(0).toUpperCase();
+          
+          // 등급이 유효한지 확인 (S, A, B, C, D 중 하나)
+          if (['S', 'A', 'B', 'C', 'D'].includes(firstChar)) {
+            grade = firstChar;
+            
+            // 공백으로 분리하여 나머지 부분을 이유로 사용
+            const remainingText = gradeStr.slice(1).trim();
+            if (remainingText) {
+              reason = remainingText;
+            }
+          } else {
+            // 등급을 찾을 수 없는 경우 전체 텍스트를 확인
+            const parts = gradeStr.split(/\s+/);
+            if (parts.length > 0) {
+              const potentialGrade = parts[0].toUpperCase();
+              if (['S', 'A', 'B', 'C', 'D'].includes(potentialGrade)) {
+                grade = potentialGrade;
+                if (parts.length > 1) {
+                  reason = parts.slice(1).join(' ');
+                }
+              }
             }
           }
-          console.log('공백 패턴 파싱 사용:', { grade, reason });
+          
+          console.log('공백 패턴 파싱 사용:', { grade, reason, original: gradeStr });
         }
       }
       

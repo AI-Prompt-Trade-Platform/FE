@@ -24,39 +24,72 @@ const PromptCard = ({ prompt, onClick }) => {
     }
   };
 
-  // AI 등급 변환 함수 - A등급만 표시
-  const getAIGrade = (rate) => {
-    if (!rate) return null;
+  // AI 등급 파싱 및 변환 함수 - 모든 등급 지원 (S, A, B, C, D)
+  const parseAIGrade = (rate) => {
+    if (!rate) return { grade: null, displayName: null };
     
-    // 다양한 형태의 AI 등급 데이터 처리
-    const rateStr = rate.toString().toLowerCase();
+    let rateStr = rate.toString().trim();
     
-    // "A", "excellent", "A - 이유" 등의 형태 모두 처리
-    if (rateStr.startsWith('a') || rateStr.includes('excellent')) {
-      return 'EXCELLENT';
+    // 백틱 문자 제거 (`A 주요 객체와 스타일이 잘 구현됨` -> A 주요 객체와 스타일이 잘 구현됨)
+    rateStr = rateStr.replace(/`/g, '').trim();
+    
+    let grade = null;
+    
+    // 대괄호 패턴 체크: [A][이유]
+    const bracketMatch = rateStr.match(/\[([A-Z])\]\[.+?\]/);
+    if (bracketMatch) {
+      grade = bracketMatch[1].toUpperCase();
+    } else {
+      // 공백 기반 파싱: "A 주요 요소들이 프롬프트와 잘 일치하고 분위기도 적절함"
+      const firstChar = rateStr.charAt(0).toUpperCase();
+      
+      // 등급이 유효한지 확인 (S, A, B, C, D 중 하나)
+      if (['S', 'A', 'B', 'C', 'D'].includes(firstChar)) {
+        grade = firstChar;
+      } else {
+        // 공백으로 분리하여 첫 번째 단어 확인
+        const parts = rateStr.split(/\s+/);
+        if (parts.length > 0) {
+          const potentialGrade = parts[0].toUpperCase();
+          if (['S', 'A', 'B', 'C', 'D'].includes(potentialGrade)) {
+            grade = potentialGrade;
+          }
+        }
+      }
     }
     
-    // 첫 글자가 'A'인 경우도 처리
-    const firstChar = rate.toString().charAt(0).toUpperCase();
-    return firstChar === 'A' ? 'EXCELLENT' : null;
+    // 등급에 따른 표시명 설정
+    const gradeDisplayMap = {
+      'S': 'PREMIUM',
+      'A': 'EXCELLENT', 
+      'B': 'GOOD',
+      'C': 'FAIR',
+      'D': 'BASIC'
+    };
+    
+    return {
+      grade: grade,
+      displayName: grade ? gradeDisplayMap[grade] : null
+    };
   };
 
   // AI 등급 클래스 결정 함수
   const getGradeClass = (rate) => {
-    if (!rate) return '';
+    const { grade } = parseAIGrade(rate);
+    if (!grade) return '';
     
-    const rateStr = rate.toString().toLowerCase();
+    const gradeClassMap = {
+      'S': 'grade-s',
+      'A': 'grade-a',
+      'B': 'grade-b', 
+      'C': 'grade-c',
+      'D': 'grade-d'
+    };
     
-    // "A", "excellent", "A - 이유" 등의 형태 모두 처리
-    if (rateStr.startsWith('a') || rateStr.includes('excellent')) {
-      return 'grade-excellent';
-    }
-    
-    const firstChar = rate.toString().charAt(0).toUpperCase();
-    return firstChar === 'A' ? 'grade-excellent' : '';
+    return gradeClassMap[grade] || '';
   };
 
-  const aiGrade = getAIGrade(aiInspectionRate);
+  const { displayName: aiGrade } = parseAIGrade(aiInspectionRate);
   
 
 
