@@ -234,6 +234,13 @@
   box-shadow: 0 2px 10px rgba(117, 117, 117, 0.5);
 }
 
+.card-ai-grade.grade-x {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+  color: #fff;
+  border: 1px solid #ff6b6b;
+  box-shadow: 0 2px 10px rgba(255, 107, 107, 0.5);
+}
+
 @media (max-width: 480px) {
   .prompt-card:hover {
     transform: translateY(-4px) scale(1.005);

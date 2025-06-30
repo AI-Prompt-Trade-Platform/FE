@@ -80,7 +80,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
         setReviews([]);
       }
 
-      // AI 등급 설정 - 새로운 포맷: "[등급][이유]"
+      // AI 등급 설정 - 다양한 포맷 지원
       // 다양한 필드명 확인
       const aiGradeData = promptData.aiInspectionRate || 
                          promptData.ai_inspection_rate || 
@@ -96,6 +96,8 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       // 등급과 이유 분리 - 다양한 형태 지원
       // 형태 1: "[S][스타일과 분위기 묘사가 구체적임]"
       // 형태 2: "A 주요 요소들이 프롬프트와 잘 일치하고 분위기도 적절함"
+      // 형태 3: "AI 등급 원본 데이터: X 시각적 요소가 아님"
+      // 형태 4: "X: 시각적 요소가 아님"
       let grade = 'N/A';
       let reason = '';
       
@@ -107,40 +109,63 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
         
         console.log('백틱 제거 후 데이터:', gradeStr);
         
-        // 대괄호 패턴으로 등급과 이유 추출
+        // 1. 대괄호 패턴으로 등급과 이유 추출: [A][이유]
         const bracketMatch = gradeStr.match(/\[([A-Z])\]\[(.+?)\]/);
         if (bracketMatch) {
-          grade = bracketMatch[1].toUpperCase(); // 등급 (S, A, B, C, D 등)
-          reason = bracketMatch[2]; // 이유
+          grade = bracketMatch[1].toUpperCase();
+          reason = bracketMatch[2];
           console.log('대괄호 패턴 파싱 성공:', { grade, reason });
         } else {
-          // 공백 기반 파싱 - 첫 번째 문자가 등급, 나머지는 이유
+          // 2. 공백 기반 파싱 - 첫 번째 문자가 등급, 나머지는 이유 ("X 시각적 요소가 아님")
           const firstChar = gradeStr.charAt(0).toUpperCase();
           
-          // 등급이 유효한지 확인 (S, A, B, C, D 중 하나)
-          if (['S', 'A', 'B', 'C', 'D'].includes(firstChar)) {
+          // 등급이 유효한지 확인 (S, A, B, C, D, X 중 하나)
+          if (['S', 'A', 'B', 'C', 'D', 'X'].includes(firstChar)) {
             grade = firstChar;
             
-            // 공백으로 분리하여 나머지 부분을 이유로 사용
+            // 첫 글자 다음부터를 이유로 사용
             const remainingText = gradeStr.slice(1).trim();
             if (remainingText) {
               reason = remainingText;
             }
+            console.log('공백 패턴 파싱 성공:', { grade, reason });
           } else {
-            // 등급을 찾을 수 없는 경우 전체 텍스트를 확인
-            const parts = gradeStr.split(/\s+/);
-            if (parts.length > 0) {
-              const potentialGrade = parts[0].toUpperCase();
-              if (['S', 'A', 'B', 'C', 'D'].includes(potentialGrade)) {
+            // 3. 콜론 기반 파싱 시도: "등급: 이유" 형태
+            const colonMatch = gradeStr.match(/([A-ZX])\s*[:：]\s*(.+)/i);
+            if (colonMatch) {
+              const potentialGrade = colonMatch[1].toUpperCase();
+              if (['S', 'A', 'B', 'C', 'D', 'X'].includes(potentialGrade)) {
                 grade = potentialGrade;
-                if (parts.length > 1) {
-                  reason = parts.slice(1).join(' ');
+                reason = colonMatch[2].trim();
+                console.log('콜론 패턴 파싱 성공:', { grade, reason });
+              }
+            } else {
+              // 4. 단어 단위로 분리하여 등급 찾기
+              const words = gradeStr.split(/\s+/);
+              let foundGrade = false;
+              
+              for (let i = 0; i < words.length; i++) {
+                const word = words[i].toUpperCase();
+                if (['S', 'A', 'B', 'C', 'D', 'X'].includes(word)) {
+                  grade = word;
+                  // 등급 다음 단어들을 이유로 사용
+                  if (i + 1 < words.length) {
+                    reason = words.slice(i + 1).join(' ');
+                  }
+                  foundGrade = true;
+                  console.log('단어 단위 파싱 성공:', { grade, reason });
+                  break;
                 }
+              }
+              
+              // 5. 등급을 찾지 못한 경우 기본 처리
+              if (!foundGrade) {
+                grade = 'N/A';
+                reason = gradeStr;
+                console.log('기본 처리:', { grade, reason });
               }
             }
           }
-          
-          console.log('공백 패턴 파싱 사용:', { grade, reason, original: gradeStr });
         }
       }
       
@@ -360,6 +385,7 @@ const PromptDetailModal = ({ promptId, onClose, onPurchase }) => {
       case 'B': return 'grade-b';
       case 'C': return 'grade-c';
       case 'D': return 'grade-d';
+      case 'X': return 'grade-x';
       default: return 'grade-default';
     }
   }

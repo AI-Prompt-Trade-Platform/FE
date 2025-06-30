@@ -35,28 +35,39 @@ const PromptCard = ({ prompt, onClick }) => {
     
     let grade = null;
     
-    // 대괄호 패턴 체크: [A][이유]
+    // 1. 대괄호 패턴 체크: [A][이유]
     const bracketMatch = rateStr.match(/\[([A-Z])\]\[.+?\]/);
     if (bracketMatch) {
       grade = bracketMatch[1].toUpperCase();
-    } else {
-      // 공백 기반 파싱: "A 주요 요소들이 프롬프트와 잘 일치하고 분위기도 적절함"
-      const firstChar = rateStr.charAt(0).toUpperCase();
-      
-      // 등급이 유효한지 확인 (S, A, B, C, D 중 하나)
-      if (['S', 'A', 'B', 'C', 'D'].includes(firstChar)) {
-        grade = firstChar;
-      } else {
-        // 공백으로 분리하여 첫 번째 단어 확인
-        const parts = rateStr.split(/\s+/);
-        if (parts.length > 0) {
-          const potentialGrade = parts[0].toUpperCase();
-          if (['S', 'A', 'B', 'C', 'D'].includes(potentialGrade)) {
-            grade = potentialGrade;
+          } else {
+        // 2. 공백 기반 파싱: "X 시각적 요소가 아님" 또는 "A 주요 요소들이 프롬프트와 잘 일치함"
+        const firstChar = rateStr.charAt(0).toUpperCase();
+        
+        // 등급이 유효한지 확인 (S, A, B, C, D, X 중 하나)
+        if (['S', 'A', 'B', 'C', 'D', 'X'].includes(firstChar)) {
+          grade = firstChar;
+        } else {
+          // 3. 콜론 기반 파싱 시도: "등급: 이유" 형태
+          const colonMatch = rateStr.match(/([A-ZX])\s*[:：]\s*(.+)/i);
+          if (colonMatch) {
+            const potentialGrade = colonMatch[1].toUpperCase();
+            if (['S', 'A', 'B', 'C', 'D', 'X'].includes(potentialGrade)) {
+              grade = potentialGrade;
+            }
+          } else {
+            // 4. 단어 단위로 분리하여 등급 찾기
+            const words = rateStr.split(/\s+/);
+            
+            for (let i = 0; i < words.length; i++) {
+              const word = words[i].toUpperCase();
+              if (['S', 'A', 'B', 'C', 'D', 'X'].includes(word)) {
+                grade = word;
+                break;
+              }
+            }
           }
         }
       }
-    }
     
     // 등급에 따른 표시명 설정
     const gradeDisplayMap = {
@@ -64,7 +75,8 @@ const PromptCard = ({ prompt, onClick }) => {
       'A': 'EXCELLENT', 
       'B': 'GOOD',
       'C': 'FAIR',
-      'D': 'BASIC'
+      'D': 'BASIC',
+      'X': 'NOT RATED'
     };
     
     return {
@@ -83,7 +95,8 @@ const PromptCard = ({ prompt, onClick }) => {
       'A': 'grade-a',
       'B': 'grade-b', 
       'C': 'grade-c',
-      'D': 'grade-d'
+      'D': 'grade-d',
+      'X': 'grade-x'
     };
     
     return gradeClassMap[grade] || '';
