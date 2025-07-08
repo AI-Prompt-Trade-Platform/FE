@@ -1,0 +1,99 @@
+.footer {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: #ffffff;
+  padding: 40px 0 20px;
+  margin-top: auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* 모든 가능한 배경 속성 강제 제거 */
+.footer,
+.footer::before,
+.footer::after {
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+  background-clip: initial !important;
+  background-origin: initial !important;
+  background-position: initial !important;
+  background-repeat: initial !important;
+  background-size: initial !important;
+}
+
+/* 하위 요소들도 투명 배경 강제 */
+.footer * {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.footer-copyright {
+  text-align: center;
+  line-height: 1.6;
+}
+
+.footer-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-logo {
+  width: 80px;
+  height: 32px;
+  filter: invert(1);
+}
+
+.footer-copyright p {
+  margin: 0;
+  color: #cccccc;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .footer {
+    padding: 30px 0 15px;
+  }
+  
+  .footer-content {
+    padding: 0 15px;
+  }
+  
+  .footer-logo {
+    width: 70px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-logo-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .footer-logo {
+    width: 60px;
+    height: 24px;
+  }
+  
+  .footer-copyright p {
+    font-size: 13px;
+  }
+} 

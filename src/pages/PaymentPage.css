@@ -1,0 +1,188 @@
+.payment-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 1rem 2rem;
+  color: #ffffff;
+  position: relative;
+}
+
+.payment-container {
+  background: rgba(25, 25, 28, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.payment-title {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  color: #f0f0f0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+}
+
+.point-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2.5rem;
+}
+
+.point-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.point-option:hover {
+  transform: translateY(-5px) scale(1.03);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: #a78bfa;
+}
+
+.point-option.selected {
+  border-color: #8b5cf6;
+  background-color: rgba(139, 92, 246, 0.25);
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5), inset 0 0 10px rgba(139, 92, 246, 0.2);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.point-option .amount {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #b0b0b0;
+}
+
+.payment-summary {
+  background-color: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.payment-summary h2 {
+  margin: 0 0 1.2rem 0;
+  padding-bottom: 1rem;
+  font-size: 1.3rem;
+  color: #e5e5e5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  background: rgba(10, 10, 12, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d0d0d0;
+  font-size: 1rem;
+}
+
+.summary-item:last-child {
+  margin-bottom: 0;
+}
+
+.summary-item span:first-child {
+  color: #b0b0b0;
+}
+
+.summary-item span:last-child {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.summary-item.total {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.summary-item.total span:last-child {
+  color: #a78bfa; /* Accent color for total */
+}
+
+.payment-button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  background-color: #8b5cf6;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
+.payment-button:hover:not(:disabled) {
+  background-color: #7c3aed;
+  box-shadow: 0 6px 25px rgba(124, 58, 237, 0.6);
+  transform: translateY(-3px);
+}
+
+.payment-button:disabled {
+  background-color: #585561;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* 결제 성공/실패 메시지 스타일 (다크모드) */
+.payment-success-message,
+.payment-error-message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.payment-success-message {
+  background-color: rgba(46, 204, 113, 0.15);
+  border-color: #2ecc71;
+  color: #2ecc71;
+}
+
+.payment-error-message {
+  background-color: rgba(231, 76, 60, 0.15);
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 로딩 컨테이너는 기존 스타일을 그대로 사용해도 괜찮을 것 같습니다. 
+   만약 수정이 필요하다면 여기에 추가할 수 있습니다. */

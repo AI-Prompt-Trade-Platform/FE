@@ -1,0 +1,356 @@
+/* AlertModal.css */
+.alert-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.alert-modal-overlay.fade-out {
+  animation: fadeOut 0.3s ease-in;
+}
+
+.alert-modal-content {
+  background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+  border-radius: 20px;
+  padding: 32px;
+  min-width: 360px;
+  max-width: 500px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  transform: scale(0.8) translateY(20px);
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.alert-modal-content.slide-in {
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.alert-modal-content.slide-out {
+  animation: slideOut 0.3s ease-in forwards;
+}
+
+.alert-modal-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.alert-icon-container {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.alert-icon {
+  stroke-width: 2.5;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  animation: iconPulse 0.6s ease-out;
+}
+
+.alert-icon.success {
+  stroke: #10b981;
+  animation: successIcon 0.8s ease-out;
+}
+
+.alert-icon.error {
+  stroke: #ef4444;
+  animation: errorShake 0.5s ease-out;
+}
+
+.alert-icon.warning {
+  stroke: #f59e0b;
+  animation: warningBounce 0.6s ease-out;
+}
+
+.alert-icon.info {
+  stroke: #3b82f6;
+  animation: infoPulse 0.6s ease-out;
+}
+
+.alert-title {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.alert-modal-body {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.alert-message {
+  color: #e5e7eb;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.alert-modal-footer {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.alert-confirm-btn {
+  background: linear-gradient(145deg, #4f46e5, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.alert-confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
+
+.alert-confirm-btn:active {
+  transform: translateY(0);
+}
+
+.alert-confirm-btn.success {
+  background: linear-gradient(145deg, #10b981, #34d399);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.alert-confirm-btn.success:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.alert-confirm-btn.error {
+  background: linear-gradient(145deg, #ef4444, #f87171);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.alert-confirm-btn.error:hover {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.alert-confirm-btn.warning {
+  background: linear-gradient(145deg, #f59e0b, #fbbf24);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.alert-confirm-btn.warning:hover {
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+.alert-cancel-btn {
+  background: transparent;
+  color: #9ca3af;
+  border: 2px solid #374151;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.alert-cancel-btn:hover {
+  color: #ffffff;
+  border-color: #6b7280;
+  background: rgba(75, 85, 99, 0.1);
+  transform: translateY(-1px);
+}
+
+.alert-cancel-btn:active {
+  transform: translateY(0);
+}
+
+/* 성공 알림 파티클 효과 */
+.success-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: particleFloat 2s ease-out forwards;
+}
+
+.particle-1 { top: 20%; left: 10%; animation-delay: 0.1s; }
+.particle-2 { top: 30%; left: 80%; animation-delay: 0.2s; }
+.particle-3 { top: 50%; left: 20%; animation-delay: 0.3s; }
+.particle-4 { top: 70%; left: 90%; animation-delay: 0.4s; }
+.particle-5 { top: 40%; left: 70%; animation-delay: 0.5s; }
+.particle-6 { top: 60%; left: 30%; animation-delay: 0.6s; }
+.particle-7 { top: 80%; left: 60%; animation-delay: 0.7s; }
+.particle-8 { top: 25%; left: 50%; animation-delay: 0.8s; }
+
+/* 애니메이션 키프레임 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(0.8) translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9) translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes successIcon {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(-90deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes errorShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes warningBounce {
+  0% {
+    transform: scale(0) translateY(20px);
+  }
+  50% {
+    transform: scale(1.1) translateY(-5px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes infoPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes iconPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) scale(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-60px) scale(1);
+    opacity: 0;
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .alert-modal-content {
+    margin: 20px;
+    min-width: auto;
+    width: calc(100% - 40px);
+    padding: 24px;
+  }
+  
+  .alert-title {
+    font-size: 18px;
+  }
+  
+  .alert-message {
+    font-size: 14px;
+  }
+  
+  .alert-confirm-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+} 

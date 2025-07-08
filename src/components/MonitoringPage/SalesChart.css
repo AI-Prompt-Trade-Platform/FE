@@ -1,0 +1,21 @@
+.sales-chart-container {
+  background: rgba(30, 30, 30, 0.7);
+  backdrop-filter: blur(5px);
+  border-radius: var(--radius-lg, 16px);
+  padding: 24px;
+  margin: 20px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.sales-chart-container:hover {
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.sales-chart-title {
+  color: var(--text-primary, #ffffff);
+  font-weight: bold;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  margin-bottom: 16px;
+}
